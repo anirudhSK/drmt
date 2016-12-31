@@ -7,7 +7,7 @@ import copy
  
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
-        nx.DiGraph.__init__(self)       
+        nx.DiGraph.__init__(self)
         self.create_dag(nodes, edges)
         
     def create_dag(self, nodes, edges):
@@ -31,12 +31,14 @@ class ScheduleDAG(nx.DiGraph):
             If graph is not a DAG
             
         """
-        self.add_nodes_from(nodes)    
-        self.add_edges_from(edges)  
-        
+        # add_nodes_from and add_edges_from
+        # are inherited from nx.DiGraph
+        self.add_nodes_from(nodes)
+        self.add_edges_from(edges)
+ 
         if nx.is_directed_acyclic_graph(self) is False:
             raise ValueError('Input is not a DAG!')
-         
+  
         # Annotate nodes
         for u in self.nodes():
             self.node[u]['type'] = nodes[u]['type']
@@ -44,6 +46,7 @@ class ScheduleDAG(nx.DiGraph):
                 self.node[u]['key_width'] = nodes[u]['key_width']
             elif self.node[u]['type'] == 'action':
                 self.node[u]['num_fields'] = nodes[u]['num_fields']   
+
         # Annotate edges
         for (u,v) in self.edges():
             self.edge[u][v]['delay'] = edges[(u,v)]['delay']       
@@ -64,7 +67,7 @@ class ScheduleDAG(nx.DiGraph):
             Latency of longest path
             
         """
-        dist = {}  # stores [node, distance] pair
+        dist = {}  # stores [distance, node] pair
         for node in nx.topological_sort(self):
             # pairs of dist,node for all incoming edges
             pairs = [(dist[v][0] + self[v][u]['delay'], v) for v,u in self.in_edges(node)]
@@ -117,7 +120,8 @@ class ScheduleDAG(nx.DiGraph):
             
                
 class DrmtScheduleSolver:
-    def __init__(self, dag, num_procs, pkts_per_period=1, key_width_limit=640, action_fields_limit=8):
+    def __init__(self, dag, num_procs, pkts_per_period=1,
+                 key_width_limit=640, action_fields_limit=8):
         self.G = dag
         self.num_procs = num_procs
         self.pkts_per_period = pkts_per_period
@@ -134,7 +138,7 @@ class DrmtScheduleSolver:
         ops_at_time : defaultdic
             List of operations in each timeslot
         length : int
-            Maximum latency of optimnal schedule
+            Maximum latency of optimal schedule
         """       
         N = self.num_procs
         Q = self.pkts_per_period
