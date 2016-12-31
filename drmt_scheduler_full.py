@@ -128,7 +128,7 @@ class DrmtScheduleSolver:
         self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
 
-    def solve(self, identical=True):
+    def solve(self):
         """ Returns the optimal schedule
 
         Returns
@@ -151,10 +151,7 @@ class DrmtScheduleSolver:
         m = Model()
 
         # Create variables
-        if identical:
-            t = m.addVars(nodes, lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
-        else:
-            t = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
+        t = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
         delta = m.addVars(range(Q), lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
         k = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="k")
         s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
@@ -166,14 +163,10 @@ class DrmtScheduleSolver:
         # Set constraints
         m.addConstr(delta[0] == 0)
         #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1))
-        if identical:
-            m.addConstrs(t[v]  <= length for v in nodes)
-            m.addConstrs(delta[q]+t[v] == k[v,q] * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
-            m.addConstrs(t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges)
-        else:
-            m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
-            m.addConstrs(delta[q]+t[v,q] == k[v,q] * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
-            m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
+
+        m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
+        m.addConstrs(delta[q]+t[v,q] == k[v,q] * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
+        m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
 
         m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
         m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
@@ -190,10 +183,7 @@ class DrmtScheduleSolver:
             maxt = 0
             mint = np.inf
             for v in nodes:
-                if identical:
-                    tvq = int(delta[q].x + t[v].x)
-                else:
-                    tvq = int(delta[q].x + t[v,q].x)
+                tvq = int(delta[q].x + t[v,q].x)
                 if tvq > maxt:
                     maxt = tvq
                 if tvq < mint:
@@ -364,7 +354,7 @@ try:
                                 pkts_per_period=pkts_per_period,\
                                 key_width_limit=key_width_limit, \
                                 action_fields_limit=action_fields_limit)
-    solver.solve(identical=False)
+    solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
     print '{:*^80}'.format(' Optimal Schedule ')
