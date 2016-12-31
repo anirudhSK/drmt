@@ -151,25 +151,55 @@ class DrmtScheduleSolver:
         m = Model()
 
         # Create variables
+        # t is the start time for each node in each packet,
+        # relative to the first node in that packet.
+        # This is why there are nodes * range(Q) variables
         t = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
+
+        # The start time of each packet, i.e., the root of each packet's DAG
+        # These start times have to be under T because all packets must start
+        # within T.  
         delta = m.addVars(range(Q), lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
+
+        # The quotients when dividing by T (see below)
         k = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="k")
+
+        # The reminders when dividing by T (see below)
+        # s[v, q, t] is 1 when delta[q] + t[v, q]
+        # leaves a reminder of t when divided by T.
         s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
+
+        # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
 
-        # Set objective
+        # Set objective: minimize length of schedule
         m.setObjective(length, GRB.MINIMIZE)
 
         # Set constraints
+
+        # First packet starts at time 0
         m.addConstr(delta[0] == 0)
         #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1))
 
+        # The length is the maximum of all t's
         m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
+
+        # This is just a way to write dividend = divisor * quotient + reminder
         m.addConstrs(delta[q]+t[v,q] == k[v,q] * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
+
+        # For each packet (q), respect dependencies in DAG
         m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
 
+        # Given v and q, s[v, q, j] is 1 for exactly one j < T.
         m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
+
+        # The key width resource constraint:
+        # for every time step (j) < T, check the total key width requirement
+        # across all packets (q) and their nodes (v) that
+        # can be "rotated" into this time slot.
         m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
+
+        # The action field resource constraint (similar comments to above)
         m.addConstrs(sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T))
 
         # Solve model
