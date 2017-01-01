@@ -350,7 +350,7 @@ try:
     solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
-    print '{:*^80}'.format(' Optimal Schedule ')
+    print '{:*^80}'.format(' Timeline for a single packet ')
     print timeline
 
     print 'Optimal schedule length = %d cycles' % solver.length
@@ -359,18 +359,18 @@ try:
 
     (ops_on_ring, match_key_usage, action_fields_usage) = solver.compute_periodic_schedule()
     (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=8)
-    print '{:*^80}'.format(' Optimal Periodic Schedule ')
+    print '{:*^80}'.format(' Periodic schedule on a single processor ')
     print timeline
 
     print '{:*^80}'.format(' Resource usage ')
-    print 'Match key length usage (max = %d bits)' % key_width_limit
+    print 'Match key length usage (max = %d bits) on a single processor' % key_width_limit
     mk_usage = {}
     for t in range(period):
         mk_usage[t] = [str(match_key_usage[t])]
     (timeline, strlen) = solver.timeline_str(mk_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action fields usage (max = %d fields)' % action_fields_limit
+    print 'Action fields usage (max = %d fields) on a single processor' % action_fields_limit
     af_usage = {}
     for t in range(period):
         af_usage[t] = [str(action_fields_usage[t])]
