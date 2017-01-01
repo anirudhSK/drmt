@@ -120,11 +120,10 @@ class ScheduleDAG(nx.DiGraph):
 
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, num_procs, period_duration,
+    def __init__(self, dag, period_duration,
                  pkts_per_period=1,
                  key_width_limit=640, action_fields_limit=8):
         self.G = dag
-        self.num_procs = num_procs
         self.pkts_per_period = pkts_per_period
         self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
@@ -312,14 +311,14 @@ try:
     dM = 3
     dA = 1
 
-    nodes = {'M0' : {'type':'match', 'key_width':640}, \
-             'M*' : {'type':'match', 'key_width':640}, \
-             'M1' : {'type':'match', 'key_width':640}, \
-             'MF' : {'type':'match', 'key_width':640}, \
-             'AF' : {'type':'action', 'num_fields':8}, \
-             'A*' : {'type':'action', 'num_fields':8}, \
-             'A1' : {'type':'action', 'num_fields':8}, \
-             'A2' : {'type':'action', 'num_fields':8}}
+    nodes = {'M0' : {'type':'match', 'key_width':160}, \
+             'M*' : {'type':'match', 'key_width':160}, \
+             'M1' : {'type':'match', 'key_width':160}, \
+             'MF' : {'type':'match', 'key_width':160}, \
+             'AF' : {'type':'action', 'num_fields':2}, \
+             'A*' : {'type':'action', 'num_fields':2}, \
+             'A1' : {'type':'action', 'num_fields':2}, \
+             'A2' : {'type':'action', 'num_fields':2}}
 
     edges = {('M0','M*') : {'delay':dM}, \
              ('M0','A*') : {'delay':dM}, \
@@ -328,11 +327,25 @@ try:
              ('A1','M1') : {'delay':dA}, \
              ('M1','A2') : {'delay':dM}}
 
+    # Number of processors in system
     num_procs = 3
-    pkts_per_period = 1
+
+    # Match key and action field limit for each processor
+    # We assume the processors don't share resources for now
     key_width_limit = 640
     action_fields_limit = 8
-    period_duration = 4
+
+    # Throughput specified as a rational number p/q,
+    # This will attempt to schedule p/num_procs packets
+    # in q time slots across at each processor.
+    # This q time slot schedule then repeats itself.
+    # Equivalently, p/q packets across all processors.
+    throughput_numerator = 12
+    throughput_denominator = 4
+
+    # Derive pkts_per_period from num_procs and throughput_numerator
+    pkts_per_period = throughput_numerator / num_procs
+    period_duration = throughput_denominator
 
 ###############################################################################
     G = ScheduleDAG(nodes, edges)
@@ -342,7 +355,7 @@ try:
     G.print_report()
 
     print '{:*^80}'.format(' Running Solver ')
-    solver = DrmtScheduleSolver(dag=G, num_procs=num_procs, \
+    solver = DrmtScheduleSolver(dag=G,
                                 pkts_per_period=pkts_per_period,\
                                 period_duration = period_duration, \
                                 key_width_limit=key_width_limit, \
