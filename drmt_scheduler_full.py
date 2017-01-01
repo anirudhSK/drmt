@@ -150,6 +150,7 @@ class DrmtScheduleSolver:
         edges = self.G.edges()
 
         m = Model()
+        m.setParam( 'OutputFlag', False )
 
         # Create variables
         # t is the start time for each node in each packet,
