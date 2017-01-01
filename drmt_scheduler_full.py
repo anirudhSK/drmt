@@ -360,6 +360,7 @@ try:
     throughput_denominator = 4
 
     # Derive pkts_per_period from num_procs and throughput_numerator
+    assert(throughput_numerator % num_procs == 0)
     pkts_per_period = throughput_numerator / num_procs
     period_duration = throughput_denominator
 
