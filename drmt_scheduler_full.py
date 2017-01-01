@@ -327,14 +327,12 @@ try:
     dM = 3
     dA = 1
 
-    nodes = {'M0' : {'type':'match', 'key_width':160}, \
-             'M*' : {'type':'match', 'key_width':160}, \
-             'M1' : {'type':'match', 'key_width':160}, \
-             'MF' : {'type':'match', 'key_width':160}, \
-             'AF' : {'type':'action', 'num_fields':2}, \
-             'A*' : {'type':'action', 'num_fields':2}, \
-             'A1' : {'type':'action', 'num_fields':2}, \
-             'A2' : {'type':'action', 'num_fields':2}}
+    nodes = {'M0' : {'type':'match', 'key_width':640}, \
+             'M*' : {'type':'match', 'key_width':640}, \
+             'M1' : {'type':'match', 'key_width':640}, \
+             'A*' : {'type':'action', 'num_fields':8}, \
+             'A1' : {'type':'action', 'num_fields':8}, \
+             'A2' : {'type':'action', 'num_fields':8}}
 
     edges = {('M0','M*') : {'delay':dM}, \
              ('M0','A*') : {'delay':dM}, \
