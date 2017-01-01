@@ -129,10 +129,10 @@ class ScheduleDAG(nx.DiGraph):
               throughput_denominator, \
               (throughput_numerator / throughput_denominator))
         throughput_upper_bound = \
-              min(action_fields * num_procs / action_fields_limit,\
-                  match_bits    * num_procs / key_width_limit)
+              min(action_fields_limit * num_procs / action_fields,\
+                  key_width_limit     * num_procs / match_bits)
         print 'Upper bound on throughput = ', throughput_upper_bound
-        if (throughput_numerator / throughput_denominator > throughput_upper_bound) :
+        if ((throughput_numerator / throughput_denominator) > throughput_upper_bound) :
           print 'Throughput cannot be supported with the current resources'
 
 class DrmtScheduleSolver:
