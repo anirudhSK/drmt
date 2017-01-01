@@ -127,7 +127,7 @@ class ScheduleDAG(nx.DiGraph):
         print 'Required throughput: %d packets every %d cycles (%f)'%(\
               throughput_numerator,\
               throughput_denominator, \
-              (throughput_numerator / throughput_denominator))
+              (1.0 * throughput_numerator / throughput_denominator))
         throughput_upper_bound = \
               min(action_fields_limit * num_procs / action_fields,\
                   key_width_limit     * num_procs / match_bits)
