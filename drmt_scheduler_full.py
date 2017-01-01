@@ -109,15 +109,31 @@ class ScheduleDAG(nx.DiGraph):
                     nodelist.append((u,d))
         return nodelist
 
-    def print_report(self):
+    def print_report(self, key_width_limit, action_fields_limit, num_procs,
+                     throughput_numerator, throughput_denominator):
         cpath, cplat = self.critical_path()
         print '# of nodes = ', self.number_of_nodes()
         print '# of edges = ', self.number_of_edges()
         print '# of matches = ', len(self.nodes(select='match'))
         print '# of actions = ', len(self.nodes(select='action'))
+        match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
+        print '# of match bits = ', match_bits
+        print 'key_width_limit = ', key_width_limit
+        action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
+        print '# of action fields = ', action_fields
+        print 'action_fields_limit = ', action_fields_limit
         print 'Critical path: ', cpath
         print 'Critical path length = %d cycles' % cplat
-
+        print 'Required throughput: %d packets every %d cycles (%f)'%(\
+              throughput_numerator,\
+              throughput_denominator, \
+              (throughput_numerator / throughput_denominator))
+        throughput_upper_bound = \
+              min(action_fields * num_procs / action_fields_limit,\
+                  match_bits    * num_procs / key_width_limit)
+        print 'Upper bound on throughput = ', throughput_upper_bound
+        if (throughput_numerator / throughput_denominator > throughput_upper_bound) :
+          print 'Throughput cannot be supported with the current resources'
 
 class DrmtScheduleSolver:
     def __init__(self, dag, period_duration,
@@ -352,7 +368,13 @@ try:
     period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report()
+    G.print_report(key_width_limit = key_width_limit,\
+                   action_fields_limit = action_fields_limit, \
+                   num_procs = num_procs, \
+                   throughput_denominator = throughput_denominator, \
+                   throughput_numerator = throughput_numerator)
+
+    print '\n\n'
 
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(dag=G,
@@ -363,27 +385,32 @@ try:
     solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
-    print '{:*^80}'.format(' Timeline for a single packet ')
-    print timeline
 
     print 'Optimal schedule length = %d cycles' % solver.length
     cpath, cplat = G.critical_path()
     print 'Critical path length = %d cycles' % cplat
 
+    print '\n\n'
+
+    print '{:*^80}'.format(' First scheduling period on one processor')
+    print '{:*^80}'.format('p[i] is packet i from the first scheduling period')
+    print timeline,'\n\n'
+
     (ops_on_ring, match_key_usage, action_fields_usage) = solver.compute_periodic_schedule()
     (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=8)
-    print '{:*^80}'.format(' Periodic schedule on a single processor ')
-    print timeline
+    print '{:*^80}'.format(' Steady state on one processor')
+    print '{:*^80}'.format('p[u, v] is packet v from u scheduling periods ago')
+    print timeline, '\n\n'
 
     print '{:*^80}'.format(' Resource usage ')
-    print 'Match key length usage (max = %d bits) on a single processor' % key_width_limit
+    print 'Match key length usage (max = %d bits) on one processor' % key_width_limit
     mk_usage = {}
     for t in range(period):
         mk_usage[t] = [str(match_key_usage[t])]
     (timeline, strlen) = solver.timeline_str(mk_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action fields usage (max = %d fields) on a single processor' % action_fields_limit
+    print 'Action fields usage (max = %d fields) on one processor' % action_fields_limit
     af_usage = {}
     for t in range(period):
         af_usage[t] = [str(action_fields_usage[t])]
