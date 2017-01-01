@@ -120,13 +120,15 @@ class ScheduleDAG(nx.DiGraph):
 
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, num_procs, pkts_per_period=1,
+    def __init__(self, dag, num_procs, period_duration,
+                 pkts_per_period=1,
                  key_width_limit=640, action_fields_limit=8):
         self.G = dag
         self.num_procs = num_procs
         self.pkts_per_period = pkts_per_period
         self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
+        self.period_duration = period_duration
 
     def solve(self):
         """ Returns the optimal schedule
@@ -140,9 +142,8 @@ class DrmtScheduleSolver:
         length : int
             Maximum latency of optimal schedule
         """
-        N = self.num_procs
         Q = self.pkts_per_period
-        T = N * Q
+        T = self.period_duration
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
         action_nodes = self.G.nodes(select='action')
@@ -213,6 +214,8 @@ class DrmtScheduleSolver:
             maxt = 0
             mint = np.inf
             for v in nodes:
+                # Add starting time of packet (delta[q]) with
+                # time offset to this node (t[v,q])
                 tvq = int(delta[q].x + t[v,q].x)
                 if tvq > maxt:
                     maxt = tvq
@@ -286,7 +289,7 @@ class DrmtScheduleSolver:
         return (timeline, strlen)
 
     def compute_periodic_schedule(self):
-        T = self.num_procs * self.pkts_per_period
+        T = self.period_duration
         ops_on_ring = collections.defaultdict(list)
         match_key_usage = [0] * T
         action_fields_usage = [0] * T
@@ -304,77 +307,35 @@ class DrmtScheduleSolver:
         return (ops_on_ring, match_key_usage, action_fields_usage)
 
 try:
-#    # Short example
-#    dM = 3
-#    dA = 1
-#
-#    nodes = {'M0' : {'type':'match', 'key_width':640}, \
-#             'M*' : {'type':'match', 'key_width':640}, \
-#             'M1' : {'type':'match', 'key_width':640}, \
-#             'A*' : {'type':'action', 'num_fields':8}, \
-#             'A1' : {'type':'action', 'num_fields':8}, \
-#             'A2' : {'type':'action', 'num_fields':8}}
-#
-#    edges = {('M0','M*') : {'delay':dM}, \
-#             ('M0','A*') : {'delay':dM}, \
-#             ('M*','A1') : {'delay':dM}, \
-#             ('A*','A1') : {'delay':dA}, \
-#             ('A1','M1') : {'delay':dA}, \
-#             ('M1','A2') : {'delay':dM}}
-#
-#    num_procs = 3
-#    pkts_per_period = 1
-#    key_width_limit = 640
-#    action_fields_limit = 8
-
-    # Long example
+    # Short example
     dM = 3
     dA = 1
 
     nodes = {'M0' : {'type':'match', 'key_width':640}, \
+             'M*' : {'type':'match', 'key_width':640}, \
              'M1' : {'type':'match', 'key_width':640}, \
-             'M2' : {'type':'match', 'key_width':640}, \
-             'M3' : {'type':'match', 'key_width':640}, \
-             'M4' : {'type':'match', 'key_width':640}, \
-             'Mx1' : {'type':'match', 'key_width':640}, \
-             'Mx2' : {'type':'match', 'key_width':640}, \
-             'Mx3' : {'type':'match', 'key_width':640}, \
-             'A0' : {'type':'action', 'num_fields':8}, \
+             'MF' : {'type':'match', 'key_width':640}, \
+             'AF' : {'type':'action', 'num_fields':8}, \
+             'A*' : {'type':'action', 'num_fields':8}, \
              'A1' : {'type':'action', 'num_fields':8}, \
-             'A2' : {'type':'action', 'num_fields':8}, \
-             'A3' : {'type':'action', 'num_fields':8}, \
-             'A4' : {'type':'action', 'num_fields':8}, \
-             'Ax1' : {'type':'action', 'num_fields':8}, \
-             'Ax2' : {'type':'action', 'num_fields':8}, \
-             'Ax3' : {'type':'action', 'num_fields':8}}
+             'A2' : {'type':'action', 'num_fields':8}}
 
-    edges = {('M0','M1') : {'delay':dM}, \
-             ('M1','A0') : {'delay':dM}, \
-             ('A0','Mx1') : {'delay':dA}, \
-             ('A0','Ax1') : {'delay':dA}, \
-             ('Mx1','M2') : {'delay':dM}, \
-             ('Ax1','M2') : {'delay':dA}, \
-             ('M2','A1') : {'delay':dM}, \
-             ('A1','A2') : {'delay':dA}, \
-             ('A2','Mx2') : {'delay':dA}, \
-             ('A2','Ax2') : {'delay':dA}, \
-             ('Mx2','M3') : {'delay':dM}, \
-             ('Ax2','M3') : {'delay':dA}, \
-             ('M3','A3') : {'delay':dM}, \
-             ('A3','M4') : {'delay':dA}, \
-             ('M4','Mx3') : {'delay':dM}, \
-             ('M4','Ax3') : {'delay':dM}, \
-             ('Mx3','A4') : {'delay':dM}, \
-             ('Ax3','A4') : {'delay':dA}}
+    edges = {('M0','M*') : {'delay':dM}, \
+             ('M0','A*') : {'delay':dM}, \
+             ('M*','A1') : {'delay':dM}, \
+             ('A*','A1') : {'delay':dA}, \
+             ('A1','M1') : {'delay':dA}, \
+             ('M1','A2') : {'delay':dM}}
 
-    num_procs = 8
-    pkts_per_period = 4
+    num_procs = 3
+    pkts_per_period = 1
     key_width_limit = 640
     action_fields_limit = 8
+    period_duration = 4
 
 ###############################################################################
     G = ScheduleDAG(nodes, edges)
-    period = num_procs * pkts_per_period
+    period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
     G.print_report()
@@ -382,6 +343,7 @@ try:
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(dag=G, num_procs=num_procs, \
                                 pkts_per_period=pkts_per_period,\
+                                period_duration = period_duration, \
                                 key_width_limit=key_width_limit, \
                                 action_fields_limit=action_fields_limit)
     solver.solve()
