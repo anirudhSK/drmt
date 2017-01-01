@@ -354,8 +354,8 @@ try:
     # in q time slots across at each processor.
     # This q time slot schedule then repeats itself.
     # Equivalently, p/q packets across all processors.
-    throughput_numerator = 12
-    throughput_denominator = 4
+    throughput_numerator = 3
+    throughput_denominator = 3
 
     # Derive pkts_per_period from num_procs and throughput_numerator
     assert(throughput_numerator % num_procs == 0)
