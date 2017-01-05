@@ -111,7 +111,7 @@ class ScheduleDAG(nx.DiGraph):
                     nodelist.append((u,d))
         return nodelist
 
-    def print_report(self, key_width_limit, action_fields_limit, num_procs,
+    def print_report(self, key_width_limit, action_fields_limit, match_unit_limit, num_procs,
                      throughput_numerator, throughput_denominator):
         cpath, cplat = self.critical_path()
         print '# of nodes = ', self.number_of_nodes()
@@ -121,6 +121,11 @@ class ScheduleDAG(nx.DiGraph):
         match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
         print '# of match bits = ', match_bits
         print 'aggregate key_width_limit = ', num_procs * key_width_limit
+        unit_size = key_width_limit / match_unit_limit
+        assert(key_width_limit % match_unit_limit == 0)
+        match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / unit_size), self.nodes(select='match'), 0)
+        print '# of match units = ', match_units
+        print 'aggregate match_unit_limit = ', num_procs * (match_unit_limit)
         action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
         print '# of action fields = ', action_fields
         print 'aggregate action_fields_limit = ', num_procs * action_fields_limit
@@ -132,20 +137,22 @@ class ScheduleDAG(nx.DiGraph):
               (1.0 * throughput_numerator / throughput_denominator))
         throughput_upper_bound = \
               min(1.0 * (action_fields_limit * num_procs) / action_fields,\
-                  1.0 * (key_width_limit     * num_procs) / match_bits)
+                  1.0 * (key_width_limit     * num_procs) / match_bits, \
+                  1.0 * (match_unit_limit    * num_procs) / match_units)
         print 'Upper bound on throughput = ', throughput_upper_bound
         if ((throughput_numerator / throughput_denominator) > throughput_upper_bound) :
           print 'Throughput cannot be supported with the current resources'
 
 class DrmtScheduleSolver:
     def __init__(self, dag, period_duration,
-                 pkts_per_period=1,
-                 key_width_limit=640, action_fields_limit=8):
+                 pkts_per_period,
+                 key_width_limit, match_unit_limit, action_fields_limit):
         self.G = dag
         self.pkts_per_period = pkts_per_period
         self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
         self.period_duration = period_duration
+        self.match_unit_limit = match_unit_limit
 
     def solve(self):
         """ Returns the optimal schedule
@@ -218,8 +225,10 @@ class DrmtScheduleSolver:
         # can be "rotated" into this time slot.
         m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
 
-        # Number of match units does not exceed 8
-        m.addConstrs(sum(math.ceil(self.G.node[v]['key_width'] / 80.0) * s[v,q,j] for v in match_nodes for q in range(Q)) <= 8 for j in range(T))
+        # Number of match units does not exceed match_unit_limit
+        assert(self.key_width_limit % self.match_unit_limit == 0)
+        unit_size = self.key_width_limit / self.match_unit_limit
+        m.addConstrs(sum(math.ceil((1.0 * self.G.node[v]['key_width']) / unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T))
 
         # The action field resource constraint (similar comments to above)
         m.addConstrs(sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T))
@@ -343,6 +352,7 @@ try:
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(key_width_limit = input_for_ilp.key_width_limit,\
                    action_fields_limit = input_for_ilp.action_fields_limit, \
+                   match_unit_limit = input_for_ilp.match_unit_limit, \
                    num_procs = input_for_ilp.num_procs, \
                    throughput_denominator = input_for_ilp.throughput_denominator, \
                    throughput_numerator = input_for_ilp.throughput_numerator)
@@ -354,7 +364,8 @@ try:
                                 pkts_per_period = pkts_per_period,\
                                 period_duration = period_duration, \
                                 key_width_limit = input_for_ilp.key_width_limit, \
-                                action_fields_limit= input_for_ilp.action_fields_limit)
+                                action_fields_limit= input_for_ilp.action_fields_limit, \
+                                match_unit_limit = input_for_ilp.match_unit_limit)
     solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
@@ -394,5 +405,5 @@ try:
 except GurobiError as e:
     print('Error code ' + str(e.errno) + ": " + str(e))
 
-except AttributeError:
-    print('Encountered an attribute error')
+except AttributeError as e:
+    print('Encountered an attribute error ' + str(e))

@@ -416,6 +416,7 @@ num_procs = 45
 # We assume the processors don't share resources for now
 key_width_limit = 640
 action_fields_limit = 8
+match_unit_limit = 8
 
 # Throughput specified as a rational number p/q,
 # This will attempt to schedule p/num_procs packets
