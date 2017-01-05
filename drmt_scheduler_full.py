@@ -1,9 +1,7 @@
 from gurobipy import *
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 import collections
-import copy
 import importlib
 import math
 
@@ -48,6 +46,8 @@ class ScheduleDAG(nx.DiGraph):
                 self.node[u]['key_width'] = nodes[u]['key_width']
             elif self.node[u]['type'] == 'action':
                 self.node[u]['num_fields'] = nodes[u]['num_fields']
+            else:
+                assert(False)
 
         # Annotate edges
         for (u,v) in self.edges():
@@ -77,6 +77,7 @@ class ScheduleDAG(nx.DiGraph):
                 dist[node] = max(pairs)
             else:
                 dist[node] = (0, node)
+        #TODO: Don't get this code.
         node, (length, _) = max(dist.items(), key=lambda x: x[1])
         latency = length + 1 # one extra cycle for final operation
         path = []
@@ -118,23 +119,29 @@ class ScheduleDAG(nx.DiGraph):
         print '# of edges = ', self.number_of_edges()
         print '# of matches = ', len(self.nodes(select='match'))
         print '# of actions = ', len(self.nodes(select='action'))
+
         match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
         print '# of match bits = ', match_bits
         print 'aggregate key_width_limit = ', num_procs * key_width_limit
-        unit_size = key_width_limit / match_unit_limit
+
         assert(key_width_limit % match_unit_limit == 0)
+        unit_size = key_width_limit / match_unit_limit
         match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / unit_size), self.nodes(select='match'), 0)
         print '# of match units = ', match_units
-        print 'aggregate match_unit_limit = ', num_procs * (match_unit_limit)
+        print 'aggregate match_unit_limit = ', num_procs * match_unit_limit
+
         action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
         print '# of action fields = ', action_fields
         print 'aggregate action_fields_limit = ', num_procs * action_fields_limit
+
         print 'Critical path: ', cpath
         print 'Critical path length = %d cycles' % cplat
+
         print 'Required throughput: %d packets every %d cycles (%f)'%(\
               throughput_numerator,\
               throughput_denominator, \
               (1.0 * throughput_numerator) / throughput_denominator)
+
         throughput_upper_bound = \
               min((1.0 * action_fields_limit * num_procs) / action_fields,\
                   (1.0 * key_width_limit     * num_procs) / match_bits, \
@@ -174,10 +181,12 @@ class DrmtScheduleSolver:
         edges = self.G.edges()
 
         m = Model()
+
+        # Supress Gurobi output
         m.setParam( 'OutputFlag', False )
 
         # Create variables
-        # t is the start time for each node in each packet,
+        # t is the start time for each node in each packet (there are a total of pkts_per_period packets),
         # relative to the first node in that packet.
         # This is why there are nodes * range(Q) variables
         t = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
@@ -205,7 +214,7 @@ class DrmtScheduleSolver:
 
         # First packet starts at time 0
         m.addConstr(delta[0] == 0)
-        #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1))
+        #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1)) #TODO: Why is this not required?
 
         # The length is the maximum of all t's
         m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
@@ -216,7 +225,7 @@ class DrmtScheduleSolver:
         # For each packet (q), respect dependencies in DAG
         m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
 
-        # Given v and q, s[v, q, j] is 1 for exactly one j < T.
+        # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique reminder j
         m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
 
         # The key width resource constraint:
@@ -225,7 +234,7 @@ class DrmtScheduleSolver:
         # can be "rotated" into this time slot.
         m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
 
-        # Number of match units does not exceed match_unit_limit
+        # Number of match units does not exceed match_unit_limit (similar comments to above)
         assert(self.key_width_limit % self.match_unit_limit == 0)
         unit_size = self.key_width_limit / self.match_unit_limit
         m.addConstrs(sum(math.ceil((1.0 * self.G.node[v]['key_width']) / unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T))
