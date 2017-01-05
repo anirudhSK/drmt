@@ -4,8 +4,6 @@ import networkx as nx
 import collections
 import importlib
 import math
-import matplotlib.pyplot as plt
-import time
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -358,8 +356,6 @@ try:
 
 ###############################################################################
     G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
-    nx.draw(G)
-    time.sleep(10) 
     period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
