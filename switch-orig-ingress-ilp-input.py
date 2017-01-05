@@ -410,7 +410,7 @@ edges = \
  ('vlan_decap_MATCH', 'vlan_decap_ACTION'): {'delay': dM}}
 
 # Number of processors in system
-num_procs = 3
+num_procs = 50
 
 # Match key and action field limit for each processor
 # We assume the processors don't share resources for now
@@ -422,5 +422,5 @@ action_fields_limit = 8
 # in q time slots across at each processor.
 # This q time slot schedule then repeats itself.
 # Equivalently, p/q packets across all processors.
-throughput_numerator = 3
-throughput_denominator = 3
+throughput_numerator = 50
+throughput_denominator = 50
