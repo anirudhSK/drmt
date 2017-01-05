@@ -408,3 +408,19 @@ edges = \
  ('vlan_decap_ACTION', 'tunnel_encap_process_outer_ACTION'): {'delay': dA},
  ('vlan_decap_ACTION', 'tunnel_rewrite_ACTION'): {'delay': dA},
  ('vlan_decap_MATCH', 'vlan_decap_ACTION'): {'delay': dM}}
+
+# Number of processors in system
+num_procs = 3
+
+# Match key and action field limit for each processor
+# We assume the processors don't share resources for now
+key_width_limit = 640
+action_fields_limit = 8
+
+# Throughput specified as a rational number p/q,
+# This will attempt to schedule p/num_procs packets
+# in q time slots across at each processor.
+# This q time slot schedule then repeats itself.
+# Equivalently, p/q packets across all processors.
+throughput_numerator = 3
+throughput_denominator = 3
