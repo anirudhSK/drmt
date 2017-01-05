@@ -372,14 +372,14 @@ try:
     print timeline, '\n\n'
 
     print '{:*^80}'.format(' Resource usage ')
-    print 'Match key length usage (max = %d bits) on one processor' % key_width_limit
+    print 'Match key length usage (max = %d bits) on one processor' % input_for_ilp.key_width_limit
     mk_usage = {}
     for t in range(period):
         mk_usage[t] = [str(match_key_usage[t])]
     (timeline, strlen) = solver.timeline_str(mk_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action fields usage (max = %d fields) on one processor' % action_fields_limit
+    print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
     af_usage = {}
     for t in range(period):
         af_usage[t] = [str(action_fields_usage[t])]
