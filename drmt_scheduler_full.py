@@ -4,6 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import collections
 import copy
+import importlib
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -323,33 +324,33 @@ class DrmtScheduleSolver:
         return (ops_on_ring, match_key_usage, action_fields_usage)
 
 try:
-    # Short example
-    import switch-orig-ingress-ilp-input.py
+    # Input example
+    input_for_ilp = importlib.import_module(sys.argv[1], "*")
 
     # Derive pkts_per_period from num_procs and throughput_numerator
-    assert(throughput_numerator % num_procs == 0)
-    pkts_per_period = throughput_numerator / num_procs
-    period_duration = throughput_denominator
+    assert(input_for_ilp.throughput_numerator % input_for_ilp.num_procs == 0)
+    pkts_per_period = input_for_ilp.throughput_numerator / input_for_ilp.num_procs
+    period_duration = input_for_ilp.throughput_denominator
 
 ###############################################################################
-    G = ScheduleDAG(nodes, edges)
+    G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
     period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(key_width_limit = key_width_limit,\
-                   action_fields_limit = action_fields_limit, \
-                   num_procs = num_procs, \
-                   throughput_denominator = throughput_denominator, \
-                   throughput_numerator = throughput_numerator)
+    G.print_report(key_width_limit = input_for_ilp.key_width_limit,\
+                   action_fields_limit = input_for_ilp.action_fields_limit, \
+                   num_procs = input_for_ilp.num_procs, \
+                   throughput_denominator = input_for_ilp.throughput_denominator, \
+                   throughput_numerator = input_for_ilp.throughput_numerator)
 
     print '\n\n'
 
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(dag=G,
-                                pkts_per_period=pkts_per_period,\
+                                pkts_per_period = pkts_per_period,\
                                 period_duration = period_duration, \
-                                key_width_limit=key_width_limit, \
-                                action_fields_limit=action_fields_limit)
+                                key_width_limit = input_for_ilp.key_width_limit, \
+                                action_fields_limit= input_for_ilp.action_fields_limit)
     solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
