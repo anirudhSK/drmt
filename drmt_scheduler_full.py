@@ -119,10 +119,10 @@ class ScheduleDAG(nx.DiGraph):
         print '# of actions = ', len(self.nodes(select='action'))
         match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
         print '# of match bits = ', match_bits
-        print 'key_width_limit = ', key_width_limit
+        print 'aggregate key_width_limit = ', num_procs * key_width_limit
         action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
         print '# of action fields = ', action_fields
-        print 'action_fields_limit = ', action_fields_limit
+        print 'aggregate action_fields_limit = ', num_procs * action_fields_limit
         print 'Critical path: ', cpath
         print 'Critical path length = %d cycles' % cplat
         print 'Required throughput: %d packets every %d cycles (%f)'%(\
