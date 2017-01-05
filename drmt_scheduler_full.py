@@ -4,6 +4,8 @@ import networkx as nx
 import collections
 import importlib
 import math
+import matplotlib.pyplot as plt
+import time
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -183,7 +185,7 @@ class DrmtScheduleSolver:
         m = Model()
 
         # Supress Gurobi output
-        m.setParam( 'OutputFlag', False )
+        #m.setParam( 'OutputFlag', False )
 
         # Create variables
         # t is the start time for each node in each packet (there are a total of pkts_per_period packets),
@@ -356,6 +358,8 @@ try:
 
 ###############################################################################
     G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
+    nx.draw(G)
+    time.sleep(10) 
     period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
