@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import collections
 import copy
 import importlib
+import math
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -216,6 +217,9 @@ class DrmtScheduleSolver:
         # across all packets (q) and their nodes (v) that
         # can be "rotated" into this time slot.
         m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
+
+        # Number of match units does not exceed 8
+        m.addConstrs(sum(math.ceil(self.G.node[v]['key_width'] / 80.0) * s[v,q,j] for v in match_nodes for q in range(Q)) <= 8 for j in range(T))
 
         # The action field resource constraint (similar comments to above)
         m.addConstrs(sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T))
