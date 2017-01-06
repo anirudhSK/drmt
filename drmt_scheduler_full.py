@@ -377,7 +377,7 @@ try:
                                 match_unit_limit = input_for_ilp.match_unit_limit)
     solver.solve()
 
-    (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=8)
+    (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
     print 'Optimal schedule length = %d cycles' % solver.length
     cpath, cplat = G.critical_path()
