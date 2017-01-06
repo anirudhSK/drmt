@@ -390,7 +390,7 @@ try:
     print timeline,'\n\n'
 
     (ops_on_ring, match_key_usage, action_fields_usage) = solver.compute_periodic_schedule()
-    (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=8)
+    (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=4)
     print '{:*^80}'.format(' Steady state on one processor')
     print '{:*^80}'.format('p[u, v] is packet v from u scheduling periods ago')
     print timeline, '\n\n'
