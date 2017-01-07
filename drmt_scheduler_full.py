@@ -270,7 +270,26 @@ class DrmtScheduleSolver:
 
         # Read previous solution
         if (initial_solution != ""):
-          m.read(initial_solution)
+          for (line in initial_solution.readlines()):
+            if (line.startswith("#")):
+              continue
+            else:
+              indices = line.split(" ")[0].split("[")[1].split("]")[0].split(",")
+              value   = int(line.split(" ")[1])
+              if (line.startswith("s_and_p")):
+                m.s_and_p[indices[0], int(indices[1]), int(indices[2]), int(indices[3])].start = value
+              elif (line.startswith("s"))
+                m.s[indices[0], int(indices[1]), int(indices[2])].start = value
+              elif (line.startswith("p")):
+                m.p[indices[0], int(indices[1]), int(indices[2])].start = value
+              elif (line.startswith("t")):
+                m.t[indices[0], int(indices[1])].start = value
+              elif (line.startswith("delta")):
+                m.delta[int(indices[0])].start = value
+              elif (line.startswith("length")):
+                m.length.start = value
+              else:
+                assert(False)
 
         # Solve model
         m.optimize()
