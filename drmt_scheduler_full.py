@@ -211,8 +211,8 @@ class DrmtScheduleSolver:
         s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
 
         # total match (m) and action (a) packets in each time slot j from round k in the past
-        total_m_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.match_unit_limit, vtype=GRB.INTEGER, name="total_m_pkts")
-        total_a_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.action_fields_limit, vtype=GRB.INTEGER, name="total_a_pkts")
+        total_m_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.match_unit_limit, vtype=GRB.CONTINUOUS, name="total_m_pkts")
+        total_a_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.action_fields_limit, vtype=GRB.CONTINUOUS, name="total_a_pkts")
 
         # unique match (m) and action (a) packets in each time slot uniq_pkt[j, k] = 1 if packet from round k exists in time slot j
         # This is required to prevent overcounting by simply using total_pkts and is obtained by thresholding total_pkts against 1
@@ -281,11 +281,11 @@ class DrmtScheduleSolver:
         m.addConstrs((total_a_pkts[j, k] == sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q)) for j in range(T) for k in range(K_MAX)), "constr_total_action_pkts")
 
         # Threshold total_pkts to uniq_pkt (http://stackoverflow.com/a/22849589) for both match and action
-        m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
-        m.addConstrs(((total_m_pkts[j, k] - 1) <= ((self.match_unit_limit - 1) * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
+        m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 0.9999) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
+        m.addConstrs(((total_m_pkts[j, k] - 0.9999) <= ((self.match_unit_limit - 1) * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
 
-        m.addConstrs(((-1 * (1 - uniq_a_pkt[j, k])) <= (total_a_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_a")
-        m.addConstrs(((total_a_pkts[j, k] - 1) <= ((self.action_fields_limit - 1) * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
+        m.addConstrs(((-1 * (1 - uniq_a_pkt[j, k])) <= (total_a_pkts[j, k] - 0.9999) for j in range(T) for k in range(K_MAX)), "constr_thresh1_a")
+        m.addConstrs(((total_a_pkts[j, k] - 0.9999) <= ((self.action_fields_limit - 1) * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
 
         # At most match_proc_limit / action_proc_limit packets are doing matches/actions every cycle
         m.addConstrs((sum(uniq_m_pkt[j, k] for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
