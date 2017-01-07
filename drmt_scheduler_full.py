@@ -4,7 +4,7 @@ import networkx as nx
 import collections
 import importlib
 import math
-
+K_MAX=10
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
         nx.DiGraph.__init__(self)
@@ -195,13 +195,14 @@ class DrmtScheduleSolver:
         # within T.  
         delta = m.addVars(range(Q), lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
 
-        # The quotients when dividing by T (see below)
-        k = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="k")
-
         # The reminders when dividing by T (see below)
         # s[v, q, j] is 1 when delta[q] + t[v, q]
         # leaves a reminder of j when divided by T.
         s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
+
+        # The quotients when dividing by T
+        # encoded similarly to s above
+        p = m.addVars(list(itertools.product(nodes, range(Q), range(K_MAX))), vtype=GRB.BINARY, name="p")
 
         # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
@@ -219,13 +220,16 @@ class DrmtScheduleSolver:
         m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
 
         # This is just a way to write dividend = divisor * quotient + reminder
-        m.addConstrs(delta[q]+t[v,q] == k[v,q] * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
+        m.addConstrs(delta[q]+t[v,q] == sum(k * p[v,q,k] for k in range(K_MAX)) * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
 
         # For each packet (q), respect dependencies in DAG
         m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
 
         # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique reminder j
         m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
+
+        # Given v and q, p[v, q, k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
+        m.addConstrs(sum(p[v,q,k] for k in range(K_MAX)) == 1 for v in nodes for q in range(Q))
 
         # The key width resource constraint:
         # for every time step (j) < T, check the total key width requirement
