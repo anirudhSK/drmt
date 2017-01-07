@@ -291,37 +291,6 @@ class DrmtScheduleSolver:
         m.addConstrs((sum(uniq_m_pkt[j, k] for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
         m.addConstrs((sum(uniq_a_pkt[j, k] for k in range(K_MAX)) <= self.action_proc_limit for j in range(T)), "constr_action_proc")
 
-        # Read previous solution
-        if (initial_solution != ""):
-          for line in open(initial_solution):
-            if (line.startswith("#")):
-              continue
-            else:
-              print line
-              value   = int(line.split(" ")[1])
-
-              # Get indices for array variables
-              if ("[" in line):
-                indices = line.split(" ")[0].split("[")[1].split("]")[0].split(",")
-              else:
-                indices = []
-
-              # Handle each variable name separately TODO: This is a hack.
-              if (line.startswith("s_and_p")):
-                s_and_p[indices[0], int(indices[1]), int(indices[2]), int(indices[3])].start = value
-              elif (line.startswith("s")):
-                s[indices[0], int(indices[1]), int(indices[2])].start = value
-              elif (line.startswith("p")):
-                p[indices[0], int(indices[1]), int(indices[2])].start = value
-              elif (line.startswith("t")):
-                t[indices[0], int(indices[1])].start = value
-              elif (line.startswith("delta")):
-                delta[int(indices[0])].start = value
-              elif (line.startswith("length")):
-                length.start = value
-              else:
-                assert(False)
-
         # Solve model
         m.optimize()
 
@@ -432,19 +401,12 @@ class DrmtScheduleSolver:
 try:
     # Cmd line args
     if (len(sys.argv) < 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <solution output> [initial solution]"
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <solution output>"
       exit(1)
     elif (len(sys.argv) == 3):
       input_file = sys.argv[1]
       solution_output = sys.argv[2]
       assert(solution_output.endswith(".mst"))
-      initial_solution = ""
-    elif (len(sys.argv) == 4):
-      input_file = sys.argv[1]
-      solution_output = sys.argv[2]
-      assert(solution_output.endswith(".mst"))
-      initial_solution = sys.argv[3]
-      assert(initial_solution.endswith(".mst"))
     else:
       assert(False)
 
