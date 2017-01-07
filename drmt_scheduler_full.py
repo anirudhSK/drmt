@@ -4,6 +4,7 @@ import networkx as nx
 import collections
 import importlib
 import math
+from sets import Set
 K_MAX=20
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -380,12 +381,22 @@ class DrmtScheduleSolver:
 
         return (timeline, strlen)
 
-    def compute_periodic_schedule(self):
+    def compute_periodic_schedule(self, unit_size):
         T = self.period_duration
         ops_on_ring = collections.defaultdict(list)
         match_key_usage = [0] * T
         action_fields_usage = [0] * T
+        match_units_usage = [0] * T
 
+        match_proc_set = [0] * T
+        for t in range(T):
+          match_proc_set[t] = Set()
+        match_proc_usage = [0] * T
+
+        action_proc_set = [0] * T
+        for t in range(T):
+          action_proc_set[t] = Set()
+        action_proc_usage = [0] * T
         for q in range(self.pkts_per_period):
             for v in self.G.nodes():
                 k = self.time_of_op[v,q] / T
@@ -393,10 +404,15 @@ class DrmtScheduleSolver:
                 ops_on_ring[r].append('p[%d,%d].%s' % (k,q,v))
                 if self.G.node[v]['type'] == 'match':
                     match_key_usage[r] += self.G.node[v]['key_width']
+                    match_units_usage[r] += math.ceil((1.0 * self.G.node[v]['key_width'])/ unit_size)
+                    match_proc_set[r].add(k)
+                    match_proc_usage[r] = len(match_proc_set[r])
                 else:
                     action_fields_usage[r] += self.G.node[v]['num_fields']
+                    action_proc_set[r].add(k)
+                    action_proc_usage[r] = len(action_proc_set[r])
 
-        return (ops_on_ring, match_key_usage, action_fields_usage)
+        return (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage)
 
 try:
     # Cmd line args
@@ -454,7 +470,7 @@ try:
     print '{:*^80}'.format('p[i] is packet i from the first scheduling period')
     print timeline,'\n\n'
 
-    (ops_on_ring, match_key_usage, action_fields_usage) = solver.compute_periodic_schedule()
+    (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage) = solver.compute_periodic_schedule(input_for_ilp.key_width_limit / input_for_ilp.match_unit_limit)
     (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=4)
     print '{:*^80}'.format(' Steady state on one processor')
     print '{:*^80}'.format('p[u, v] is packet v from u scheduling periods ago')
@@ -473,6 +489,27 @@ try:
     for t in range(period):
         af_usage[t] = [str(action_fields_usage[t])]
     (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
+    print timeline
+
+    print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
+    mu_usage = {}
+    for t in range(period):
+        mu_usage[t] = [str(match_units_usage[t])]
+    (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
+    print timeline
+
+    print 'Match packets (max = %d units) on one processor' % input_for_ilp.match_proc_limit
+    mp_usage = {}
+    for t in range(period):
+        mp_usage[t] = [str(match_proc_usage[t])]
+    (timeline, strlen) = solver.timeline_str(mp_usage, white_space=0, timeslots_per_row=16)
+    print timeline
+
+    print 'Action packets (max = %d units) on one processor' % input_for_ilp.action_proc_limit
+    ap_usage = {}
+    for t in range(period):
+        ap_usage[t] = [str(action_proc_usage[t])]
+    (timeline, strlen) = solver.timeline_str(ap_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
 
