@@ -112,21 +112,19 @@ class ScheduleDAG(nx.DiGraph):
                     nodelist.append((u,d))
         return nodelist
 
-    def print_report(self, key_width_limit, action_fields_limit, match_unit_limit, num_procs,
+    def print_report(self, match_unit_size, action_fields_limit, match_unit_limit, num_procs,
                      throughput_numerator, throughput_denominator):
         cpath, cplat = self.critical_path()
+        print '# of processors = ', num_procs
         print '# of nodes = ', self.number_of_nodes()
         print '# of edges = ', self.number_of_edges()
         print '# of matches = ', len(self.nodes(select='match'))
         print '# of actions = ', len(self.nodes(select='action'))
+        print 'Match unit size = ', match_unit_size
 
         match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
-        print '# of match bits = ', match_bits
-        print 'aggregate key_width_limit = ', num_procs * key_width_limit
-
-        assert(key_width_limit % match_unit_limit == 0)
-        unit_size = key_width_limit / match_unit_limit
-        match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / unit_size), self.nodes(select='match'), 0)
+        match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / match_unit_size), self.nodes(select='match'), 0)
+        print 'Total # of match bits = ', match_bits
         print '# of match units = ', match_units
         print 'aggregate match_unit_limit = ', num_procs * match_unit_limit
 
@@ -144,7 +142,6 @@ class ScheduleDAG(nx.DiGraph):
 
         throughput_upper_bound = \
               min((1.0 * action_fields_limit * num_procs) / action_fields,\
-                  (1.0 * key_width_limit     * num_procs) / match_bits, \
                   (1.0 * match_unit_limit    * num_procs) / match_units)
         print 'Upper bound on throughput = ', throughput_upper_bound
         if ((throughput_numerator / throughput_denominator) > throughput_upper_bound) :
@@ -153,13 +150,13 @@ class ScheduleDAG(nx.DiGraph):
 class DrmtScheduleSolver:
     def __init__(self, dag, period_duration,
                  pkts_per_period,
-                 key_width_limit, match_unit_limit, action_fields_limit,
+                 match_unit_size, match_unit_limit, action_fields_limit,
                  match_proc_limit, action_proc_limit):
         self.G = dag
         self.pkts_per_period = pkts_per_period
-        self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
         self.period_duration = period_duration
+        self.match_unit_size = match_unit_size
         self.match_unit_limit = match_unit_limit
         self.match_proc_limit  = match_proc_limit
         self.action_proc_limit = action_proc_limit
@@ -247,16 +244,11 @@ class DrmtScheduleSolver:
         # Given v and q, p[v, q, k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
         m.addConstrs((sum(p[v,q,k] for k in range(K_MAX)) == 1 for v in nodes for q in range(Q)), "constr_unique_quotient")
 
-        # The key width resource constraint:
-        # for every time step (j) < T, check the total key width requirement
+        # Number of match units does not exceed match_unit_limit
+        # for every time step (j) < T, check the total match unit requirements
         # across all packets (q) and their nodes (v) that
         # can be "rotated" into this time slot.
-        m.addConstrs((sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T)), "constr_key_width")
-
-        # Number of match units does not exceed match_unit_limit (similar comments to above)
-        assert(self.key_width_limit % self.match_unit_limit == 0)
-        unit_size = self.key_width_limit / self.match_unit_limit
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T)), "constr_match_units")
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T)), "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
         m.addConstrs((sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T)), "constr_action_fields")
@@ -438,7 +430,7 @@ try:
     period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(key_width_limit = input_for_ilp.key_width_limit,\
+    G.print_report(match_unit_size = input_for_ilp.match_unit_size,\
                    action_fields_limit = input_for_ilp.action_fields_limit, \
                    match_unit_limit = input_for_ilp.match_unit_limit, \
                    num_procs = input_for_ilp.num_procs, \
@@ -451,7 +443,7 @@ try:
     solver = DrmtScheduleSolver(dag=G,
                                 pkts_per_period = pkts_per_period,\
                                 period_duration = period_duration, \
-                                key_width_limit = input_for_ilp.key_width_limit, \
+                                match_unit_size = input_for_ilp.match_unit_size, \
                                 action_fields_limit= input_for_ilp.action_fields_limit, \
                                 match_unit_limit = input_for_ilp.match_unit_limit,
                                 action_proc_limit = input_for_ilp.action_proc_limit,
@@ -470,18 +462,17 @@ try:
     print '{:*^80}'.format('p[i] is packet i from the first scheduling period')
     print timeline,'\n\n'
 
-    (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage) = solver.compute_periodic_schedule(input_for_ilp.key_width_limit / input_for_ilp.match_unit_limit)
+    (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage) = solver.compute_periodic_schedule(input_for_ilp.match_unit_size)
     (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=4)
     print '{:*^80}'.format(' Steady state on one processor')
     print '{:*^80}'.format('p[u, v] is packet v from u scheduling periods ago')
     print timeline, '\n\n'
 
-    print '{:*^80}'.format(' Resource usage ')
-    print 'Match key length usage (max = %d bits) on one processor' % input_for_ilp.key_width_limit
-    mk_usage = {}
+    print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
+    mu_usage = {}
     for t in range(period):
-        mk_usage[t] = [str(match_key_usage[t])]
-    (timeline, strlen) = solver.timeline_str(mk_usage, white_space=0, timeslots_per_row=16)
+        mu_usage[t] = [str(match_units_usage[t])]
+    (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
     print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
@@ -491,27 +482,19 @@ try:
     (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
-    mu_usage = {}
-    for t in range(period):
-        mu_usage[t] = [str(match_units_usage[t])]
-    (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
-    print timeline
-
-    print 'Match packets (max = %d units) on one processor' % input_for_ilp.match_proc_limit
+    print 'Match packets (max = %d match packets) on one processor' % input_for_ilp.match_proc_limit
     mp_usage = {}
     for t in range(period):
         mp_usage[t] = [str(match_proc_usage[t])]
     (timeline, strlen) = solver.timeline_str(mp_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action packets (max = %d units) on one processor' % input_for_ilp.action_proc_limit
+    print 'Action packets (max = % action packets) on one processor' % input_for_ilp.action_proc_limit
     ap_usage = {}
     for t in range(period):
         ap_usage[t] = [str(action_proc_usage[t])]
     (timeline, strlen) = solver.timeline_str(ap_usage, white_space=0, timeslots_per_row=16)
     print timeline
-
 
 except GurobiError as e:
     print('Error code ' + str(e.errno) + ": " + str(e))
