@@ -195,9 +195,9 @@ class DrmtScheduleSolver:
         # within T.  
         delta = m.addVars(range(Q), lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
 
-        # The reminders when dividing by T (see below)
+        # The remainders when dividing by T (see below)
         # s[v, q, j] is 1 when delta[q] + t[v, q]
-        # leaves a reminder of j when divided by T.
+        # leaves a remainder of j when divided by T.
         s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
 
         # The quotients when dividing by T
@@ -219,13 +219,13 @@ class DrmtScheduleSolver:
         # The length is the maximum of all t's
         m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
 
-        # This is just a way to write dividend = divisor * quotient + reminder
+        # This is just a way to write dividend = divisor * quotient + remainder
         m.addConstrs(delta[q]+t[v,q] == sum(k * p[v,q,k] for k in range(K_MAX)) * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
 
         # For each packet (q), respect dependencies in DAG
         m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
 
-        # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique reminder j
+        # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique remainder j
         m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
 
         # Given v and q, p[v, q, k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
