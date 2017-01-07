@@ -282,10 +282,10 @@ class DrmtScheduleSolver:
 
         # Threshold total_pkts to uniq_pkt (http://stackoverflow.com/a/22849589) for both match and action
         m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
-        m.addConstrs(((total_m_pkts[j, k] - 1) < (self.match_unit_limit * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
+        m.addConstrs(((total_m_pkts[j, k] - 1) <= ((self.match_unit_limit - 1) * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
 
         m.addConstrs(((-1 * (1 - uniq_a_pkt[j, k])) <= (total_a_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_a")
-        m.addConstrs(((total_a_pkts[j, k] - 1) < (self.action_fields_limit * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
+        m.addConstrs(((total_a_pkts[j, k] - 1) <= ((self.action_fields_limit - 1) * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
 
         # At most match_proc_limit / action_proc_limit packets are doing matches/actions every cycle
         m.addConstrs((sum(uniq_m_pkt[j, k] for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
