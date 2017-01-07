@@ -219,37 +219,37 @@ class DrmtScheduleSolver:
         # Set constraints
 
         # First packet starts at time 0
-        m.addConstr(delta[0] == 0)
+        m.addConstr(delta[0] == 0, "constr_delta")
         #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1)) #TODO: Why is this not required?
 
         # The length is the maximum of all t's
-        m.addConstrs(t[v,q]  <= length for v in nodes for q in range(Q))
+        m.addConstrs((t[v,q]  <= length for v in nodes for q in range(Q)), "constr_length_is_max")
 
         # This is just a way to write dividend = divisor * quotient + remainder
-        m.addConstrs(delta[q]+t[v,q] == sum(k * p[v,q,k] for k in range(K_MAX)) * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q))
+        m.addConstrs((delta[q]+t[v,q] == sum(k * p[v,q,k] for k in range(K_MAX)) * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q)), "constr_division")
 
         # For each packet (q), respect dependencies in DAG
-        m.addConstrs(t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q))
+        m.addConstrs((t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q)), "constr_dag_dependencies")
 
         # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique remainder j
-        m.addConstrs(sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q))
+        m.addConstrs((sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q)), "constr_unique_remainder")
 
         # Given v and q, p[v, q, k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
-        m.addConstrs(sum(p[v,q,k] for k in range(K_MAX)) == 1 for v in nodes for q in range(Q))
+        m.addConstrs((sum(p[v,q,k] for k in range(K_MAX)) == 1 for v in nodes for q in range(Q)), "constr_unique_quotient")
 
         # The key width resource constraint:
         # for every time step (j) < T, check the total key width requirement
         # across all packets (q) and their nodes (v) that
         # can be "rotated" into this time slot.
-        m.addConstrs(sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T))
+        m.addConstrs((sum(self.G.node[v]['key_width']*s[v,q,j] for v in match_nodes for q in range(Q)) <= self.key_width_limit for j in range(T)), "constr_key_width")
 
         # Number of match units does not exceed match_unit_limit (similar comments to above)
         assert(self.key_width_limit % self.match_unit_limit == 0)
         unit_size = self.key_width_limit / self.match_unit_limit
-        m.addConstrs(sum(math.ceil((1.0 * self.G.node[v]['key_width']) / unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T))
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T)), "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
-        m.addConstrs(sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T))
+        m.addConstrs((sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T)), "constr_action_fields")
 
         # Any time slot (j) can have match or action operations from only one packet
         # Mathematically, for each j, Summation (v, q, k) s[v, q, j] * p[v, q, k]  <= 1
@@ -261,12 +261,12 @@ class DrmtScheduleSolver:
         # i.e., all v's and q's that fall in that time slot
         # equivalently Summation(all v, q falling into j)(all k) p[v, q, k] <= 1
         # i.e., there's at most one k for which p[v, q, k] for all v, q falling into j
-        m.addConstrs((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
-        m.addConstrs((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
+        m.addConstrs(((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and1")
+        m.addConstrs(((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and2")
 
         # At most one packet is doing a match or action every cycle
-        m.addConstrs(sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= self.match_proc_limit for j in range(T))
-        m.addConstrs(sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= self.action_proc_limit for j in range(T))
+        m.addConstrs((sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
+        m.addConstrs((sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= self.action_proc_limit for j in range(T)), "constr_action_proc")
 
         # Read previous solution
         if (initial_solution != ""):
