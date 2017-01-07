@@ -210,6 +210,15 @@ class DrmtScheduleSolver:
         # Temporary variable for boolean ANDs of s[v, q, j] * p[v, q, k] for each j and k
         s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
 
+        # total match (m) and action (a) packets in each time slot j from round k in the past
+        total_m_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.match_unit_limit, vtype=GRB.INTEGER, name="total_m_pkts")
+        total_a_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.action_fields_limit, vtype=GRB.INTEGER, name="total_a_pkts")
+
+        # unique match (m) and action (a) packets in each time slot uniq_pkt[j, k] = 1 if packet from round k exists in time slot j
+        # This is required to prevent overcounting by simply using total_pkts and is obtained by thresholding total_pkts against 1
+        uniq_m_pkt = m.addVars(list(itertools.product(range(T), range(K_MAX))), vtype=GRB.BINARY, name="uniq_m_pkt")
+        uniq_a_pkt = m.addVars(list(itertools.product(range(T), range(K_MAX))), vtype=GRB.BINARY, name="uniq_a_pkt")
+
         # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
 
@@ -264,9 +273,23 @@ class DrmtScheduleSolver:
         m.addConstrs(((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and1")
         m.addConstrs(((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and2")
 
-        # At most one packet is doing a match or action every cycle
-        m.addConstrs((sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
-        m.addConstrs((sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= self.action_proc_limit for j in range(T)), "constr_action_proc")
+        # For a particular j, s_and_p summed over all v, q, k gives us the total number of events in that time slot.
+        # We want to count the number of unique packets.
+        # So we fix j and k, sum s_and_p over all v, q to get the total number of packets from k.
+        # We threshold this so that if its >= 1, uniq_pkt = 1, else it is 0
+        m.addConstrs((total_m_pkts[j, k] == sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q)) for j in range(T) for k in range(K_MAX)), "constr_total_match_pkts")
+        m.addConstrs((total_a_pkts[j, k] == sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q)) for j in range(T) for k in range(K_MAX)), "constr_total_action_pkts")
+
+        # Threshold total_pkts to uniq_pkt (http://stackoverflow.com/a/22849589) for both match and action
+        m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
+        m.addConstrs(((total_m_pkts[j, k] - 1) < (self.match_unit_limit * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
+
+        m.addConstrs(((-1 * (1 - uniq_a_pkt[j, k])) <= (total_a_pkts[j, k] - 1) for j in range(T) for k in range(K_MAX)), "constr_thresh1_a")
+        m.addConstrs(((total_a_pkts[j, k] - 1) < (self.action_fields_limit * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
+
+        # At most match_proc_limit / action_proc_limit packets are doing matches/actions every cycle
+        m.addConstrs((sum(uniq_m_pkt[j, k] for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
+        m.addConstrs((sum(uniq_a_pkt[j, k] for k in range(K_MAX)) <= self.action_proc_limit for j in range(T)), "constr_action_proc")
 
         # Read previous solution
         if (initial_solution != ""):
