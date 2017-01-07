@@ -424,4 +424,4 @@ match_unit_limit = 4
 # This q time slot schedule then repeats itself.
 # Equivalently, p/q packets across all processors.
 throughput_numerator = 12
-throughput_denominator = 12
+throughput_denominator = 48

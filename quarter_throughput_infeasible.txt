@@ -1,0 +1,136 @@
+dhcp-18-189-117-223:drmt anirudh$ time python drmt_scheduler_full.py switch-orig-egress-ilp-input 
+********************************** Input DAG ***********************************
+# of nodes =  104
+# of edges =  291
+# of matches =  41
+# of actions =  63
+# of match bits =  1051
+aggregate key_width_limit =  7680
+# of match units =  42.0
+aggregate match_unit_limit =  48
+# of action fields =  364
+aggregate action_fields_limit =  384
+Critical path:  ['rid_MATCH', 'rid_ACTION', 'replica_type_MATCH', 'replica_type_ACTION', 'rewrite_ACTION', 'egress_bd_map_MATCH', 'egress_bd_map_ACTION', '_condition_65', 'egress_nat_ACTION', 'egress_l4port_fields_ACTION', 'egress_l4_src_port_MATCH', 'egress_l4_src_port_ACTION', 'tunnel_encap_process_outer_ACTION', 'tunnel_rewrite_MATCH', 'tunnel_rewrite_ACTION', 'tunnel_smac_rewrite_MATCH', 'tunnel_smac_rewrite_ACTION', 'egress_mac_acl_MATCH', 'egress_mac_acl_ACTION', 'egress_system_acl_MATCH', 'egress_system_acl_ACTION']
+Critical path length = 83 cycles
+Required throughput: 12 packets every 48 cycles (0.250000)
+Upper bound on throughput =  1.05494505495
+
+
+
+******************************** Running Solver ********************************
+Optimize a model with 200628 rows, 107018 columns and 720775 nonzeros
+Variable types: 0 continuous, 107018 integer (106912 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 9e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 5e+01]
+  RHS range        [1e+00, 6e+02]
+Presolve removed 7270 rows and 3711 columns
+Presolve time: 3.26s
+Presolved: 193358 rows, 103307 columns, 694571 nonzeros
+Variable types: 0 continuous, 103307 integer (103202 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    8.2000000e+01   2.106768e+02   0.000000e+00      6s
+    4131    8.2000000e+01   0.000000e+00   0.000000e+00      7s
+
+Root relaxation: objective 8.200000e+01, 4131 iterations, 1.13 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   82.00000    0  610          -   82.00000      -     -    9s
+     0     0   82.34951    0 1026          -   82.34951      -     -   19s
+     0     0   82.50000    0  954          -   82.50000      -     -   25s
+     0     0   83.00000    0 1017          -   83.00000      -     -   31s
+     0     0   83.10227    0 1007          -   83.10227      -     -   35s
+     0     0   83.68991    0 1104          -   83.68991      -     -   40s
+     0     0   84.00000    0 1008          -   84.00000      -     -   45s
+     0     0   84.35875    0 1159          -   84.35875      -     -   49s
+     0     0   84.44279    0 1093          -   84.44279      -     -   53s
+     0     0   84.44279    0 1169          -   84.44279      -     -   57s
+     0     0   84.50000    0 1016          -   84.50000      -     -   61s
+     0     0   84.50000    0 1107          -   84.50000      -     -   64s
+     0     0   84.50000    0 1025          -   84.50000      -     -   68s
+     0     0   84.50000    0 1155          -   84.50000      -     -   72s
+     0     0   84.50000    0 1144          -   84.50000      -     -   76s
+     0     0   84.50000    0  711          -   84.50000      -     -   84s
+     0     0   84.50000    0  892          -   84.50000      -     -   88s
+     0     0   84.50000    0  837          -   84.50000      -     -   95s
+     0     0   84.50000    0  905          -   84.50000      -     -   99s
+     0     0   84.50000    0  713          -   84.50000      -     -  108s
+     0     0   84.50000    0  734          -   84.50000      -     -  112s
+     0     2   84.50000    0  734          -   84.50000      -     -  128s
+     1     4   84.50000    1  747          -   84.50000      -  3582  130s
+    28    27  131.00000    9  487          -   84.50000      -   343  135s
+   112   111  131.00000   22  450          -   84.50000      -   121  140s
+   205   205  131.00000   49  496          -   84.50000      -  75.6  145s
+   291   290  131.00000   61  421          -   84.50000      -  65.8  150s
+   439   438  131.00000  137  422          -   84.50000      -  45.8  155s
+   603   602  131.00000  217  406          -   84.50000      -  36.0  161s
+   713   708  131.00000  272  400          -   84.50000      -  32.4  165s
+   815   810  131.00000  313  411          -   84.50000      -  30.4  170s
+   905   894  131.00000  352  329          -   84.50000      -  32.3  176s
+   956   944  131.00000  400  342          -   84.50000      -  33.3  180s
+  1071  1058  131.00000  442  359          -   84.50000      -  34.1  185s
+  1155  1142  131.00000  493  346          -   84.50000      -  36.7  191s
+  1232  1218  131.00000  533  335          -   84.50000      -  37.5  195s
+  1281  1257   86.00000   11  653          -   84.56098      -  42.9  200s
+  1397  1375   86.00000  116  577          -   84.56098      -  41.3  205s
+  1527  1505   86.00000  236  571          -   84.56098      -  40.7  211s
+  1665  1639   86.00000  365  575          -   84.56098      -  39.9  218s
+  1734  1707   86.00000  431  526          -   84.56098      -  40.1  221s
+  1870  1839   86.00000  565  535          -   84.56098      -  39.5  228s
+  1935  1903 infeasible  627               -   84.56098      -  39.3  230s
+  1954  1918  445.00000  402  734          -   84.56098      -  45.1  497s
+  1955  1919  131.00000  525  734          -   84.56098      -  45.1  500s
+  1956  1919   88.00000  326  501          -   88.00000      -  45.1  516s
+  1957  1920  131.00000  427  539          -   88.00000      -  45.0  531s
+  1958  1921  432.00000  625 1099          -   88.16667      -  45.0  543s
+  1959  1921   89.00000    5  784          -   89.00000      -  45.0  584s
+  1960  1922  310.76136  222 1000          -   89.00000      -  45.0  601s
+  1961  1923  131.00000  300  710          -   89.00000      -  45.0  686s
+  1962  1923  432.00000  553  921          -   89.00000      -  44.9  713s
+  1963  1924  386.96023  504  606          -   89.00000      -  44.9  809s
+  1964  1925  330.38636  512 1376          -   89.00177      -  44.9  880s
+  1965  1925  936.00000  207  729          -   90.00000      -  44.9  952s
+  1966  1926  131.00000  210 1024          -   90.00000      -  44.8  991s
+  1967  1927  131.00000  257  595          -   90.00000      -  44.8 1093s
+  1968  1927   90.00000  241  884          -   90.00000      -  44.8 1158s
+  1969  1928  131.00000  323  929          -   90.19746      -  44.8 1352s
+  1970  1929   91.03001   20 1202          -   91.03001      -  44.7 1412s
+  1971  1929  139.16477  508  798          -   92.53993      -  44.7 1518s
+  1972  1930   94.41899  389 1018          -   94.41899      -  44.7 1542s
+  1973  1931  131.00000   41  724          -   97.90089      -  44.7 1617s
+  1974  1931  445.00000  402  972          -  100.79066      -  44.7 1641s
+  1975  1932  131.00000  525  664          -  103.90310      -  44.6 1714s
+  1976  1933  106.60685  326  934          -  106.60685      -  44.6 1734s
+  1977  1933  131.00000  427  666          -  114.13977      -  44.6 1799s
+  1978  1934  432.00000  625 1076          -  131.33561      -  44.6 1836s
+
+Cutting planes:
+  Gomory: 7
+  Cover: 23
+  Implied bound: 181
+  Projected Implied bound: 4
+  Clique: 1422
+  MIR: 48
+  Flow cover: 132
+  GUB cover: 135
+  Zero half: 60
+
+Explored 1978 nodes (946442 simplex iterations) in 1837.25 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 0
+Pool objective bound 1e+100
+
+Model is infeasible
+Best objective -, best bound -, gap -
+Error code 10004: Unable to retrieve attribute 'x'
+
+real	30m46.401s
+user	52m27.995s
+sys	3m16.596s
