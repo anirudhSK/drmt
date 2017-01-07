@@ -17,12 +17,11 @@ edges = {('M0','M*') : {'delay':dM}, \
 
 num_procs = 3
 
-key_width_limit = 640
 action_fields_limit = 8
 match_unit_limit = 4
+match_unit_size  = 160
 
 action_proc_limit = 8
-match_proc_limit = 4
+match_proc_limit  = 4
 
-throughput_numerator = 3
-throughput_denominator = 3
+throughput = 1.0

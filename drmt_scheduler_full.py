@@ -5,7 +5,9 @@ import collections
 import importlib
 import math
 from sets import Set
+
 K_MAX=20
+
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
         nx.DiGraph.__init__(self)
@@ -112,8 +114,8 @@ class ScheduleDAG(nx.DiGraph):
                     nodelist.append((u,d))
         return nodelist
 
-    def print_report(self, match_unit_size, action_fields_limit, match_unit_limit, num_procs,
-                     throughput_numerator, throughput_denominator):
+    def print_report(self, match_unit_size, action_fields_limit,
+                     match_unit_limit, num_procs, throughput):
         cpath, cplat = self.critical_path()
         print '# of processors = ', num_procs
         print '# of nodes = ', self.number_of_nodes()
@@ -135,25 +137,19 @@ class ScheduleDAG(nx.DiGraph):
         print 'Critical path: ', cpath
         print 'Critical path length = %d cycles' % cplat
 
-        print 'Required throughput: %d packets every %d cycles (%f)'%(\
-              throughput_numerator,\
-              throughput_denominator, \
-              (1.0 * throughput_numerator) / throughput_denominator)
-
+        print 'Required throughput: %d packets / cycle '%(throughput)
         throughput_upper_bound = \
               min((1.0 * action_fields_limit * num_procs) / action_fields,\
                   (1.0 * match_unit_limit    * num_procs) / match_units)
         print 'Upper bound on throughput = ', throughput_upper_bound
-        if ((throughput_numerator / throughput_denominator) > throughput_upper_bound) :
+        if (throughput > throughput_upper_bound) :
           print 'Throughput cannot be supported with the current resources'
 
 class DrmtScheduleSolver:
     def __init__(self, dag, period_duration,
-                 pkts_per_period,
                  match_unit_size, match_unit_limit, action_fields_limit,
                  match_proc_limit, action_proc_limit):
         self.G = dag
-        self.pkts_per_period = pkts_per_period
         self.action_fields_limit = action_fields_limit
         self.period_duration = period_duration
         self.match_unit_size = match_unit_size
@@ -173,7 +169,6 @@ class DrmtScheduleSolver:
         length : int
             Maximum latency of optimal schedule
         """
-        Q = self.pkts_per_period
         T = self.period_duration
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
@@ -186,27 +181,24 @@ class DrmtScheduleSolver:
         #m.setParam( 'OutputFlag', False )
 
         # Create variables
-        # t is the start time for each node in each packet (there are a total of pkts_per_period packets),
+        # t is the start time for each node
         # relative to the first node in that packet.
-        # This is why there are nodes * range(Q) variables
-        t = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
+        t = m.addVars(nodes, lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
 
-        # The start time of each packet, i.e., the root of each packet's DAG
-        # These start times have to be under T because all packets must start
-        # within T.  
-        delta = m.addVars(range(Q), lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
+        # The start time of the first packet is delta, set to 0
+        delta = m.addVar(lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
 
         # The remainders when dividing by T (see below)
-        # s[v, q, j] is 1 when delta[q] + t[v, q]
+        # s[v, j] is 1 when delta + t[v]
         # leaves a remainder of j when divided by T.
-        s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
+        s = m.addVars(list(itertools.product(nodes, range(T))), vtype=GRB.BINARY, name="s")
 
         # The quotients when dividing by T
         # encoded similarly to s above
-        p = m.addVars(list(itertools.product(nodes, range(Q), range(K_MAX))), vtype=GRB.BINARY, name="p")
+        p = m.addVars(list(itertools.product(nodes, range(K_MAX))), vtype=GRB.BINARY, name="p")
 
-        # Temporary variable for boolean ANDs of s[v, q, j] * p[v, q, k] for each j and k
-        s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
+        # Temporary variable for boolean ANDs of s[v, j] * p[v, k] for each j and k
+        s_and_p = m.addVars(list(itertools.product(nodes, range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
 
         # total match (m) and action (a) packets in each time slot j from round k in the past
         total_m_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.match_unit_limit, vtype=GRB.CONTINUOUS, name="total_m_pkts")
@@ -226,52 +218,49 @@ class DrmtScheduleSolver:
         # Set constraints
 
         # First packet starts at time 0
-        m.addConstr(delta[0] == 0, "constr_delta")
-        #m.addConstrs(delta[q] <= delta[q+1] for q in range(Q-1)) #TODO: Why is this not required?
+        m.addConstr(delta == 0, "constr_delta")
 
         # The length is the maximum of all t's
-        m.addConstrs((t[v,q]  <= length for v in nodes for q in range(Q)), "constr_length_is_max")
+        m.addConstrs((t[v]  <= length for v in nodes), "constr_length_is_max")
 
         # This is just a way to write dividend = divisor * quotient + remainder
-        m.addConstrs((delta[q]+t[v,q] == sum(k * p[v,q,k] for k in range(K_MAX)) * T + sum(j*s[v,q,j] for j in range(T)) for v in nodes for q in range(Q)), "constr_division")
+        m.addConstrs((delta + t[v] == sum(k * p[v,k] for k in range(K_MAX)) * T + sum(j*s[v,j] for j in range(T)) for v in nodes), "constr_division")
 
-        # For each packet (q), respect dependencies in DAG
-        m.addConstrs((t[v,q] - t[u,q] >= self.G.edge[u][v]['delay'] for (u,v) in edges for q in range(Q)), "constr_dag_dependencies")
+        # Respect dependencies in DAG
+        m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges), "constr_dag_dependencies")
 
-        # Given v and q, s[v, q, j] is 1 for exactly one j < T, i.e., there's a unique remainder j
-        m.addConstrs((sum(s[v,q,j] for j in range(T)) == 1 for v in nodes for q in range(Q)), "constr_unique_remainder")
+        # Given v, s[v,j] is 1 for exactly one j < T, i.e., there's a unique remainder j
+        m.addConstrs((sum(s[v,j] for j in range(T)) == 1 for v in nodes), "constr_unique_remainder")
 
-        # Given v and q, p[v, q, k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
-        m.addConstrs((sum(p[v,q,k] for k in range(K_MAX)) == 1 for v in nodes for q in range(Q)), "constr_unique_quotient")
+        # Given v, p[v,k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
+        m.addConstrs((sum(p[v,k] for k in range(K_MAX)) == 1 for v in nodes), "constr_unique_quotient")
 
         # Number of match units does not exceed match_unit_limit
         # for every time step (j) < T, check the total match unit requirements
-        # across all packets (q) and their nodes (v) that
-        # can be "rotated" into this time slot.
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * s[v,q,j] for v in match_nodes for q in range(Q)) <= self.match_unit_limit for j in range(T)), "constr_match_units")
+        # across all nodes (v) that can be "rotated" into this time slot.
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * s[v,j] for v in match_nodes) <= self.match_unit_limit for j in range(T)), "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
-        m.addConstrs((sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T)), "constr_action_fields")
+        m.addConstrs((sum(self.G.node[v]['num_fields']*s[v,j] for v in action_nodes) <= self.action_fields_limit for j in range(T)), "constr_action_fields")
 
         # Any time slot (j) can have match or action operations from only one packet
-        # Mathematically, for each j, Summation (v, q, k) s[v, q, j] * p[v, q, k]  <= 1
+        # Mathematically, for each j, Summation (v, k) s[v, j] * p[v, k]  <= 1
         # The summation is across
         # 1. either match or action vs,
-        # 2. all q's
         # 3. all previous time periods (k)
-        # This works because the summation picks out those terms for which s[v, q, j] == 1
-        # i.e., all v's and q's that fall in that time slot
-        # equivalently Summation(all v, q falling into j)(all k) p[v, q, k] <= 1
-        # i.e., there's at most one k for which p[v, q, k] for all v, q falling into j
-        m.addConstrs(((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and1")
-        m.addConstrs(((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX)), "constr_and2")
+        # This works because the summation picks out those terms for which s[v, j] == 1
+        # i.e., all v's that fall in that time slot
+        # equivalently Summation(all v falling into j)(all k) p[v, k] <= 1
+        # i.e., there's at most one k for which p[v, k] for all v falling into j
+        m.addConstrs(((2 * s_and_p[v, j, k]) >= (s[v,j] + p[v, k] - 1) for v in nodes for j in range(T) for k in range(K_MAX)), "constr_and1")
+        m.addConstrs(((2 * s_and_p[v, j, k]) <= (s[v,j] + p[v, k]) for v in nodes for j in range(T) for k in range(K_MAX)), "constr_and2")
 
-        # For a particular j, s_and_p summed over all v, q, k gives us the total number of events in that time slot.
+        # For a particular j, s_and_p summed over all v, k gives us the total number of events in that time slot.
         # We want to count the number of unique packets.
-        # So we fix j and k, sum s_and_p over all v, q to get the total number of packets from k.
+        # So we fix j and k, sum s_and_p over all v to get the total number of packets from k.
         # We threshold this so that if its >= 1, uniq_pkt = 1, else it is 0
-        m.addConstrs((total_m_pkts[j, k] == sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q)) for j in range(T) for k in range(K_MAX)), "constr_total_match_pkts")
-        m.addConstrs((total_a_pkts[j, k] == sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q)) for j in range(T) for k in range(K_MAX)), "constr_total_action_pkts")
+        m.addConstrs((total_m_pkts[j, k] == sum(s_and_p[v, j, k] for v in match_nodes) for j in range(T) for k in range(K_MAX)), "constr_total_match_pkts")
+        m.addConstrs((total_a_pkts[j, k] == sum(s_and_p[v, j, k] for v in action_nodes) for j in range(T) for k in range(K_MAX)), "constr_total_action_pkts")
 
         # Threshold total_pkts to uniq_pkt (http://stackoverflow.com/a/22849589) for both match and action
         m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 0.9999) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
@@ -295,22 +284,21 @@ class DrmtScheduleSolver:
         self.time_of_op = {}
         self.ops_at_time = collections.defaultdict(list)
         self.length = 0
-        for q in range(Q):
-            maxt = 0
-            mint = np.inf
-            for v in nodes:
-                # Add starting time of packet (delta[q]) with
-                # time offset to this node (t[v,q])
-                tvq = int(delta[q].x + t[v,q].x)
-                if tvq > maxt:
-                    maxt = tvq
-                if tvq < mint:
-                    mint = tvq
-                self.time_of_op[v,q] = tvq
-                self.ops_at_time[tvq].append('p['+str(q)+'].'+v)
-            lenq = maxt - mint + 1
-            if lenq > self.length:
-                self.length = lenq
+        maxt = 0
+        mint = np.inf
+        for v in nodes:
+            # Add starting time of packet (delta) with
+            # time offset to this node (t[v])
+            tv = int(delta.x + t[v].x)
+            if tv > maxt:
+                maxt = tv
+            if tv < mint:
+                mint = tv
+            self.time_of_op[v] = tv
+            self.ops_at_time[tv].append(v)
+        lenq = maxt - mint + 1
+        if lenq > self.length:
+            self.length = lenq
         return (self.time_of_op, self.ops_at_time, self.length)
 
     def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
@@ -389,20 +377,19 @@ class DrmtScheduleSolver:
         for t in range(T):
           action_proc_set[t] = Set()
         action_proc_usage = [0] * T
-        for q in range(self.pkts_per_period):
-            for v in self.G.nodes():
-                k = self.time_of_op[v,q] / T
-                r = self.time_of_op[v,q] % T
-                ops_on_ring[r].append('p[%d,%d].%s' % (k,q,v))
-                if self.G.node[v]['type'] == 'match':
-                    match_key_usage[r] += self.G.node[v]['key_width']
-                    match_units_usage[r] += math.ceil((1.0 * self.G.node[v]['key_width'])/ unit_size)
-                    match_proc_set[r].add(k)
-                    match_proc_usage[r] = len(match_proc_set[r])
-                else:
-                    action_fields_usage[r] += self.G.node[v]['num_fields']
-                    action_proc_set[r].add(k)
-                    action_proc_usage[r] = len(action_proc_set[r])
+        for v in self.G.nodes():
+            k = self.time_of_op[v] / T
+            r = self.time_of_op[v] % T
+            ops_on_ring[r].append('p[%d].%s' % (k,v))
+            if self.G.node[v]['type'] == 'match':
+                match_key_usage[r] += self.G.node[v]['key_width']
+                match_units_usage[r] += math.ceil((1.0 * self.G.node[v]['key_width'])/ unit_size)
+                match_proc_set[r].add(k)
+                match_proc_usage[r] = len(match_proc_set[r])
+            else:
+                action_fields_usage[r] += self.G.node[v]['num_fields']
+                action_proc_set[r].add(k)
+                action_proc_usage[r] = len(action_proc_set[r])
 
         return (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage)
 
@@ -421,27 +408,21 @@ try:
     # Input example
     input_for_ilp = importlib.import_module(input_file, "*")
 
-    # Derive pkts_per_period from num_procs and throughput_numerator
-    assert(input_for_ilp.throughput_numerator % input_for_ilp.num_procs == 0)
-    pkts_per_period = input_for_ilp.throughput_numerator / input_for_ilp.num_procs
-    period_duration = input_for_ilp.throughput_denominator
+    # Derive period_duration from num_procs and throughput
+    period_duration = int(math.ceil((1.0 * input_for_ilp.num_procs) / input_for_ilp.throughput))
 
     G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
-    period = period_duration
 
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(match_unit_size = input_for_ilp.match_unit_size,\
                    action_fields_limit = input_for_ilp.action_fields_limit, \
                    match_unit_limit = input_for_ilp.match_unit_limit, \
                    num_procs = input_for_ilp.num_procs, \
-                   throughput_denominator = input_for_ilp.throughput_denominator, \
-                   throughput_numerator = input_for_ilp.throughput_numerator)
-
+                   throughput = input_for_ilp.throughput)
     print '\n\n'
 
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(dag=G,
-                                pkts_per_period = pkts_per_period,\
                                 period_duration = period_duration, \
                                 match_unit_size = input_for_ilp.match_unit_size, \
                                 action_fields_limit= input_for_ilp.action_fields_limit, \
@@ -470,28 +451,28 @@ try:
 
     print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
     mu_usage = {}
-    for t in range(period):
+    for t in range(period_duration):
         mu_usage[t] = [str(match_units_usage[t])]
     (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
     print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
     af_usage = {}
-    for t in range(period):
+    for t in range(period_duration):
         af_usage[t] = [str(action_fields_usage[t])]
     (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
     print 'Match packets (max = %d match packets) on one processor' % input_for_ilp.match_proc_limit
     mp_usage = {}
-    for t in range(period):
+    for t in range(period_duration):
         mp_usage[t] = [str(match_proc_usage[t])]
     (timeline, strlen) = solver.timeline_str(mp_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action packets (max = % action packets) on one processor' % input_for_ilp.action_proc_limit
+    print 'Action packets (max = %d action packets) on one processor' % input_for_ilp.action_proc_limit
     ap_usage = {}
-    for t in range(period):
+    for t in range(period_duration):
         ap_usage[t] = [str(action_proc_usage[t])]
     (timeline, strlen) = solver.timeline_str(ap_usage, white_space=0, timeslots_per_row=16)
     print timeline

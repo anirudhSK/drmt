@@ -1177,14 +1177,9 @@ num_procs = 24
 
 # Match key and action field limit for each processor
 # We assume the processors don't share resources for now
-key_width_limit = 640
 action_fields_limit = 32
 match_unit_limit = 4
+match_unit_size = 160
 
-# Throughput specified as a rational number p/q,
-# This will attempt to schedule p/num_procs packets
-# in q time slots across at each processor.
-# This q time slot schedule then repeats itself.
-# Equivalently, p/q packets across all processors.
-throughput_numerator = 24
-throughput_denominator = 24
+# Throughput required
+throughput = 1.0

@@ -422,10 +422,5 @@ match_unit_size  = 160
 action_proc_limit = 2
 match_proc_limit = 4
 
-# Throughput specified as a rational number p/q,
-# This will attempt to schedule p/num_procs packets
-# in q time slots across at each processor.
-# This q time slot schedule then repeats itself.
-# Equivalently, p/q packets across all processors.
-throughput_numerator = 12
-throughput_denominator = 12
+# Throughput required
+throughput = 1.0
