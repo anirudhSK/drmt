@@ -4,7 +4,7 @@ import networkx as nx
 import collections
 import importlib
 import math
-K_MAX=10
+K_MAX=20
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
         nx.DiGraph.__init__(self)
@@ -245,6 +245,26 @@ class DrmtScheduleSolver:
         # The action field resource constraint (similar comments to above)
         m.addConstrs(sum(self.G.node[v]['num_fields']*s[v,q,j] for v in action_nodes for q in range(Q)) <= self.action_fields_limit for j in range(T))
 
+        # Any time slot (j) can have match or action operations from only one packet
+        # Mathematically, for each j, Summation (v, q, k) s[v, q, j] * p[v, q, k]  <= 1
+        # The summation is across
+        # 1. either match or action vs,
+        # 2. all q's
+        # 3. all previous time periods (k)
+        # This works because the summation picks out those terms for which s[v, q, j] == 1
+        # i.e., all v's and q's that fall in that time slot
+        # equivalently Summation(all v, q falling into j)(all k) p[v, q, k] <= 1
+        # i.e., there's at most one k for which p[v, q, k] for all v, q falling into j
+
+        # Temporary variable for boolean ANDs of s[v, q, j] * p[v, q, k] for each j and k
+        s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
+        m.addConstrs((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
+        m.addConstrs((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
+
+        # At most one packet is doing a match or action every cycle
+        m.addConstrs(sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= 1 for j in range(T))
+        m.addConstrs(sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= 1 for j in range(T))
+
         # Solve model
         m.optimize()
 
@@ -357,7 +377,6 @@ try:
     pkts_per_period = input_for_ilp.throughput_numerator / input_for_ilp.num_procs
     period_duration = input_for_ilp.throughput_denominator
 
-###############################################################################
     G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
     period = period_duration
 
