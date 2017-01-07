@@ -270,24 +270,32 @@ class DrmtScheduleSolver:
 
         # Read previous solution
         if (initial_solution != ""):
-          for (line in initial_solution.readlines()):
+          for line in open(initial_solution):
             if (line.startswith("#")):
               continue
             else:
-              indices = line.split(" ")[0].split("[")[1].split("]")[0].split(",")
+              print line
               value   = int(line.split(" ")[1])
+
+              # Get indices for array variables
+              if ("[" in line):
+                indices = line.split(" ")[0].split("[")[1].split("]")[0].split(",")
+              else:
+                indices = []
+
+              # Handle each variable name separately TODO: This is a hack.
               if (line.startswith("s_and_p")):
-                m.s_and_p[indices[0], int(indices[1]), int(indices[2]), int(indices[3])].start = value
-              elif (line.startswith("s"))
-                m.s[indices[0], int(indices[1]), int(indices[2])].start = value
+                s_and_p[indices[0], int(indices[1]), int(indices[2]), int(indices[3])].start = value
+              elif (line.startswith("s")):
+                s[indices[0], int(indices[1]), int(indices[2])].start = value
               elif (line.startswith("p")):
-                m.p[indices[0], int(indices[1]), int(indices[2])].start = value
+                p[indices[0], int(indices[1]), int(indices[2])].start = value
               elif (line.startswith("t")):
-                m.t[indices[0], int(indices[1])].start = value
+                t[indices[0], int(indices[1])].start = value
               elif (line.startswith("delta")):
-                m.delta[int(indices[0])].start = value
+                delta[int(indices[0])].start = value
               elif (line.startswith("length")):
-                m.length.start = value
+                length.start = value
               else:
                 assert(False)
 
