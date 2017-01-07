@@ -77,7 +77,6 @@ class ScheduleDAG(nx.DiGraph):
                 dist[node] = max(pairs)
             else:
                 dist[node] = (0, node)
-        #TODO: Don't get this code.
         node, (length, _) = max(dist.items(), key=lambda x: x[1])
         latency = length + 1 # one extra cycle for final operation
         path = []
@@ -200,8 +199,8 @@ class DrmtScheduleSolver:
         k = m.addVars(list(itertools.product(nodes, range(Q))), lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="k")
 
         # The reminders when dividing by T (see below)
-        # s[v, q, t] is 1 when delta[q] + t[v, q]
-        # leaves a reminder of t when divided by T.
+        # s[v, q, j] is 1 when delta[q] + t[v, q]
+        # leaves a reminder of j when divided by T.
         s = m.addVars(list(itertools.product(nodes, range(Q), range(T))), vtype=GRB.BINARY, name="s")
 
         # The length of the schedule
