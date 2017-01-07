@@ -419,7 +419,7 @@ action_fields_limit = 32
 match_unit_limit = 4
 
 # Number of packets that can be concurrently matched
-action_proc_limit = 32
+action_proc_limit = 6
 match_proc_limit = 4
 
 # Throughput specified as a rational number p/q,
@@ -428,4 +428,4 @@ match_proc_limit = 4
 # This q time slot schedule then repeats itself.
 # Equivalently, p/q packets across all processors.
 throughput_numerator = 12
-throughput_denominator = 48
+throughput_denominator = 12
