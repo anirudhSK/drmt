@@ -207,6 +207,9 @@ class DrmtScheduleSolver:
         # encoded similarly to s above
         p = m.addVars(list(itertools.product(nodes, range(Q), range(K_MAX))), vtype=GRB.BINARY, name="p")
 
+        # Temporary variable for boolean ANDs of s[v, q, j] * p[v, q, k] for each j and k
+        s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
+
         # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
 
@@ -258,9 +261,6 @@ class DrmtScheduleSolver:
         # i.e., all v's and q's that fall in that time slot
         # equivalently Summation(all v, q falling into j)(all k) p[v, q, k] <= 1
         # i.e., there's at most one k for which p[v, q, k] for all v, q falling into j
-
-        # Temporary variable for boolean ANDs of s[v, q, j] * p[v, q, k] for each j and k
-        s_and_p = m.addVars(list(itertools.product(nodes, range(Q), range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
         m.addConstrs((2 * s_and_p[v, q, j, k]) >= (s[v, q, j] + p[v, q, k] - 1) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
         m.addConstrs((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
 
