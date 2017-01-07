@@ -418,6 +418,10 @@ key_width_limit = 640
 action_fields_limit = 32
 match_unit_limit = 4
 
+# Number of packets that can be concurrently matched
+action_proc_limit = 32
+match_proc_limit = 4
+
 # Throughput specified as a rational number p/q,
 # This will attempt to schedule p/num_procs packets
 # in q time slots across at each processor.

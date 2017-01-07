@@ -152,13 +152,16 @@ class ScheduleDAG(nx.DiGraph):
 class DrmtScheduleSolver:
     def __init__(self, dag, period_duration,
                  pkts_per_period,
-                 key_width_limit, match_unit_limit, action_fields_limit):
+                 key_width_limit, match_unit_limit, action_fields_limit,
+                 match_proc_limit, action_proc_limit):
         self.G = dag
         self.pkts_per_period = pkts_per_period
         self.key_width_limit = key_width_limit
         self.action_fields_limit = action_fields_limit
         self.period_duration = period_duration
         self.match_unit_limit = match_unit_limit
+        self.match_proc_limit  = match_proc_limit
+        self.action_proc_limit = action_proc_limit
 
     def solve(self):
         """ Returns the optimal schedule
@@ -262,8 +265,8 @@ class DrmtScheduleSolver:
         m.addConstrs((2 * s_and_p[v, q, j, k]) <= (s[v, q, j] + p[v, q, k]) for v in nodes for q in range(Q) for j in range(T) for k in range(K_MAX))
 
         # At most one packet is doing a match or action every cycle
-        m.addConstrs(sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= 1 for j in range(T))
-        m.addConstrs(sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= 1 for j in range(T))
+        m.addConstrs(sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= self.match_proc_limit for j in range(T))
+        m.addConstrs(sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= self.action_proc_limit for j in range(T))
 
         # Solve model
         m.optimize()
@@ -396,7 +399,9 @@ try:
                                 period_duration = period_duration, \
                                 key_width_limit = input_for_ilp.key_width_limit, \
                                 action_fields_limit= input_for_ilp.action_fields_limit, \
-                                match_unit_limit = input_for_ilp.match_unit_limit)
+                                match_unit_limit = input_for_ilp.match_unit_limit,
+                                action_proc_limit = input_for_ilp.action_proc_limit,
+                                match_proc_limit = input_for_ilp.match_proc_limit)
     solver.solve()
 
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
