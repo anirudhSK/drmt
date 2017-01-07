@@ -419,7 +419,7 @@ action_fields_limit = 32
 match_unit_limit = 4
 
 # Number of packets that can be concurrently matched
-action_proc_limit = 6
+action_proc_limit = 2
 match_proc_limit = 4
 
 # Throughput specified as a rational number p/q,
