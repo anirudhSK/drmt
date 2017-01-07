@@ -268,8 +268,16 @@ class DrmtScheduleSolver:
         m.addConstrs(sum(s_and_p[v, q, j, k] for v in match_nodes for q in range(Q) for k in range(K_MAX)) <= self.match_proc_limit for j in range(T))
         m.addConstrs(sum(s_and_p[v, q, j, k] for v in action_nodes for q in range(Q) for k in range(K_MAX)) <= self.action_proc_limit for j in range(T))
 
+        # Read previous solution
+        if (initial_solution != ""):
+          m.read(initial_solution)
+
         # Solve model
         m.optimize()
+
+        # Write solution
+        assert(solution_output != "")
+        m.write(solution_output)
 
         # Construct and return schedule
         self.time_of_op = {}
@@ -372,8 +380,26 @@ class DrmtScheduleSolver:
         return (ops_on_ring, match_key_usage, action_fields_usage)
 
 try:
+    # Cmd line args
+    if (len(sys.argv) < 3):
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <solution output> [initial solution]"
+      exit(1)
+    elif (len(sys.argv) == 3):
+      input_file = sys.argv[1]
+      solution_output = sys.argv[2]
+      assert(solution_output.endswith(".mst"))
+      initial_solution = ""
+    elif (len(sys.argv) == 4):
+      input_file = sys.argv[1]
+      solution_output = sys.argv[2]
+      assert(solution_output.endswith(".mst"))
+      initial_solution = sys.argv[3]
+      assert(initial_solution.endswith(".mst"))
+    else:
+      assert(False)
+
     # Input example
-    input_for_ilp = importlib.import_module(sys.argv[1], "*")
+    input_for_ilp = importlib.import_module(input_file, "*")
 
     # Derive pkts_per_period from num_procs and throughput_numerator
     assert(input_for_ilp.throughput_numerator % input_for_ilp.num_procs == 0)
