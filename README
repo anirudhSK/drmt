@@ -1,0 +1,10 @@
+Prereqs:
+1. Install Gurobi from http://www.gurobi.com
+2. Install networkx from http://networkx.github.io or
+   using the command "pip install networkx"
+
+Running the program:
+Usage:  drmt_scheduler_full.py  <scheduling input file without .py suffix>
+For instance, to run example.py, type "drmt_scheduler_full.py example"
+
+Format of input file: Look at the comments in example.py 
