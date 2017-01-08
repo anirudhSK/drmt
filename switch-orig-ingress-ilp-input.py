@@ -1181,8 +1181,8 @@ action_fields_limit = 32
 match_unit_limit = 4
 match_unit_size = 160
 
-# Number of packets that can be concurrently matched
-action_proc_limit = 32
+# Number of packets that can be concurrently matched/acted upon
+action_proc_limit = 4
 match_proc_limit = 4
 
 # Throughput required

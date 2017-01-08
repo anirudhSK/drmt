@@ -50,6 +50,7 @@ class ScheduleDAG(nx.DiGraph):
             elif self.node[u]['type'] == 'action':
                 self.node[u]['num_fields'] = nodes[u]['num_fields']
             else:
+                # TODO: Fix this and handle conditions correctly
                 assert(False)
 
         # Annotate edges
@@ -72,7 +73,8 @@ class ScheduleDAG(nx.DiGraph):
             Latency of longest path
 
         """
-        dist = {}  # stores [distance, node] pair
+        dist = {}  # stores [distance, node] pair.
+        # distance is distance from root and node is predecessor on path from root
         for node in nx.topological_sort(self):
             # pairs of dist,node for all incoming edges
             pairs = [(dist[v][0] + self[v][u]['delay'], v) for v,u in self.in_edges(node)]
@@ -115,7 +117,8 @@ class ScheduleDAG(nx.DiGraph):
         return nodelist
 
     def print_report(self, match_unit_size, action_fields_limit,
-                     match_unit_limit, num_procs, throughput):
+                     match_unit_limit, num_procs, throughput,
+                     match_proc_limit, action_proc_limit):
         cpath, cplat = self.critical_path()
         print '# of processors = ', num_procs
         print '# of nodes = ', self.number_of_nodes()
@@ -124,15 +127,16 @@ class ScheduleDAG(nx.DiGraph):
         print '# of actions = ', len(self.nodes(select='action'))
         print 'Match unit size = ', match_unit_size
 
-        match_bits = reduce(lambda acc, node: acc + self.node[node]['key_width'], self.nodes(select='match'), 0)
         match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / match_unit_size), self.nodes(select='match'), 0)
-        print 'Total # of match bits = ', match_bits
         print '# of match units = ', match_units
         print 'aggregate match_unit_limit = ', num_procs * match_unit_limit
 
         action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
         print '# of action fields = ', action_fields
         print 'aggregate action_fields_limit = ', num_procs * action_fields_limit
+
+        print 'match_proc_limit =', match_proc_limit
+        print 'action_proc_limit =', action_proc_limit
 
         print 'Critical path: ', cpath
         print 'Critical path length = %d cycles' % cplat
@@ -151,11 +155,11 @@ class DrmtScheduleSolver:
                  match_proc_limit, action_proc_limit):
         self.G = dag
         self.action_fields_limit = action_fields_limit
-        self.period_duration = period_duration
-        self.match_unit_size = match_unit_size
-        self.match_unit_limit = match_unit_limit
-        self.match_proc_limit  = match_proc_limit
-        self.action_proc_limit = action_proc_limit
+        self.period_duration     = period_duration
+        self.match_unit_size     = match_unit_size
+        self.match_unit_limit    = match_unit_limit
+        self.match_proc_limit    = match_proc_limit
+        self.action_proc_limit   = action_proc_limit
 
     def solve(self):
         """ Returns the optimal schedule
@@ -177,19 +181,18 @@ class DrmtScheduleSolver:
 
         m = Model()
 
-        # Supress Gurobi output
-        #m.setParam( 'OutputFlag', False )
-
         # Create variables
-        # t is the start time for each node in the first scheduling period
+        # t is the start time for each DAG node in the first scheduling period
         t = m.addVars(nodes, lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
 
         # The quotients and remainders when dividing by T (see below)
         # qr[v, q, r] is 1 when t[v]
-        # leaves a remainder of r and a quotient of q when divided by T.
+        # leaves a quotient of q and a remainder of r, when divided by T.
         qr  = m.addVars(list(itertools.product(nodes, range(Q_MAX), range(T))), vtype=GRB.BINARY, name="qr")
 
         # Is there any match/action from packet q in time slot r?
+        # This is required to enforce limits on the number of packets that
+        # can be performing matches or actions concurrently on any processor.
         any_match = m.addVars(list(itertools.product(range(Q_MAX), range(T))), vtype=GRB.BINARY, name = "any_match")
         any_action = m.addVars(list(itertools.product(range(Q_MAX), range(T))), vtype=GRB.BINARY, name = "any_action")
 
@@ -204,6 +207,10 @@ class DrmtScheduleSolver:
         # The length is the maximum of all t's
         m.addConstrs((t[v]  <= length for v in nodes), "constr_length_is_max")
 
+        # Given v, qr[v, q, r] is 1 for exactly one q, r, i.e., there's a unique quotient and remainder
+        m.addConstrs((sum(qr[v, q, r] for q in range(Q_MAX) for r in range(T)) == 1 for v in nodes),\
+                     "constr_unique_quotient_remainder")
+
         # This is just a way to write dividend = quotient * divisor + remainder
         m.addConstrs((t[v] == \
                       sum(q * qr[v, q, r] for q in range(Q_MAX) for r in range(T)) * T + \
@@ -211,18 +218,22 @@ class DrmtScheduleSolver:
                       for v in nodes), "constr_division")
 
         # Respect dependencies in DAG
-        m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges), "constr_dag_dependencies")
-
-        # Given v, qr[v, q, r] is 1 for exactly one q, r, i.e., there's a unique quotient and remainder
-        m.addConstrs((sum(qr[v, q, r] for q in range(Q_MAX) for r in range(T)) == 1 for v in nodes), "constr_unique_quotient_remainder")
+        m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges),\
+                     "constr_dag_dependencies")
 
         # Number of match units does not exceed match_unit_limit
         # for every time step (j) < T, check the total match unit requirements
         # across all nodes (v) that can be "rotated" into this time slot.
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * qr[v, q, r] for v in match_nodes for q in range(Q_MAX)) <= self.match_unit_limit for r in range(T)), "constr_match_units")
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size) * qr[v, q, r]\
+                      for v in match_nodes for q in range(Q_MAX))\
+                      <= self.match_unit_limit for r in range(T)),\
+                      "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
-        m.addConstrs((sum(self.G.node[v]['num_fields'] * qr[v, q, r] for v in action_nodes for q in range(Q_MAX)) <= self.action_fields_limit for r in range(T)), "constr_action_fields")
+        m.addConstrs((sum(self.G.node[v]['num_fields'] * qr[v, q, r]\
+                      for v in action_nodes for q in range(Q_MAX))\
+                      <= self.action_fields_limit for r in range(T)),\
+                      "constr_action_fields")
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -255,10 +266,6 @@ class DrmtScheduleSolver:
 
         # Solve model
         m.optimize()
-
-        # Write solution
-        assert(solution_output != "")
-        m.write(solution_output)
 
         # Construct and return schedule
         self.time_of_op = {}
@@ -368,20 +375,16 @@ class DrmtScheduleSolver:
                 action_fields_usage[r] += self.G.node[v]['num_fields']
                 action_proc_set[r].add(k)
                 action_proc_usage[r] = len(action_proc_set[r])
-
+        # TODO: This is bad form. Return a struct instead.
         return (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage)
 
 try:
     # Cmd line args
-    if (len(sys.argv) < 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <solution output>"
+    if (len(sys.argv) != 2):
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix>"
       exit(1)
-    elif (len(sys.argv) == 3):
+    elif (len(sys.argv) == 2):
       input_file = sys.argv[1]
-      solution_output = sys.argv[2]
-      assert(solution_output.endswith(".mst"))
-    else:
-      assert(False)
 
     # Input example
     input_for_ilp = importlib.import_module(input_file, "*")
@@ -396,7 +399,9 @@ try:
                    action_fields_limit = input_for_ilp.action_fields_limit, \
                    match_unit_limit = input_for_ilp.match_unit_limit, \
                    num_procs = input_for_ilp.num_procs, \
-                   throughput = input_for_ilp.throughput)
+                   throughput = input_for_ilp.throughput, \
+                   match_proc_limit = input_for_ilp.match_proc_limit, \
+                   action_proc_limit = input_for_ilp.action_proc_limit)
     print '\n\n'
 
     print '{:*^80}'.format(' Running Solver ')
@@ -418,13 +423,12 @@ try:
     print '\n\n'
 
     print '{:*^80}'.format(' First scheduling period on one processor')
-    print '{:*^80}'.format('p[i] is packet i from the first scheduling period')
     print timeline,'\n\n'
 
     (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage) = solver.compute_periodic_schedule(input_for_ilp.match_unit_size)
     (timeline, strlen) = solver.timeline_str(ops_on_ring, white_space=0, timeslots_per_row=4)
     print '{:*^80}'.format(' Steady state on one processor')
-    print '{:*^80}'.format('p[u, v] is packet v from u scheduling periods ago')
+    print '{:*^80}'.format('p[u] is packet from u scheduling periods ago')
     print timeline, '\n\n'
 
     print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
