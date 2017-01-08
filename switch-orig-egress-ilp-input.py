@@ -415,12 +415,12 @@ num_procs = 12
 # Match key and action field limit for each processor
 # We assume the processors don't share resources for now
 action_fields_limit = 32
-match_unit_limit = 4
-match_unit_size  = 160
+match_unit_limit = 8
+match_unit_size  = 80
 
 # Number of packets that can be concurrently matched
 action_proc_limit = 2
-match_proc_limit = 4
+match_proc_limit = 2
 
 # Throughput required
 throughput = 1.0
