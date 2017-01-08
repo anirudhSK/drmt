@@ -6,7 +6,7 @@ import importlib
 import math
 from sets import Set
 
-K_MAX=20
+Q_MAX=20
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -181,33 +181,17 @@ class DrmtScheduleSolver:
         #m.setParam( 'OutputFlag', False )
 
         # Create variables
-        # t is the start time for each node
-        # relative to the first node in that packet.
+        # t is the start time for each node in the first scheduling period
         t = m.addVars(nodes, lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="t")
 
-        # The start time of the first packet is delta, set to 0
-        delta = m.addVar(lb=0, ub=T-1, vtype=GRB.INTEGER, name="delta")
+        # The quotients and remainders when dividing by T (see below)
+        # qr[v, q, r] is 1 when t[v]
+        # leaves a remainder of r and a quotient of q when divided by T.
+        qr  = m.addVars(list(itertools.product(nodes, range(Q_MAX), range(T))), vtype=GRB.BINARY, name="qr")
 
-        # The remainders when dividing by T (see below)
-        # s[v, j] is 1 when delta + t[v]
-        # leaves a remainder of j when divided by T.
-        s = m.addVars(list(itertools.product(nodes, range(T))), vtype=GRB.BINARY, name="s")
-
-        # The quotients when dividing by T
-        # encoded similarly to s above
-        p = m.addVars(list(itertools.product(nodes, range(K_MAX))), vtype=GRB.BINARY, name="p")
-
-        # Temporary variable for boolean ANDs of s[v, j] * p[v, k] for each j and k
-        s_and_p = m.addVars(list(itertools.product(nodes, range(T), range(K_MAX))), vtype=GRB.BINARY, name="s_and_p")
-
-        # total match (m) and action (a) packets in each time slot j from round k in the past
-        total_m_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.match_unit_limit, vtype=GRB.CONTINUOUS, name="total_m_pkts")
-        total_a_pkts = m.addVars(list(itertools.product(range(T), range(K_MAX))), lb=0, ub=self.action_fields_limit, vtype=GRB.CONTINUOUS, name="total_a_pkts")
-
-        # unique match (m) and action (a) packets in each time slot uniq_pkt[j, k] = 1 if packet from round k exists in time slot j
-        # This is required to prevent overcounting by simply using total_pkts and is obtained by thresholding total_pkts against 1
-        uniq_m_pkt = m.addVars(list(itertools.product(range(T), range(K_MAX))), vtype=GRB.BINARY, name="uniq_m_pkt")
-        uniq_a_pkt = m.addVars(list(itertools.product(range(T), range(K_MAX))), vtype=GRB.BINARY, name="uniq_a_pkt")
+        # Is there any match/action from packet q in time slot r?
+        any_match = m.addVars(list(itertools.product(range(Q_MAX), range(T))), vtype=GRB.BINARY, name = "any_match")
+        any_action = m.addVars(list(itertools.product(range(Q_MAX), range(T))), vtype=GRB.BINARY, name = "any_action")
 
         # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
@@ -217,61 +201,57 @@ class DrmtScheduleSolver:
 
         # Set constraints
 
-        # First packet starts at time 0
-        m.addConstr(delta == 0, "constr_delta")
-
         # The length is the maximum of all t's
         m.addConstrs((t[v]  <= length for v in nodes), "constr_length_is_max")
 
-        # This is just a way to write dividend = divisor * quotient + remainder
-        m.addConstrs((delta + t[v] == sum(k * p[v,k] for k in range(K_MAX)) * T + sum(j*s[v,j] for j in range(T)) for v in nodes), "constr_division")
+        # This is just a way to write dividend = quotient * divisor + remainder
+        m.addConstrs((t[v] == \
+                      sum(q * qr[v, q, r] for q in range(Q_MAX) for r in range(T)) * T + \
+                      sum(r * qr[v, q, r] for q in range(Q_MAX) for r in range(T)) \
+                      for v in nodes), "constr_division")
 
         # Respect dependencies in DAG
         m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges), "constr_dag_dependencies")
 
-        # Given v, s[v,j] is 1 for exactly one j < T, i.e., there's a unique remainder j
-        m.addConstrs((sum(s[v,j] for j in range(T)) == 1 for v in nodes), "constr_unique_remainder")
-
-        # Given v, p[v,k] is 1 for exactly one k < K_MAX, i.e., there's a unique quotient k
-        m.addConstrs((sum(p[v,k] for k in range(K_MAX)) == 1 for v in nodes), "constr_unique_quotient")
+        # Given v, qr[v, q, r] is 1 for exactly one q, r, i.e., there's a unique quotient and remainder
+        m.addConstrs((sum(qr[v, q, r] for q in range(Q_MAX) for r in range(T)) == 1 for v in nodes), "constr_unique_quotient_remainder")
 
         # Number of match units does not exceed match_unit_limit
         # for every time step (j) < T, check the total match unit requirements
         # across all nodes (v) that can be "rotated" into this time slot.
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * s[v,j] for v in match_nodes) <= self.match_unit_limit for j in range(T)), "constr_match_units")
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size ) * qr[v, q, r] for v in match_nodes for q in range(Q_MAX)) <= self.match_unit_limit for r in range(T)), "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
-        m.addConstrs((sum(self.G.node[v]['num_fields']*s[v,j] for v in action_nodes) <= self.action_fields_limit for j in range(T)), "constr_action_fields")
+        m.addConstrs((sum(self.G.node[v]['num_fields'] * qr[v, q, r] for v in action_nodes for q in range(Q_MAX)) <= self.action_fields_limit for r in range(T)), "constr_action_fields")
 
-        # Any time slot (j) can have match or action operations from only one packet
-        # Mathematically, for each j, Summation (v, k) s[v, j] * p[v, k]  <= 1
-        # The summation is across
-        # 1. either match or action vs,
-        # 3. all previous time periods (k)
-        # This works because the summation picks out those terms for which s[v, j] == 1
-        # i.e., all v's that fall in that time slot
-        # equivalently Summation(all v falling into j)(all k) p[v, k] <= 1
-        # i.e., there's at most one k for which p[v, k] for all v falling into j
-        m.addConstrs(((2 * s_and_p[v, j, k]) >= (s[v,j] + p[v, k] - 1) for v in nodes for j in range(T) for k in range(K_MAX)), "constr_and1")
-        m.addConstrs(((2 * s_and_p[v, j, k]) <= (s[v,j] + p[v, k]) for v in nodes for j in range(T) for k in range(K_MAX)), "constr_and2")
+        # Any time slot (r) can have match or action operations
+        # from only match_proc_limit/action_proc_limit packets
+        # We do this in two steps.
 
-        # For a particular j, s_and_p summed over all v, k gives us the total number of events in that time slot.
-        # We want to count the number of unique packets.
-        # So we fix j and k, sum s_and_p over all v to get the total number of packets from k.
-        # We threshold this so that if its >= 1, uniq_pkt = 1, else it is 0
-        m.addConstrs((total_m_pkts[j, k] == sum(s_and_p[v, j, k] for v in match_nodes) for j in range(T) for k in range(K_MAX)), "constr_total_match_pkts")
-        m.addConstrs((total_a_pkts[j, k] == sum(s_and_p[v, j, k] for v in action_nodes) for j in range(T) for k in range(K_MAX)), "constr_total_action_pkts")
+        # First, detect if there is any (at least one) match/action operation from packet q in time slot r
+        # we do this by ORing together all qr[v, q, r] across all match/action vs for a given q and r
+        m.addConstrs((sum(qr[v, q, r] for v in match_nodes) <= (len(match_nodes) * any_match[q, r]) \
+                      for q in range(Q_MAX)\
+                      for r in range(T)),\
+                      "constr_any_match1");
+        m.addConstrs(((len(match_nodes) * any_match[q, r]) <= (len(match_nodes) - 1 + sum(qr[v, q, r] for v in match_nodes))\
+                      for q in range(Q_MAX)\
+                      for r in range(T)),\
+                      "constr_any_match2");
+        m.addConstrs((sum(qr[v, q, r] for v in action_nodes) <= (len(action_nodes) * any_action[q, r]) \
+                      for q in range(Q_MAX)\
+                      for r in range(T)),\
+                      "constr_any_action1");
+        m.addConstrs(((len(action_nodes) * any_action[q, r]) <= (len(action_nodes) - 1 + sum(qr[v, q, r] for v in action_nodes))\
+                      for q in range(Q_MAX)\
+                      for r in range(T)),\
+                      "constr_any_action2");
 
-        # Threshold total_pkts to uniq_pkt (http://stackoverflow.com/a/22849589) for both match and action
-        m.addConstrs(((-1 * (1 - uniq_m_pkt[j, k])) <= (total_m_pkts[j, k] - 0.9999) for j in range(T) for k in range(K_MAX)), "constr_thresh1_m")
-        m.addConstrs(((total_m_pkts[j, k] - 0.9999) <= ((self.match_unit_limit - 1) * uniq_m_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_m")
-
-        m.addConstrs(((-1 * (1 - uniq_a_pkt[j, k])) <= (total_a_pkts[j, k] - 0.9999) for j in range(T) for k in range(K_MAX)), "constr_thresh1_a")
-        m.addConstrs(((total_a_pkts[j, k] - 0.9999) <= ((self.action_fields_limit - 1) * uniq_a_pkt[j, k]) for j in range(T) for k in range(K_MAX)), "constr_thresh2_a")
-
-        # At most match_proc_limit / action_proc_limit packets are doing matches/actions every cycle
-        m.addConstrs((sum(uniq_m_pkt[j, k] for k in range(K_MAX)) <= self.match_proc_limit for j in range(T)), "constr_match_proc")
-        m.addConstrs((sum(uniq_a_pkt[j, k] for k in range(K_MAX)) <= self.action_proc_limit for j in range(T)), "constr_action_proc")
+        # Second, check that, for any r, the summation over q of any_match[q, r] is under proc_limits
+        m.addConstrs((sum(any_match[q, r] for q in range(Q_MAX)) <= self.match_proc_limit\
+                      for r in range(T)), "constr_match_proc")
+        m.addConstrs((sum(any_action[q, r] for q in range(Q_MAX)) <= self.action_proc_limit\
+                      for r in range(T)), "constr_action_proc")
 
         # Solve model
         m.optimize()
@@ -287,9 +267,7 @@ class DrmtScheduleSolver:
         maxt = 0
         mint = np.inf
         for v in nodes:
-            # Add starting time of packet (delta) with
-            # time offset to this node (t[v])
-            tv = int(delta.x + t[v].x)
+            tv = int(t[v].x)
             if tv > maxt:
                 maxt = tv
             if tv < mint:
