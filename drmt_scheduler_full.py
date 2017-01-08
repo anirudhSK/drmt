@@ -6,7 +6,6 @@ import importlib
 import math
 from sets import Set
 
-Q_MAX=20
 
 class ScheduleDAG(nx.DiGraph):
     def __init__(self, nodes, edges):
@@ -240,23 +239,17 @@ class DrmtScheduleSolver:
         # We do this in two steps.
 
         # First, detect if there is any (at least one) match/action operation from packet q in time slot r
-        # we do this by ORing together all qr[v, q, r] across all match/action vs for a given q and r
+        # if qr[v, q, r] = 1 for any match node, then any_match[q,r] must = 1 (same for actions)
+        # Notice that any_match[q, r] may be 1 even if all qr[v, q, r] are zero
         m.addConstrs((sum(qr[v, q, r] for v in match_nodes) <= (len(match_nodes) * any_match[q, r]) \
                       for q in range(Q_MAX)\
                       for r in range(T)),\
                       "constr_any_match1");
-        m.addConstrs(((len(match_nodes) * any_match[q, r]) <= (len(match_nodes) - 1 + sum(qr[v, q, r] for v in match_nodes))\
-                      for q in range(Q_MAX)\
-                      for r in range(T)),\
-                      "constr_any_match2");
+
         m.addConstrs((sum(qr[v, q, r] for v in action_nodes) <= (len(action_nodes) * any_action[q, r]) \
                       for q in range(Q_MAX)\
                       for r in range(T)),\
                       "constr_any_action1");
-        m.addConstrs(((len(action_nodes) * any_action[q, r]) <= (len(action_nodes) - 1 + sum(qr[v, q, r] for v in action_nodes))\
-                      for q in range(Q_MAX)\
-                      for r in range(T)),\
-                      "constr_any_action2");
 
         # Second, check that, for any r, the summation over q of any_match[q, r] is under proc_limits
         m.addConstrs((sum(any_match[q, r] for q in range(Q_MAX)) <= self.match_proc_limit\
@@ -393,7 +386,10 @@ try:
     period_duration = int(math.ceil((1.0 * input_for_ilp.num_procs) / input_for_ilp.throughput))
 
     G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
+    cpath, cplat = G.critical_path()
 
+    Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
+    
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(match_unit_size = input_for_ilp.match_unit_size,\
                    action_fields_limit = input_for_ilp.action_fields_limit, \
@@ -402,6 +398,7 @@ try:
                    throughput = input_for_ilp.throughput, \
                    match_proc_limit = input_for_ilp.match_proc_limit, \
                    action_proc_limit = input_for_ilp.action_proc_limit)
+    print 'Q_MAX = ', Q_MAX
     print '\n\n'
 
     print '{:*^80}'.format(' Running Solver ')
@@ -417,7 +414,6 @@ try:
     (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
     print 'Optimal schedule length = %d cycles' % solver.length
-    cpath, cplat = G.critical_path()
     print 'Critical path length = %d cycles' % cplat
 
     print '\n\n'
