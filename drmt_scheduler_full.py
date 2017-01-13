@@ -135,6 +135,7 @@ class DrmtScheduleSolver:
         lenq = maxt - mint + 1
         if lenq > self.length:
             self.length = lenq
+        assert(lenq == length.x + 1)
         return (self.time_of_op, self.ops_at_time, self.length)
 
     def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
