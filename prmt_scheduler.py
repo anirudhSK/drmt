@@ -90,28 +90,19 @@ class PrmtScheduleSolver:
         # Construct length of schedule
         # and usage in every time slot
         self.ops_at_time = collections.defaultdict(list)
-        self.match_units_usage = collections.defaultdict(list)
-        self.action_field_usage = collections.defaultdict(list)
-        self.length = 0
-        maxt = 0
-        mint = np.inf
+        self.length = int(length.x + 1)
+        assert(self.length == length.x + 1)
+        self.match_units_usage = [0] * self.length
+        self.action_fields_usage = [0] * self.length
         for v in nodes:
             tv = int(t[v].x)
-            if tv > maxt:
-                maxt = tv
-            if tv < mint:
-                mint = tv
             self.ops_at_time[tv].append(v)
             if self.G.node[v]['type'] == 'match':
-               self.match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
+               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
             elif self.G.node[v]['type'] == 'action':
-               self.action_field_usage += self.G.node[v]['num_fields']
+               self.action_fields_usage[tv] += self.G.node[v]['num_fields']
             else:
                assert(False)
-        lenq = maxt - mint + 1
-        if lenq > self.length:
-            self.length = lenq
-        assert(lenq == length.x + 1)
 
     def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
         """ Returns a string representation of the schedule in the ops_at_time
@@ -214,6 +205,7 @@ try:
     print timeline,'\n\n'
 
     print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
+    mu_usage = {}
     for t in range(solver.length):
       mu_usage[t] = [str(solver.match_units_usage[t])]
     (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
@@ -221,7 +213,7 @@ try:
 
     print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
     af_usage = {}
-    for t in range(period_duration):
+    for t in range(solver.length):
       af_usage[t] = [str(solver.action_fields_usage[t])]
     (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
     print timeline

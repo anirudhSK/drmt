@@ -121,21 +121,12 @@ class DrmtScheduleSolver:
         # Construct and return schedule
         self.time_of_op = {}
         self.ops_at_time = collections.defaultdict(list)
-        self.length = 0
-        maxt = 0
-        mint = np.inf
+        self.length = int(length.x + 1)
+        assert(self.length == length.x + 1)
         for v in nodes:
             tv = int(t[v].x)
-            if tv > maxt:
-                maxt = tv
-            if tv < mint:
-                mint = tv
             self.time_of_op[v] = tv
             self.ops_at_time[tv].append(v)
-        lenq = maxt - mint + 1
-        if lenq > self.length:
-            self.length = lenq
-        assert(lenq == length.x + 1)
         return (self.time_of_op, self.ops_at_time, self.length)
 
     def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
