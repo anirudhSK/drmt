@@ -116,7 +116,8 @@ try:
 
     # Input example
     input_for_ilp = importlib.import_module(input_file, "*")
-    G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
+    G = ScheduleDAG()
+    G.create_dag(input_for_ilp.nodes, input_for_ilp.edges)
     cpath, cplat = G.critical_path()
 
     print '{:*^80}'.format(' Input DAG ')

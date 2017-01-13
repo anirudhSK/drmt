@@ -176,7 +176,8 @@ try:
     # Derive period_duration from num_procs and throughput
     period_duration = int(math.ceil((1.0 * input_for_ilp.num_procs) / input_for_ilp.throughput))
 
-    G = ScheduleDAG(input_for_ilp.nodes, input_for_ilp.edges)
+    G = ScheduleDAG()
+    G.create_dag(input_for_ilp.nodes, input_for_ilp.edges)
     cpath, cplat = G.critical_path()
 
     Q_MAX = int(math.ceil(1.5 * cplat / period_duration))

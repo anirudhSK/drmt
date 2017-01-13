@@ -2,9 +2,8 @@ import networkx as nx
 import math
 
 class ScheduleDAG(nx.DiGraph):
-    def __init__(self, nodes, edges):
+    def __init__(self):
         nx.DiGraph.__init__(self)
-        self.create_dag(nodes, edges)
 
     def create_dag(self, nodes, edges):
         """ Returns a DAG of match/action nodes
