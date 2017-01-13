@@ -87,9 +87,11 @@ class PrmtScheduleSolver:
         # Solve model
         m.optimize()
 
-        # Construct and return schedule
-        self.time_of_op = {}
+        # Construct length of schedule
+        # and usage in every time slot
         self.ops_at_time = collections.defaultdict(list)
+        self.match_units_usage = collections.defaultdict(list)
+        self.action_field_usage = collections.defaultdict(list)
         self.length = 0
         maxt = 0
         mint = np.inf
@@ -99,12 +101,17 @@ class PrmtScheduleSolver:
                 maxt = tv
             if tv < mint:
                 mint = tv
-            self.time_of_op[v] = tv
             self.ops_at_time[tv].append(v)
+            if self.G.node[v]['type'] == 'match':
+               self.match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
+            elif self.G.node[v]['type'] == 'action':
+               self.action_field_usage += self.G.node[v]['num_fields']
+            else:
+               assert(False)
         lenq = maxt - mint + 1
         if lenq > self.length:
             self.length = lenq
-        return (self.time_of_op, self.ops_at_time, self.length)
+        assert(lenq == length.x + 1)
 
     def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
         """ Returns a string representation of the schedule in the ops_at_time
@@ -203,8 +210,21 @@ try:
 
     print '\n\n'
 
-    print '{:*^80}'.format(' First scheduling period on one processor')
+    print '{:*^80}'.format(' Schedule')
     print timeline,'\n\n'
+
+    print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
+    for t in range(solver.length):
+      mu_usage[t] = [str(solver.match_units_usage[t])]
+    (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
+    print timeline
+
+    print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
+    af_usage = {}
+    for t in range(period_duration):
+      af_usage[t] = [str(solver.action_fields_usage[t])]
+    (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
+    print timeline
 
 except GurobiError as e:
     print('Error code ' + str(e.errno) + ": " + str(e))
