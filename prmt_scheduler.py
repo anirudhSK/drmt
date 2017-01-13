@@ -10,11 +10,12 @@ from timeline_printer import timeline_str
 
 class PrmtScheduleSolver:
     def __init__(self, dag,
-                 match_unit_size, match_unit_limit, action_fields_limit):
+                 match_unit_size, match_unit_limit, action_fields_limit, init_schedule):
         self.G = dag
         self.action_fields_limit = action_fields_limit
         self.match_unit_size     = match_unit_size
         self.match_unit_limit    = match_unit_limit
+        self.init_schedule       = init_schedule
 
     def solve(self):
         """ Returns the optimal schedule
@@ -33,7 +34,12 @@ class PrmtScheduleSolver:
         action_nodes = self.G.nodes(select='action')
         edges = self.G.edges()
         (_, cplen) = self.G.critical_path()
-        T_MAX = 3 * cplen
+
+        # Set T_MAX as the max of initial schedule + 1
+        if (self.init_schedule is not None):
+          T_MAX = max(self.init_schedule.values()) + 1
+        else:
+          T_MAX = 3 * cplen
 
         m = Model()
 
@@ -81,6 +87,11 @@ class PrmtScheduleSolver:
                       <= self.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
+        # Initialize schedule
+        if (self.init_schedule is not None):
+          for v in nodes:
+            t[v].start = self.init_schedule[v]
+
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
         # We do this in two steps.
@@ -108,11 +119,12 @@ class PrmtScheduleSolver:
 
 try:
     # Cmd line args
-    if (len(sys.argv) != 2):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix>"
+    if (len(sys.argv) != 3):
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
       exit(1)
-    elif (len(sys.argv) == 2):
+    elif (len(sys.argv) == 3):
       input_file = sys.argv[1]
+      seed_greedy = bool(sys.argv[2] == "yes")
 
     # Input example
     input_for_ilp = importlib.import_module(input_file, "*")
@@ -130,13 +142,19 @@ try:
                    num_procs = 1)
     # match_proc_limit, action_proc_limit, and num_procs are not used
 
-    print '{:*^80}'.format(' Running Solver ')
+    print '{:*^80}'.format(' Running Greedy Solver ')
+    gsolver = GreedyPrmtSolver(dag=G,
+                               match_unit_size = input_for_ilp.match_unit_size, \
+                               action_fields_limit= input_for_ilp.action_fields_limit, \
+                               match_unit_limit = input_for_ilp.match_unit_limit)
+    gschedule = gsolver.solve()
+    print '{:*^80}'.format(' Running ILP Solver ')
     solver = PrmtScheduleSolver(dag=G,
                                 match_unit_size = input_for_ilp.match_unit_size, \
                                 action_fields_limit= input_for_ilp.action_fields_limit, \
-                                match_unit_limit = input_for_ilp.match_unit_limit)
+                                match_unit_limit = input_for_ilp.match_unit_limit, \
+                                init_schedule = gschedule if seed_greedy else None)
     solver.solve()
-
     (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
     print 'Optimal schedule length = %d cycles' % solver.length
