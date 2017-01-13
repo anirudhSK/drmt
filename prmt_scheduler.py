@@ -5,6 +5,8 @@ import importlib
 import math
 from sets import Set
 from schedule_dag import ScheduleDAG
+from greedy_prmt_solver import GreedyPrmtSolver
+from timeline_printer import timeline_str
 
 class PrmtScheduleSolver:
     def __init__(self, dag,
@@ -104,66 +106,6 @@ class PrmtScheduleSolver:
             else:
                assert(False)
 
-    def timeline_str(self, strs_at_time, white_space=2, timeslots_per_row=8):
-        """ Returns a string representation of the schedule in the ops_at_time
-            argument
-
-        Parameters
-        ----------
-        strs_at_time : dict
-            List of strings for each timeslot
-
-        white_space : int
-            Amount of white space per timeslot
-
-        timeslots_per_row : int
-            Number of timesteps in each row
-
-        Returns
-        -------
-        timeline : string
-            Printable string representation of schedule
-        strlen : int
-            Length of string for each timeslot
-        """
-
-        num_strs = sum(len(strs) for strs in strs_at_time.itervalues())
-        strlen = max(max(len(s) for s in strs) for strs in strs_at_time.itervalues()) + white_space
-        timeline_length = max(t for t in strs_at_time.iterkeys()) + 1
-        strlen = max(strlen, len(str(timeline_length))+2)
-
-        K = timeline_length / timeslots_per_row
-        R = timeline_length % timeslots_per_row
-
-        timeline = ''
-        for k in range(K+1):
-            if k < K:
-                low = k * timeslots_per_row
-                high = low + timeslots_per_row
-            else:
-                low = k * timeslots_per_row
-                high = low + R
-
-            maxstrs = 0
-            for t in range(low, high):
-                if t in strs_at_time:
-                    maxstrs = max(maxstrs, len(strs_at_time[t]))
-
-            if maxstrs > 0:
-                timeline += '|'
-                for t in range(low, high):
-                    timeline += '{0: ^{1}}'.format('t=%d' % t, strlen) + '|'
-                for i in range(maxstrs):
-                    timeline += '\n|'
-                    for t in range(low, high):
-                        if (t in strs_at_time) and (i<len(strs_at_time[t])):
-                            timeline += '{0: ^{1}}'.format(strs_at_time[t][i],strlen) + '|'
-                        else:
-                            timeline += ' ' * strlen + '|'
-                timeline += '\n\n'
-
-        return (timeline, strlen)
-
 try:
     # Cmd line args
     if (len(sys.argv) != 2):
@@ -194,7 +136,7 @@ try:
                                 match_unit_limit = input_for_ilp.match_unit_limit)
     solver.solve()
 
-    (timeline, strlen) = solver.timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
+    (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
     print 'Optimal schedule length = %d cycles' % solver.length
     print 'Critical path length = %d cycles' % cplat
@@ -208,14 +150,14 @@ try:
     mu_usage = {}
     for t in range(solver.length):
       mu_usage[t] = [str(solver.match_units_usage[t])]
-    (timeline, strlen) = solver.timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
+    (timeline, strlen) = timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
     print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
     af_usage = {}
     for t in range(solver.length):
       af_usage[t] = [str(solver.action_fields_usage[t])]
-    (timeline, strlen) = solver.timeline_str(af_usage, white_space=0, timeslots_per_row=16)
+    (timeline, strlen) = timeline_str(af_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
 except GurobiError as e:
