@@ -6,6 +6,8 @@ import math
 from sets import Set
 from schedule_dag import ScheduleDAG
 from timeline_printer import timeline_str
+from solution import Solution
+from resource_usage_printer import print_resource_usage
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec):
@@ -121,39 +123,55 @@ class DrmtScheduleSolver:
             tv = int(t[v].x)
             self.time_of_op[v] = tv
             self.ops_at_time[tv].append(v)
-        return (self.time_of_op, self.ops_at_time, self.length)
 
-    def compute_periodic_schedule(self, unit_size):
+        # Compute periodic schedule to calculate resource usage
+        self.compute_periodic_schedule()
+
+        # Populate solution
+        solution = Solution()
+        solution.time_of_op = self.time_of_op
+        solution.ops_at_time = self.ops_at_time
+        solution.ops_on_ring = self.ops_on_ring
+        solution.length = self.length
+        solution.match_key_usage     = self.match_key_usage
+        solution.action_fields_usage = self.action_fields_usage
+        solution.match_units_usage   = self.match_units_usage
+        solution.match_proc_usage    = self.match_proc_usage
+        solution.action_proc_usage   = self.action_proc_usage
+        return solution
+
+    def compute_periodic_schedule(self):
         T = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
-        ops_on_ring = collections.defaultdict(list)
-        match_key_usage = [0] * T
-        action_fields_usage = [0] * T
-        match_units_usage = [0] * T
-
-        match_proc_set = [0] * T
+        self.ops_on_ring = collections.defaultdict(list)
+        self.match_key_usage = dict()
+        self.action_fields_usage = dict()
+        self.match_units_usage = dict()
+        self.match_proc_set = dict()
+        self.match_proc_usage = dict()
+        self.action_proc_set = dict()
+        self.action_proc_usage = dict()
         for t in range(T):
-          match_proc_set[t] = Set()
-        match_proc_usage = [0] * T
+          self.match_key_usage[t]     = 0
+          self.action_fields_usage[t] = 0
+          self.match_units_usage[t]   = 0
+          self.match_proc_set[t]      = Set()
+          self.match_proc_usage[t]    = 0
+          self.action_proc_set[t]     = Set()
+          self.action_proc_usage[t]   = 0
 
-        action_proc_set = [0] * T
-        for t in range(T):
-          action_proc_set[t] = Set()
-        action_proc_usage = [0] * T
         for v in self.G.nodes():
             k = self.time_of_op[v] / T
             r = self.time_of_op[v] % T
-            ops_on_ring[r].append('p[%d].%s' % (k,v))
+            self.ops_on_ring[r].append('p[%d].%s' % (k,v))
             if self.G.node[v]['type'] == 'match':
-                match_key_usage[r] += self.G.node[v]['key_width']
-                match_units_usage[r] += math.ceil((1.0 * self.G.node[v]['key_width'])/ unit_size)
-                match_proc_set[r].add(k)
-                match_proc_usage[r] = len(match_proc_set[r])
+                self.match_key_usage[r] += self.G.node[v]['key_width']
+                self.match_units_usage[r] += math.ceil((1.0 * self.G.node[v]['key_width'])/ self.input_spec.match_unit_size)
+                self.match_proc_set[r].add(k)
+                self.match_proc_usage[r] = len(self.match_proc_set[r])
             else:
-                action_fields_usage[r] += self.G.node[v]['num_fields']
-                action_proc_set[r].add(k)
-                action_proc_usage[r] = len(action_proc_set[r])
-        # TODO: This is bad form. Return a struct instead.
-        return (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage)
+                self.action_fields_usage[r] += self.G.node[v]['num_fields']
+                self.action_proc_set[r].add(k)
+                self.action_proc_usage[r] = len(self.action_proc_set[r])
 
 try:
     # Cmd line args
@@ -169,12 +187,14 @@ try:
     # Derive period_duration from num_procs and throughput
     period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
 
+    # Create G
     G = ScheduleDAG()
     G.create_dag(input_spec.nodes, input_spec.edges)
-    cpath, cplat = G.critical_path()
 
+    # Set Q_MAX
+    cpath, cplat = G.critical_path()
     Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
-    
+ 
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(input_spec)
     print 'Q_MAX = ', Q_MAX
@@ -182,9 +202,7 @@ try:
 
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec)
-    solver.solve()
-
-    (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
+    solution = solver.solve()
 
     print 'Optimal schedule length = %d cycles' % solver.length
     print 'Critical path length = %d cycles' % cplat
@@ -192,41 +210,13 @@ try:
     print '\n\n'
 
     print '{:*^80}'.format(' First scheduling period on one processor')
-    print timeline,'\n\n'
+    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
 
-    (ops_on_ring, match_key_usage, action_fields_usage, match_units_usage, match_proc_usage, action_proc_usage) = solver.compute_periodic_schedule(input_spec.match_unit_size)
-    (timeline, strlen) = timeline_str(ops_on_ring, white_space=0, timeslots_per_row=4)
     print '{:*^80}'.format(' Steady state on one processor')
     print '{:*^80}'.format('p[u] is packet from u scheduling periods ago')
-    print timeline, '\n\n'
+    print timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n'
 
-    print 'Match units usage (max = %d units) on one processor' % input_spec.match_unit_limit
-    mu_usage = {}
-    for t in range(period_duration):
-        mu_usage[t] = [str(match_units_usage[t])]
-    (timeline, strlen) = timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
-    print timeline
-
-    print 'Action fields usage (max = %d fields) on one processor' % input_spec.action_fields_limit
-    af_usage = {}
-    for t in range(period_duration):
-        af_usage[t] = [str(action_fields_usage[t])]
-    (timeline, strlen) = timeline_str(af_usage, white_space=0, timeslots_per_row=16)
-    print timeline
-
-    print 'Match packets (max = %d match packets) on one processor' % input_spec.match_proc_limit
-    mp_usage = {}
-    for t in range(period_duration):
-        mp_usage[t] = [str(match_proc_usage[t])]
-    (timeline, strlen) = timeline_str(mp_usage, white_space=0, timeslots_per_row=16)
-    print timeline
-
-    print 'Action packets (max = %d action packets) on one processor' % input_spec.action_proc_limit
-    ap_usage = {}
-    for t in range(period_duration):
-        ap_usage[t] = [str(action_proc_usage[t])]
-    (timeline, strlen) = timeline_str(ap_usage, white_space=0, timeslots_per_row=16)
-    print timeline
+    print_resource_usage(input_spec, solution)
 
 except GurobiError as e:
     print('Error code ' + str(e.errno) + ": " + str(e))

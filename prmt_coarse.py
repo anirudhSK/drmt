@@ -8,6 +8,9 @@ from schedule_dag import ScheduleDAG
 from greedy_prmt_solver import GreedyPrmtSolver
 from timeline_printer import timeline_str
 from fine_to_coarse import contract_dag
+from resource_usage_printer import print_resource_usage
+from solution import Solution
+import networkx as nx
 
 class PrmtCoarseSolver:
     def __init__(self, dag,
@@ -102,22 +105,24 @@ class PrmtCoarseSolver:
         # Solve model
         m.optimize()
 
-        # Construct length of schedule
-        # and usage in every time slot
-        self.ops_at_time = collections.defaultdict(list)
-        self.length = int(length.x + 1)
-        assert(self.length == length.x + 1)
-        self.match_units_usage = [0] * self.length
-        self.action_fields_usage = [0] * self.length
+        # Construct schedule and usage in every time slot
+        solution = Solution()
+        solution.ops_at_time = collections.defaultdict(list)
+        solution.length = int(length.x + 1)
+        assert(solution.length == length.x + 1)
+        for time_slot in range(solution.length):
+          solution.match_units_usage[time_slot] = 0
+          solution.action_fields_usage[time_slot] = 0
         for v in nodes:
             tv = int(t[v].x)
-            self.ops_at_time[tv].append(v)
+            solution.ops_at_time[tv].append(v)
             if self.G.node[v]['type'] == 'match':
-               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
+               solution.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
             elif self.G.node[v]['type'] == 'action':
-               self.action_fields_usage[tv] += self.G.node[v]['num_fields']
+               solution.action_fields_usage[tv] += self.G.node[v]['num_fields']
             else:
                assert(False)
+        return solution
 
 try:
     # Cmd line args
@@ -131,6 +136,7 @@ try:
     # Input example
     input_spec = importlib.import_module(input_file, "*")
     G = contract_dag(input_spec)
+    assert(nx.is_directed_acyclic_graph(G))
 
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(input_spec)
@@ -141,31 +147,17 @@ try:
     gschedule = gsolver.solve()
     print '{:*^80}'.format(' Running ILP Solver ')
     # Directly feed in input_spec
-    solver = PrmtScheduleSolver(G,
-                                input_spec,
-                                init_schedule = gschedule if seed_greedy else None)
-    solver.solve()
-    (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
+    solver = PrmtCoarseSolver(G,
+                              input_spec,
+                              init_schedule = gschedule if seed_greedy else None)
+    solution = solver.solve()
 
-    print 'Number of pipeline stages: %f' % (math.ceil(solver.length))
+    print 'Number of pipeline stages: %f' % (math.ceil(solution.length))
     print '\n\n'
 
     print '{:*^80}'.format(' Schedule')
-    print timeline,'\n\n'
-
-    print 'Match units usage (max = %d units) on one processor' % input_spec.match_unit_limit
-    mu_usage = {}
-    for t in range(solver.length):
-      mu_usage[t] = [str(solver.match_units_usage[t])]
-    (timeline, strlen) = timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
-    print timeline
-
-    print 'Action fields usage (max = %d fields) on one processor' % input_spec.action_fields_limit
-    af_usage = {}
-    for t in range(solver.length):
-      af_usage[t] = [str(solver.action_fields_usage[t])]
-    (timeline, strlen) = timeline_str(af_usage, white_space=0, timeslots_per_row=16)
-    print timeline
+    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+    print_resource_usage(input_spec, solution)
 
 except GurobiError as e:
     print('Error code ' + str(e.errno) + ": " + str(e))
