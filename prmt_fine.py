@@ -96,6 +96,10 @@ class PrmtScheduleSolver:
                       <= self.input_spec.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
+        # The num_procs constraint, length of schedule (i.e., length + 1)
+        # is lesser than twice the number of stages (one for match and one for action)
+        m.addConstr(length + 1 <= 2 * self.input_spec.num_procs, "constr_num_procs")
+
         # Initialize schedule
         if (self.init_schedule is not None):
           for v in nodes:
@@ -103,7 +107,6 @@ class PrmtScheduleSolver:
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
-        # We do this in two steps.
         # TODO
 
         # Solve model
@@ -139,11 +142,9 @@ try:
     input_spec = importlib.import_module(input_file, "*")
     G = ScheduleDAG()
     G.create_dag(input_spec.nodes, input_spec.edges)
-    cpath, cplat = G.critical_path()
 
     print '{:*^80}'.format(' Input DAG ')
     G.print_report(input_spec)
-    # match_proc_limit, action_proc_limit, and num_procs are not used
 
     print '{:*^80}'.format(' Running Greedy Solver ')
     gsolver = GreedyPrmtSolver(G,
@@ -158,8 +159,6 @@ try:
     (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
     print 'Optimal schedule length = %d cycles' % solver.length
-    print 'Critical path length = %d cycles' % cplat
-
     print '\n\n'
 
     print '{:*^80}'.format(' Schedule')
