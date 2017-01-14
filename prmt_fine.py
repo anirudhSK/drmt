@@ -158,7 +158,7 @@ try:
     solver.solve()
     (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
 
-    print 'Optimal schedule length = %d cycles' % solver.length
+    print 'Number of pipeline stages: %f' % (math.ceil(solver.length / 2.0))
     print '\n\n'
 
     print '{:*^80}'.format(' Schedule')
