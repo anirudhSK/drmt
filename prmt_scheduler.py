@@ -47,6 +47,9 @@ class PrmtScheduleSolver:
         # t is the start time for each DAG node
         t = m.addVars(nodes, lb=0, ub=T_MAX, vtype=GRB.INTEGER, name="t")
 
+        # k is the even/odd quotient for each DAG node, i.e., t = 2*k + 1 or 2*k
+        k = m.addVars(nodes, lb=0, ub=T_MAX, vtype=GRB.INTEGER, name="k")
+
         # indicator[v, t] = 1 if v is scheduled at t 
         indicator  = m.addVars(list(itertools.product(nodes, range(T_MAX))),\
                                vtype=GRB.BINARY, name="indicator")
@@ -72,8 +75,16 @@ class PrmtScheduleSolver:
                      "constr_equality")
 
         # Respect dependencies in DAG
-        m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges),\
+        m.addConstrs((t[v] - t[u] >= int(self.G.edge[u][v]['delay'] > 0) for (u,v) in edges),\
                      "constr_dag_dependencies")
+
+        # matches can only happen at even time slots
+        for v in match_nodes:
+          m.addConstr(t[v] == 2 * k[v])
+
+        # actions can only happen at odd time slots
+        for v in action_nodes:
+          m.addConstr(t[v] == 2 * k[v] + 1)
 
         # Number of match units does not exceed match_unit_limit
         m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size) * indicator[v, t]\
