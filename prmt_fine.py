@@ -10,11 +10,9 @@ from timeline_printer import timeline_str
 
 class PrmtScheduleSolver:
     def __init__(self, dag,
-                 match_unit_size, match_unit_limit, action_fields_limit, init_schedule):
+                 input_spec, init_schedule):
         self.G = dag
-        self.action_fields_limit = action_fields_limit
-        self.match_unit_size     = match_unit_size
-        self.match_unit_limit    = match_unit_limit
+        self.input_spec          = input_spec
         self.init_schedule       = init_schedule
 
     def solve(self):
@@ -87,15 +85,15 @@ class PrmtScheduleSolver:
           m.addConstr(t[v] == 2 * k[v] + 1)
 
         # Number of match units does not exceed match_unit_limit
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.match_unit_size) * indicator[v, t]\
+        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.input_spec.match_unit_size) * indicator[v, t]\
                       for v in match_nodes)\
-                      <= self.match_unit_limit for t in range(T_MAX)),\
+                      <= self.input_spec.match_unit_limit for t in range(T_MAX)),\
                       "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
         m.addConstrs((sum(self.G.node[v]['num_fields'] * indicator[v, t]\
                       for v in action_nodes)\
-                      <= self.action_fields_limit for t in range(T_MAX)),\
+                      <= self.input_spec.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
         # Initialize schedule
@@ -122,7 +120,7 @@ class PrmtScheduleSolver:
             tv = int(t[v].x)
             self.ops_at_time[tv].append(v)
             if self.G.node[v]['type'] == 'match':
-               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
+               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
             elif self.G.node[v]['type'] == 'action':
                self.action_fields_usage[tv] += self.G.node[v]['num_fields']
             else:
@@ -138,32 +136,23 @@ try:
       seed_greedy = bool(sys.argv[2] == "yes")
 
     # Input example
-    input_for_ilp = importlib.import_module(input_file, "*")
+    input_spec = importlib.import_module(input_file, "*")
     G = ScheduleDAG()
-    G.create_dag(input_for_ilp.nodes, input_for_ilp.edges)
+    G.create_dag(input_spec.nodes, input_spec.edges)
     cpath, cplat = G.critical_path()
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(match_unit_size = input_for_ilp.match_unit_size,\
-                   action_fields_limit = input_for_ilp.action_fields_limit, \
-                   match_unit_limit = input_for_ilp.match_unit_limit, \
-                   throughput = input_for_ilp.throughput, \
-                   match_proc_limit = 1,\
-                   action_proc_limit = 1,\
-                   num_procs = 1)
+    G.print_report(input_spec)
     # match_proc_limit, action_proc_limit, and num_procs are not used
 
     print '{:*^80}'.format(' Running Greedy Solver ')
-    gsolver = GreedyPrmtSolver(dag=G,
-                               match_unit_size = input_for_ilp.match_unit_size, \
-                               action_fields_limit= input_for_ilp.action_fields_limit, \
-                               match_unit_limit = input_for_ilp.match_unit_limit)
+    gsolver = GreedyPrmtSolver(G,
+                               input_spec)
     gschedule = gsolver.solve()
     print '{:*^80}'.format(' Running ILP Solver ')
-    solver = PrmtScheduleSolver(dag=G,
-                                match_unit_size = input_for_ilp.match_unit_size, \
-                                action_fields_limit= input_for_ilp.action_fields_limit, \
-                                match_unit_limit = input_for_ilp.match_unit_limit, \
+    # Directly feed in input_spec
+    solver = PrmtScheduleSolver(G,
+                                input_spec,
                                 init_schedule = gschedule if seed_greedy else None)
     solver.solve()
     (timeline, strlen) = timeline_str(solver.ops_at_time, white_space=0, timeslots_per_row=4)
@@ -176,14 +165,14 @@ try:
     print '{:*^80}'.format(' Schedule')
     print timeline,'\n\n'
 
-    print 'Match units usage (max = %d units) on one processor' % input_for_ilp.match_unit_limit
+    print 'Match units usage (max = %d units) on one processor' % input_spec.match_unit_limit
     mu_usage = {}
     for t in range(solver.length):
       mu_usage[t] = [str(solver.match_units_usage[t])]
     (timeline, strlen) = timeline_str(mu_usage, white_space=0, timeslots_per_row=16)
     print timeline
 
-    print 'Action fields usage (max = %d fields) on one processor' % input_for_ilp.action_fields_limit
+    print 'Action fields usage (max = %d fields) on one processor' % input_spec.action_fields_limit
     af_usage = {}
     for t in range(solver.length):
       af_usage[t] = [str(solver.action_fields_usage[t])]

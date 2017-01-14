@@ -4,11 +4,9 @@ import collections
 
 class GreedyPrmtSolver:
     def __init__(self, dag,
-                 match_unit_size, match_unit_limit, action_fields_limit):
+                 input_spec):
         self.G = dag
-        self.action_fields_limit = action_fields_limit
-        self.match_unit_size     = match_unit_size
-        self.match_unit_limit    = match_unit_limit
+        self.input_spec = input_spec
 
     def solve(self):
         dist = {}  # stores distance of every node from root
@@ -57,7 +55,7 @@ class GreedyPrmtSolver:
             tv = schedule[v]
             self.ops_at_time[tv].append(v)
             if self.G.node[v]['type'] == 'match':
-               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
+               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
             elif self.G.node[v]['type'] == 'action':
                self.action_fields_usage[tv] += self.G.node[v]['num_fields']
             else:
@@ -69,10 +67,10 @@ class GreedyPrmtSolver:
       action_fields_usage = 0
       for v in work_list:
         if self.G.node[v]['type'] == 'match':
-          match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.match_unit_size)
+          match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
         elif self.G.node[v]['type'] == 'action':
           action_fields_usage += self.G.node[v]['num_fields']
         else:
           assert(False)
-      return (match_units_usage <= self.match_unit_limit) and \
-             (action_fields_usage <= self.action_fields_limit)
+      return (match_units_usage <= self.input_spec.match_unit_limit) and \
+             (action_fields_usage <= self.input_spec.action_fields_limit)
