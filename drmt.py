@@ -7,11 +7,13 @@ from sets import Set
 from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
+from randomized_sieve import *
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec):
+    def __init__(self, dag, input_spec, init_schedule):
         self.G = dag
         self.input_spec = input_spec
+        self.init_schedule = init_schedule
 
     def solve(self):
         """ Returns the optimal schedule
@@ -110,6 +112,11 @@ class DrmtScheduleSolver:
         m.addConstrs((sum(any_action[q, r] for q in range(Q_MAX)) <= self.input_spec.action_proc_limit\
                       for r in range(T)), "constr_action_proc")
 
+        # Seed initial values
+        if self.init_schedule is not None:
+          for i in nodes:
+            t[i].start = init_schedule[i]
+
         # Solve model
         m.optimize()
 
@@ -174,11 +181,12 @@ class DrmtScheduleSolver:
 
 try:
     # Cmd line args
-    if (len(sys.argv) != 2):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix>"
+    if (len(sys.argv) != 3):
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy sol., no otherwise>"
       exit(1)
-    elif (len(sys.argv) == 2):
+    elif (len(sys.argv) == 3):
       input_file = sys.argv[1]
+      seed_greedy = bool(sys.argv[2] == "yes")
 
     # Input example
     input_spec = importlib.import_module(input_file, "*")
@@ -199,8 +207,11 @@ try:
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
 
+    if (seed_greedy):
+      greedy_initial = solver.greedy_find_initial_solution(60)
     print '{:*^80}'.format(' Running Solver ')
-    solver = DrmtScheduleSolver(G, input_spec)
+    solver = DrmtScheduleSolver(G, input_spec,\
+                                greedy_initial if seed_greedy else None)
     solution = solver.solve()
 
     print 'Optimal schedule length = %d cycles' % solver.length
