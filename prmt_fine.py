@@ -6,8 +6,7 @@ import math
 from sets import Set
 from schedule_dag import ScheduleDAG
 from greedy_prmt_solver import GreedyPrmtSolver
-from timeline_printer import timeline_str
-from resource_usage_printer import print_resource_usage
+from printers import *
 from solution import Solution
 
 class PrmtScheduleSolver:
@@ -149,12 +148,12 @@ try:
     G.create_dag(input_spec.nodes, input_spec.edges)
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(input_spec)
+    print_problem(G, input_spec)
 
-    print '{:*^80}'.format(' Running Greedy Solver ')
-    gsolver = GreedyPrmtSolver(G,
-                               input_spec)
-    gschedule = gsolver.solve()
+    if seed_greedy:
+      print '{:*^80}'.format(' Running Greedy Solver ')
+      gsolver = GreedyPrmtSolver(G, input_spec)
+      gschedule = gsolver.solve()
     print '{:*^80}'.format(' Running ILP Solver ')
     # Directly feed in input_spec
     solver = PrmtScheduleSolver(G,

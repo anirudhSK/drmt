@@ -6,9 +6,8 @@ import math
 from sets import Set
 from schedule_dag import ScheduleDAG
 from greedy_prmt_solver import GreedyPrmtSolver
-from timeline_printer import timeline_str
 from fine_to_coarse import contract_dag
-from resource_usage_printer import print_resource_usage
+from printers import *
 from solution import Solution
 import networkx as nx
 
@@ -134,7 +133,7 @@ try:
     assert(nx.is_directed_acyclic_graph(G))
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(input_spec, 'table', 'table')
+    print_problem(G, input_spec, 'table', 'table')
 
     if seed_greedy:
       print '{:*^80}'.format(' Running Greedy Solver ')

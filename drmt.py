@@ -5,9 +5,8 @@ import importlib
 import math
 from sets import Set
 from schedule_dag import ScheduleDAG
-from timeline_printer import timeline_str
+from printers import *
 from solution import Solution
-from resource_usage_printer import print_resource_usage
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec):
@@ -196,7 +195,7 @@ try:
     Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
  
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(input_spec)
+    print_problem(G, input_spec)
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
 
