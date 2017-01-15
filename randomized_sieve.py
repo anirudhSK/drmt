@@ -384,6 +384,7 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
               best_schedule = schedule
               print '\n'
               print 'Found Feasible Solution With Latency', best
+              break
               print '\n'
               
       curr_time = tm.time()
