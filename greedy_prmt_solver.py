@@ -10,8 +10,8 @@ class GreedyPrmtSolver:
 
     def solve(self):
         dist = {}  # stores distance of every node from root
-        for node in nx.topological_sort(self.G):
-            distances = [(dist[v] + self.G[v][u]['delay']) for v,u in self.G.in_edges(node)]
+        for node in nx.topological_sort(self.G): # TODO: Aren't all delays here either 0 or 1?
+            distances = [(dist[v] + int(self.G[v][u]['delay'] > 0)) for v,u in self.G.in_edges(node)]
             if distances:
                 dist[node] = max(distances)
             else:
@@ -25,7 +25,7 @@ class GreedyPrmtSolver:
         for node in dist:
           nodes_at_dist[dist[node]] += [node]
 
-        # Find start time of each node.
+        # Find start stage of each node/table
         current_stage = 0
         nodes_at_current_stage = []
         schedule = {}
@@ -49,28 +49,24 @@ class GreedyPrmtSolver:
 
         # Compute ops on every time slot
         self.ops_at_time = collections.defaultdict(list)
-        self.match_units_usage = [0] * self.length
-        self.action_fields_usage = [0] * self.length
+        self.match_units_usage = dict()
+        for time_slot in range(self.length): self.match_units_usage[time_slot] = 0
+        self.action_fields_usage = dict()
+        for time_slot in range(self.length): self.action_fields_usage[time_slot] = 0
         for v in self.G.nodes():
-            tv = schedule[v]
-            self.ops_at_time[tv].append(v)
-            if self.G.node[v]['type'] == 'match':
-               self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
-            elif self.G.node[v]['type'] == 'action':
-               self.action_fields_usage[tv] += self.G.node[v]['num_fields']
-            else:
-               assert(False)
+          tv = schedule[v]
+          self.ops_at_time[tv].append(v)
+          assert(self.G.node[v]['type'] == 'table')
+          self.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
+          self.action_fields_usage[tv] += self.G.node[v]['num_fields']
         return schedule
  
     def check_usage(self, work_list):
       match_units_usage = 0
       action_fields_usage = 0
       for v in work_list:
-        if self.G.node[v]['type'] == 'match':
-          match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
-        elif self.G.node[v]['type'] == 'action':
-          action_fields_usage += self.G.node[v]['num_fields']
-        else:
-          assert(False)
+        assert(self.G.node[v]['type'] == 'table')
+        match_units_usage += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
+        action_fields_usage += self.G.node[v]['num_fields']
       return (match_units_usage <= self.input_spec.match_unit_limit) and \
              (action_fields_usage <= self.input_spec.action_fields_limit)
