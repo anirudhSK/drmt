@@ -1,14 +1,16 @@
 from random import shuffle
 import time as tm
+import numpy as np
+import math
 import Queue
 
-def random_topological_sort_recursive(self):
+def random_topological_sort_recursive(dag):
   # This is basically taken from networkx's topological_sort_recursive.
   # The differences are: 
   # 1. Randomization of the order we explore node's sucsessors.
   # 2. Removed cycle detection checks.
   def _dfs(v):
-    keys=self[v].keys()
+    keys=dag[v].keys()
     shuffle(keys)
     for w in keys:   
         if w not in explored:
@@ -19,17 +21,17 @@ def random_topological_sort_recursive(self):
   explored = set()
   order = []
 
-  for v in self.nodes_iter():
+  for v in dag.nodes_iter():
     if v not in explored:
       _dfs(v)
 
   return list(reversed(order))
 
-def index_dag_sieve(index, bound):
+def index_dag_sieve(input_spec, dag, index, bound):
   # final schedule           
   schedule = []
   
-  Procs = self.period_duration
+  Procs = input_spec.num_procs
       
   # wild card intensity
   rf_m = 10**4
@@ -63,11 +65,11 @@ def index_dag_sieve(index, bound):
       concurrent_action_limit[i] = []
       
   # Init time for each node                         
-  for i in self.G.nodes():
-      self.G.node[i]['time'] = 0
+  for i in dag.nodes():
+      dag.node[i]['time'] = 0
   
   # topological sort of DAG    
-  ts = self.G.random_topological_sort_recursive() 
+  ts = random_topological_sort_recursive(dag) 
       
 
   ts_ff_queue = Queue.Queue()
@@ -97,17 +99,17 @@ def index_dag_sieve(index, bound):
           curr_node = ts_ff_queue.get()
           
           # the immediate predecessors of the current node                    
-          pred = self.G.predecessors(curr_node)
+          pred = dag.predecessors(curr_node)
                   
           # lower bound on time of current node                
           if pred: 
-              time = max([self.G.node[i]['time']+\
-              self.G.edge[i][curr_node]['delay'] for i in pred])
+              time = max([dag.node[i]['time']+\
+              dag.edge[i][curr_node]['delay'] for i in pred])
           else:
-              time = self.G.node[curr_node]['time']
+              time = dag.node[curr_node]['time']
               
           # determine node type            
-          MA = self.G.node[curr_node]['type']
+          MA = dag.node[curr_node]['type']
   
           
           # treat MATCH
@@ -121,11 +123,11 @@ def index_dag_sieve(index, bound):
                 # check resources availability at time%Procs
                                                                                                       
                 match_limit_cond = match_limit[time%Procs] + \
-                math.ceil((1.0 * self.G.node[curr_node]['key_width']) / self.match_unit_size)\
-                <= self.match_unit_limit
+                math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)\
+                <= input_spec.match_unit_limit
               
                 con_match_limit_cond = \
-                len(set(concurrent_match_limit[time%Procs])) < self.match_proc_limit                                                                                      
+                len(set(concurrent_match_limit[time%Procs])) < input_spec.match_proc_limit                                                                                      
                 
                 same_con_match_limit_cond = \
                 time in concurrent_match_limit[time%Procs]
@@ -136,11 +138,11 @@ def index_dag_sieve(index, bound):
                 (con_match_limit_cond or same_con_match_limit_cond):
   
                     # node time
-                    G.node[curr_node]['time'] = time
+                    dag.node[curr_node]['time'] = time
                     
                     # update resource usage
                     match_limit[time%Procs] += \
-                    math.ceil((1.0 * self.G.node[curr_node]['key_width']) / self.match_unit_size)
+                    math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)
                     
                     # update different packet matches at that cycle
                     concurrent_match_limit[time%Procs].append(time)
@@ -178,10 +180,10 @@ def index_dag_sieve(index, bound):
                 # check resources availability at time%Procs
                                                                       
                 action_limit_cond = action_limit[time%Procs] + \
-                self.G.node[curr_node]['num_fields'] <= self.action_fields_limit
+                dag.node[curr_node]['num_fields'] <= input_spec.action_fields_limit
   
                 con_action_limit_cond = \
-                len(set(concurrent_action_limit[time%Procs])) < self.action_proc_limit
+                len(set(concurrent_action_limit[time%Procs])) < input_spec.action_proc_limit
                 
                 same_con_action_limit_cond = \
                 time in concurrent_action_limit[time%Procs]
@@ -192,10 +194,10 @@ def index_dag_sieve(index, bound):
                 (con_action_limit_cond or same_con_action_limit_cond):
                     
                     # node time
-                    self.G.node[curr_node]['time'] = time
+                    dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    action_limit[time%Procs] += self.G.node[curr_node]['num_fields']
+                    action_limit[time%Procs] += dag.node[curr_node]['num_fields']
                     
                     # update different packet actions at that cycle
                     concurrent_action_limit[time%Procs].append(time) 
@@ -228,17 +230,17 @@ def index_dag_sieve(index, bound):
           curr_node = ts_rw_queue.get()
           
           # the immediate successors of the current node                    
-          succ = self.G.successors(curr_node)
+          succ = dag.successors(curr_node)
                   
           # upper bound on time of current node                
           if succ: 
-              time = min([self.G.node[i]['time']-\
-              self.G.edge[curr_node][i]['delay'] for i in succ])
+              time = min([dag.node[i]['time']-\
+              dag.edge[curr_node][i]['delay'] for i in succ])
           else:
-              time = self.G.node[curr_node]['time']
+              time = dag.node[curr_node]['time']
               
           # determine node type            
-          MA = self.G.node[curr_node]['type']
+          MA = dag.node[curr_node]['type']
   
           
           # treat MATCH
@@ -252,11 +254,11 @@ def index_dag_sieve(index, bound):
                 # check resources availability at time%Procs
                                                                                                       
                 match_limit_cond = match_limit[time%Procs] + \
-                math.ceil((1.0 * self.G.node[curr_node]['key_width']) / self.match_unit_size)\
-                <= self.match_unit_limit
+                math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)\
+                <= input_spec.match_unit_limit
               
                 con_match_limit_cond = \
-                len(set(concurrent_match_limit[time%Procs])) < self.match_proc_limit                                                                                      
+                len(set(concurrent_match_limit[time%Procs])) < input_spec.match_proc_limit                                                                                      
                 
                 same_con_match_limit_cond = \
                 time in concurrent_match_limit[time%Procs]
@@ -267,11 +269,11 @@ def index_dag_sieve(index, bound):
                 (con_match_limit_cond or same_con_match_limit_cond):
   
                     # node time
-                    self.G.node[curr_node]['time'] = time
+                    dag.node[curr_node]['time'] = time
                     
                     # update resource usage
                     match_limit[time%Procs] += \
-                    math.ceil((1.0 * self.G.node[curr_node]['key_width']) / self.match_unit_size)
+                    math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)
                     
                     # update different packet matches at that cycle
                     concurrent_match_limit[time%Procs].append(time)
@@ -309,10 +311,10 @@ def index_dag_sieve(index, bound):
                 # check resources availability at time%Procs
                                                                       
                 action_limit_cond = action_limit[time%Procs] + \
-                self.G.node[curr_node]['num_fields'] <= self.action_fields_limit
+                dag.node[curr_node]['num_fields'] <= input_spec.action_fields_limit
   
                 con_action_limit_cond = \
-                len(set(concurrent_action_limit[time%Procs])) < self.action_proc_limit
+                len(set(concurrent_action_limit[time%Procs])) < input_spec.action_proc_limit
                 
                 same_con_action_limit_cond = \
                 time in concurrent_action_limit[time%Procs]
@@ -323,10 +325,10 @@ def index_dag_sieve(index, bound):
                 (con_action_limit_cond or same_con_action_limit_cond):
                     
                     # node time
-                    self.G.node[curr_node]['time'] = time
+                    dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    action_limit[time%Procs] += self.G.node[curr_node]['num_fields']
+                    action_limit[time%Procs] += dag.node[curr_node]['num_fields']
                     
                     # update different packet actions at that cycle
                     concurrent_action_limit[time%Procs].append(time) 
@@ -355,7 +357,7 @@ def index_dag_sieve(index, bound):
   return schedule
     
     
-def greedy_find_initial_solution(dag, time_limit):
+def greedy_find_initial_solution(input_spec, dag, time_limit):
   star_time = tm.time()
   curr_time = tm.time()
   greedy_initial = {}
@@ -372,7 +374,7 @@ def greedy_find_initial_solution(dag, time_limit):
       if second_counter < curr_time - star_time:
           print second_counter,
           second_counter += 1
-      schedule = index_dag_sieve(index%nodes, 2*delay) #TODO: resume here
+      schedule = index_dag_sieve(input_spec, dag, index%nodes, 2*delay)
       index += 1
       if schedule != None:
           max_val = max([k[1] for k in schedule])
