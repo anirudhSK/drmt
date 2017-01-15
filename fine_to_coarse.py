@@ -39,6 +39,23 @@ def contract_dag(input_spec):
   
   # Contract table edges
   for table in tables:
+    match = table[0]
+    action = table[1]
+    table_name = match.strip('MATCH')
+    key_width  = G.node[match]['key_width']
+    num_fields = G.node[action]['num_fields']
     G = nx.contracted_edge(G, table, self_loops=False)
+    nx.relabel_nodes(G, {match: table_name}, False)
+    G.node[table_name]['type'] = 'table'
+    G.node[table_name]['key_width'] = key_width
+    G.node[table_name]['num_fields'] = num_fields
+
+  # Create dummy tables for the test
+  for v in G.nodes():
+    if (G.node[v]['type'] != 'table'):
+      G.node[v]['type'] = 'table'
+      G.node[v]['key_width'] = 0
+      assert(G.node[v]['num_fields'] >= 0)
+      # leave num_fields unchanged
 
   return G

@@ -108,7 +108,7 @@ class ScheduleDAG(nx.DiGraph):
                     nodelist.append((u,d))
         return nodelist
 
-    def print_report(self, input_spec):
+    def print_report(self, input_spec, match_selector = 'match', action_selector = 'action'):
         cpath, cplat = self.critical_path()
         print '# of processors = ', input_spec.num_procs
         print '# of nodes = ', self.number_of_nodes()
@@ -117,11 +117,13 @@ class ScheduleDAG(nx.DiGraph):
         print '# of actions = ', len(self.nodes(select='action'))
         print 'Match unit size = ', input_spec.match_unit_size
 
-        match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / input_spec.match_unit_size), self.nodes(select='match'), 0)
+        match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * self.node[node]['key_width']) / input_spec.match_unit_size),\
+                             self.nodes(select=match_selector), 0)
         print '# of match units = ', match_units
         print 'aggregate match_unit_limit = ', input_spec.num_procs * input_spec.match_unit_limit
 
-        action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'], self.nodes(select='action'), 0)
+        action_fields = reduce(lambda acc, node: acc + self.node[node]['num_fields'],\
+                             self.nodes(select=action_selector), 0)
         print '# of action fields = ', action_fields
         print 'aggregate action_fields_limit = ', input_spec.num_procs * input_spec.action_fields_limit
 
@@ -138,5 +140,3 @@ class ScheduleDAG(nx.DiGraph):
         print 'Upper bound on throughput = ', throughput_upper_bound
         if (input_spec.throughput > throughput_upper_bound) :
           print 'Throughput cannot be supported with the current resources'
-
-

@@ -32,8 +32,6 @@ class PrmtCoarseSolver:
             Maximum latency of optimal schedule
         """
         nodes = self.G.nodes()
-        match_nodes = self.G.nodes(select='match')
-        action_nodes = self.G.nodes(select='action')
         edges = self.G.edges()
         (_, cplen) = self.G.critical_path()
 
@@ -79,13 +77,13 @@ class PrmtCoarseSolver:
 
         # Number of match units does not exceed match_unit_limit
         m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.input_spec.match_unit_size) * indicator[v, t]\
-                      for v in match_nodes)\
+                      for v in nodes)\
                       <= self.input_spec.match_unit_limit for t in range(T_MAX)),\
                       "constr_match_units")
 
         # The action field resource constraint (similar comments to above)
         m.addConstrs((sum(self.G.node[v]['num_fields'] * indicator[v, t]\
-                      for v in action_nodes)\
+                      for v in nodes)\
                       <= self.input_spec.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
@@ -116,12 +114,9 @@ class PrmtCoarseSolver:
         for v in nodes:
             tv = int(t[v].x)
             solution.ops_at_time[tv].append(v)
-            if self.G.node[v]['type'] == 'match':
-               solution.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
-            elif self.G.node[v]['type'] == 'action':
-               solution.action_fields_usage[tv] += self.G.node[v]['num_fields']
-            else:
-               assert(False)
+            assert(self.G.node[v]['type'] == 'table')
+            solution.match_units_usage[tv] += math.ceil((1.0 * self.G.node[v]['key_width'])/self.input_spec.match_unit_size)
+            solution.action_fields_usage[tv] += self.G.node[v]['num_fields']
         return solution
 
 try:
@@ -139,12 +134,13 @@ try:
     assert(nx.is_directed_acyclic_graph(G))
 
     print '{:*^80}'.format(' Input DAG ')
-    G.print_report(input_spec)
+    G.print_report(input_spec, 'table', 'table')
 
-    print '{:*^80}'.format(' Running Greedy Solver ')
-    gsolver = GreedyPrmtSolver(G,
+    if seed_greedy:
+      print '{:*^80}'.format(' Running Greedy Solver ')
+      gsolver = GreedyPrmtSolver(G,
                                input_spec)
-    gschedule = gsolver.solve()
+      gschedule = gsolver.solve()
     print '{:*^80}'.format(' Running ILP Solver ')
     # Directly feed in input_spec
     solver = PrmtCoarseSolver(G,
