@@ -41,7 +41,7 @@ def contract_dag(input_spec):
   for table in tables:
     match = table[0]
     action = table[1]
-    table_name = match.strip('MATCH')
+    table_name = match.strip('MATCH') + 'TABLE'
     key_width  = G.node[match]['key_width']
     num_fields = G.node[action]['num_fields']
     G = nx.contracted_edge(G, table, self_loops=False)

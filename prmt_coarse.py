@@ -43,7 +43,7 @@ class PrmtCoarseSolver:
         m = Model()
 
         # Create variables
-        # t is the start time for each DAG node
+        # t is the start stage for each table in the DAG
         t = m.addVars(nodes, lb=0, ub=T_MAX, vtype=GRB.INTEGER, name="t")
 
         # indicator[v, t] = 1 if v is scheduled at t 
@@ -70,7 +70,7 @@ class PrmtCoarseSolver:
                      for v in nodes),\
                      "constr_equality")
 
-        # Respect dependencies in DAG
+        # Respect dependencies in DAG. these are either length 1 (MATCH/ACTION deps) or 0 (SUCCESSOR/REVERSE_MATCH deps)
         m.addConstrs((t[v] - t[u] >= int(self.G.edge[u][v]['delay'] > 0) for (u,v) in edges),\
                      "constr_dag_dependencies")
 
@@ -141,17 +141,14 @@ try:
                                input_spec)
       gschedule = gsolver.solve()
     print '{:*^80}'.format(' Running ILP Solver ')
-    # Directly feed in input_spec
     solver = PrmtCoarseSolver(G,
                               input_spec,
                               init_schedule = gschedule if seed_greedy else None)
     solution = solver.solve()
 
-    print 'Number of pipeline stages: %f' % (math.ceil(solution.length))
-    print '\n\n'
+    print 'Number of pipeline stages: %f' % (math.ceil(solution.length)), '\n\n'
 
-    print '{:*^80}'.format(' Schedule')
-    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+    print '{:*^80}'.format(' Schedule\n'), timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
     print_resource_usage(input_spec, solution)
 
 except GurobiError as e:
