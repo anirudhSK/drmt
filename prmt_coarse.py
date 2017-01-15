@@ -86,10 +86,6 @@ class PrmtCoarseSolver:
                       <= self.input_spec.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
-        # The num_procs constraint, length of schedule (i.e., length + 1)
-        # is lesser than the number of stages
-        m.addConstr(length + 1 <= self.input_spec.num_procs, "constr_num_procs")
-
         # Initialize schedule
         if (self.init_schedule is not None):
           for v in nodes:
@@ -146,7 +142,8 @@ try:
                               init_schedule = gschedule if seed_greedy else None)
     solution = solver.solve()
 
-    print 'Number of pipeline stages: %f' % (math.ceil(solution.length)), '\n\n'
+    if solution.length > self.input_spec.num_procs: print "Exceeded num_procs, rejected!!!"
+    print 'Number of pipeline stages: %f' % (solution.length), '\n\n'
 
     print '{:*^80}'.format(' Schedule\n'), timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
     print_resource_usage(input_spec, solution)

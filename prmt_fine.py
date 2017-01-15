@@ -98,11 +98,6 @@ class PrmtScheduleSolver:
                       <= self.input_spec.action_fields_limit for t in range(T_MAX)),\
                       "constr_action_fields")
 
-        # The num_procs constraint, length of schedule (i.e., length + 1)
-        # is lesser than the number of substages, i.e., twice the number of stages
-        # because each stage has a match and an action substage
-        m.addConstr(length + 1 <= 2 * self.input_spec.num_procs, "constr_num_procs")
-
         # Initialize schedule
         if (self.init_schedule is not None):
           for v in nodes:
@@ -173,7 +168,7 @@ try:
                                 input_spec,
                                 init_schedule = fine_grained_schedule if seed_greedy else None)
     solution = solver.solve()
-
+    if (solution.length > 2 * self.input_spec.num_procs): print "Exceeded num_procs, rejected!!!"
     print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
     print '{:*^80}'.format(' Schedule')
     print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
