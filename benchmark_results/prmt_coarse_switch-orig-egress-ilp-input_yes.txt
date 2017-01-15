@@ -27,14 +27,14 @@ Coefficient statistics:
   Bounds range     [1e+00, 2e+01]
   RHS range        [1e+00, 3e+01]
 Presolve removed 95 rows and 606 columns
-Presolve time: 0.02s
+Presolve time: 0.06s
 Presolved: 380 rows, 592 columns, 2185 nonzeros
 
 Loaded MIP start with objective 17
 
 Variable types: 0 continuous, 592 integer (528 binary)
 
-Root relaxation: objective 1.200000e+01, 179 iterations, 0.00 seconds
+Root relaxation: objective 1.200000e+01, 179 iterations, 0.01 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -49,7 +49,7 @@ H    0     0                      13.0000000   12.00000  7.69%     -    0s
 Cutting planes:
   Gomory: 1
 
-Explored 0 nodes (651 simplex iterations) in 0.08 seconds
+Explored 0 nodes (651 simplex iterations) in 0.17 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 4: 12 13 14 17 
@@ -61,8 +61,11 @@ REJECT: pipeline length  13 exceeded the available  12  stages
 Number of pipeline stages: 13.000000 
 
 
-*********************************** Schedule
-*********************************** |              t=0               |              t=1               |              t=2               |              t=3               |
+*********************************** Schedule************************************
+
+
+
+|              t=0               |              t=1               |              t=2               |              t=3               |
 |           rid_TABLE            |   egress_port_mapping_TABLE    |         _condition_62          |         _condition_64          |
 |         _condition_55          |         _condition_72          |         _condition_60          |tunnel_decap_process_outer_TABLE|
 |          mirror_TABLE          |       replica_type_TABLE       |         _condition_61          |      int_inst_0407_TABLE       |

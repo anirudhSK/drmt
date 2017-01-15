@@ -147,7 +147,9 @@ try:
             input_spec.num_procs, " stages"
     print 'Number of pipeline stages: %f' % (solution.length), '\n\n'
 
-    print '{:*^80}'.format(' Schedule\n'), timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+    print '{:*^80}'.format(' Schedule')
+    print '\n\n'
+    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
     print_resource_usage(input_spec, solution)
 
 except GurobiError as e:
