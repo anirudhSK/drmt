@@ -387,6 +387,8 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
               print '\n'
               
       curr_time = tm.time()
+  if (best_schedule == None):
+    return None
 
   min_val = min([k[1] for k in best_schedule])
   for i in best_schedule:
