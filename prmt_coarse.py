@@ -142,7 +142,9 @@ try:
                               init_schedule = gschedule if seed_greedy else None)
     solution = solver.solve()
 
-    if solution.length > self.input_spec.num_procs: print "Exceeded num_procs, rejected!!!"
+    if solution.length > input_spec.num_procs:
+      print "Exceeded num_procs, rejected!!!"
+      exit(1)
     print 'Number of pipeline stages: %f' % (solution.length), '\n\n'
 
     print '{:*^80}'.format(' Schedule\n'), timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
