@@ -1,0 +1,446 @@
+********************************** Input DAG ***********************************
+# of processors =  24
+# of nodes =  224
+# of edges =  930
+# of matches =  83
+# of actions =  141
+Match unit size =  160
+# of match units =  89.0
+aggregate match_unit_limit =  96
+# of action fields =  743
+aggregate action_fields_limit =  768
+match_proc_limit = 4
+action_proc_limit = 4
+Critical path:  ['ingress_port_mapping_MATCH', 'ingress_port_mapping_ACTION', 'port_vlan_mapping_MATCH', 'port_vlan_mapping_ACTION', 'ipsg_MATCH', 'ipsg_ACTION', 'native_packet_over_fabric_ACTION', 'mpls_ACTION', 'tunnel_MATCH', 'tunnel_lookup_miss_ACTION', 'ingress_l4_src_port_MATCH', 'ingress_l4_src_port_ACTION', 'ipv6_acl_MATCH', 'ipv6_acl_ACTION', 'ipv6_racl_ACTION', 'fwd_result_MATCH', 'fwd_result_ACTION', 'nexthop_MATCH', 'nexthop_ACTION', 'lag_group_MATCH', 'lag_group_ACTION', 'fabric_lag_MATCH', 'fabric_lag_ACTION']
+Critical path length = 102 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.0336473755
+Q_MAX =  7
+
+
+
+Looking for greedy feasible solution for 60 seconds
+0 
+
+Found Feasible Solution With Latency 181
+
+
+
+
+Found Feasible Solution With Latency 178
+
+
+1 
+
+Found Feasible Solution With Latency 166
+
+
+
+
+Found Feasible Solution With Latency 162
+
+
+2 
+
+Found Feasible Solution With Latency 161
+
+
+
+
+Found Feasible Solution With Latency 153
+
+
+3 
+
+Found Feasible Solution With Latency 142
+
+
+
+
+Found Feasible Solution With Latency 140
+
+
+4 5 6 7 
+
+Found Feasible Solution With Latency 138
+
+
+8 9 
+
+Found Feasible Solution With Latency 131
+
+
+10 11 12 
+
+Found Feasible Solution With Latency 122
+
+
+13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 
+
+Found Feasible Solution With Latency 120
+
+
+55 56 57 58 59 ******************************** Running Solver ********************************
+Optimize a model with 1986 rows, 32769 columns and 131908 nonzeros
+Variable types: 0 continuous, 32769 integer (32544 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 203 rows and 18621 columns
+Presolve time: 0.24s
+Presolved: 1783 rows, 14148 columns, 57103 nonzeros
+
+Loaded MIP start with objective 120
+
+Variable types: 0 continuous, 14148 integer (13937 binary)
+
+Root relaxation: objective 1.020000e+02, 2672 iterations, 0.15 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0  102.00000    0  143  120.00000  102.00000  15.0%     -    0s
+     0     0  102.00000    0  445  120.00000  102.00000  15.0%     -    1s
+     0     0  102.00000    0  461  120.00000  102.00000  15.0%     -    1s
+     0     0  102.00000    0  545  120.00000  102.00000  15.0%     -    1s
+     0     0  102.00000    0  222  120.00000  102.00000  15.0%     -    2s
+     0     2  102.00000    0  222  120.00000  102.00000  15.0%     -    3s
+   162   142  102.00000   55  217  120.00000  102.00000  15.0%  63.7    5s
+  1581  1341  102.00000  258  309  120.00000  102.00000  15.0%  35.3   10s
+  2148  1830  102.00000  365  360  120.00000  102.00000  15.0%  46.9   15s
+  2665  2297  106.00000  535  326  120.00000  102.00000  15.0%  54.5   20s
+  3279  2847  102.00000  760  250  120.00000  102.00000  15.0%  60.6   25s
+  3906  3358  102.00000  915  282  120.00000  102.00000  15.0%  66.3   30s
+  4121  3539  114.00000 1057  647  120.00000  102.00000  15.0%  65.7   35s
+  4125  3542  103.00000 1007  120  120.00000  102.00000  15.0%  65.7   40s
+  4130  3547  102.00000   12  120  120.00000  102.00000  15.0%  77.7   47s
+  4134  3550  118.00000   13  412  120.00000  102.00000  15.0%  78.0   51s
+  4138  3553  117.00000   14  399  120.00000  102.00000  15.0%  78.1   55s
+  4143  3556  102.00000   16  125  120.00000  102.00000  15.0%  78.4   61s
+  4151  3559  102.00000   18  129  120.00000  102.00000  15.0%  78.8   67s
+  4155  3562  102.00000   19  129  120.00000  102.00000  15.0%  79.9   70s
+  4163  3566  102.00000   21  124  120.00000  102.00000  15.0%  81.0   77s
+  4178  3574  119.00000   24  350  120.00000  102.00000  15.0%  82.4   81s
+  4204  3591  109.00000   29  316  120.00000  102.00000  15.0%  83.9   85s
+  4273  3622  102.00000   41  151  120.00000  102.00000  15.0%  85.4   91s
+  4313  3643  102.00000   45  215  120.00000  102.00000  15.0%  86.0   95s
+  4448  3728  102.00000   53  215  120.00000  102.00000  15.0%  86.6  101s
+  4564  3802  102.00000   57  219  120.00000  102.00000  15.0%  86.4  105s
+H 4628  3295                     119.0000000  102.00000  14.3%  86.5  106s
+  4698  3288  102.00000   69  181  119.00000  102.00000  14.3%  87.0  110s
+  4794  3345  117.00000   81  395  119.00000  102.00000  14.3%  89.3  115s
+  4946  3422  102.00000   93  190  119.00000  102.00000  14.3%  91.0  122s
+H 5040  3268                     118.0000000  102.00000  13.6%  92.5  125s
+H 5260  2694                     103.0000000  102.00000  0.97%  93.6  128s
+
+Cutting planes:
+  Gomory: 31
+  Cover: 77
+  Implied bound: 12
+  Clique: 477
+  MIR: 59
+  Flow cover: 119
+  GUB cover: 143
+  Zero half: 10
+
+Explored 5379 nodes (500777 simplex iterations) in 128.46 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 4: 103 118 119 120 
+Pool objective bound 103
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.030000000000e+02, best bound 1.030000000000e+02, gap 0.0000%
+Optimal schedule length = 104 cycles
+Critical path length = 102 cycles
+
+
+
+******************* First scheduling period on one processor********************
+|                t=0                |                t=1                |                t=2                |                t=3                |
+|           _condition_46           |    switch_config_params_MATCH     |                                   |                                   |
+|   validate_outer_ethernet_MATCH   |                                   |                                   |                                   |
+|    ingress_port_mapping_MATCH     |                                   |                                   |                                   |
+|           _condition_8            |                                   |                                   |                                   |
+
+|                t=4                |                t=5                |                t=6                |                t=7                |
+|                                   |                                   |   fabric_ingress_dst_lkp_MATCH    |                                   |
+
+|                t=8                |                t=9                |               t=10                |               t=11                |
+|    validate_mpls_packet_MATCH     |    ingress_port_mapping_ACTION    |        sflow_ingress_MATCH        | validate_outer_ipv4_packet_MATCH  |
+|                                   |                                   |         int_source_MATCH          |   ingress_port_properties_MATCH   |
+|                                   |                                   |      port_vlan_mapping_MATCH      |        storm_control_MATCH        |
+|                                   |                                   |    switch_config_params_ACTION    |  native_packet_over_fabric_MATCH  |
+|                                   |                                   |  validate_outer_ethernet_ACTION   |                                   |
+
+|               t=12                |               t=13                |               t=14                |               t=15                |
+|     ipsg_permit_special_MATCH     |        int_terminate_MATCH        |                                   |      adjust_lkp_fields_MATCH      |
+|           _condition_9            | validate_outer_ipv6_packet_MATCH  |                                   |     tunnel_lookup_miss_MATCH      |
+
+|               t=16                |               t=17                |               t=18                |               t=19                |
+|                                   |           _condition_20           |           _condition_52           |       sflow_ingress_ACTION        |
+|                                   |           _condition_10           |           _condition_47           |     port_vlan_mapping_ACTION      |
+|                                   |           _condition_0            |   fabric_ingress_dst_lkp_ACTION   |         int_source_ACTION         |
+|                                   |                                   |           _condition_21           |                                   |
+|                                   |                                   |           _condition_4            |                                   |
+
+|               t=20                |               t=21                |               t=22                |               t=23                |
+|    validate_mpls_packet_ACTION    |        ipv4_src_vtep_MATCH        |            mpls_MATCH             | validate_outer_ipv6_packet_ACTION |
+|           _condition_51           |       ipv4_dest_vtep_MATCH        |                                   |        spanning_tree_MATCH        |
+|       ipv6_dest_vtep_MATCH        |        ipv6_src_vtep_MATCH        |                                   | validate_outer_ipv4_packet_ACTION |
+|           _condition_43           |                                   |                                   |       int_terminate_ACTION        |
+|         outer_rmac_MATCH          |                                   |                                   |                                   |
+|           _condition_12           |                                   |                                   |                                   |
+|           _condition_3            |                                   |                                   |                                   |
+|           _condition_2            |                                   |                                   |                                   |
+|           _condition_1            |                                   |                                   |                                   |
+|    sflow_ing_take_sample_MATCH    |                                   |                                   |                                   |
+|            ipsg_MATCH             |                                   |                                   |                                   |
+
+|               t=24                |               t=25                |               t=26                |               t=27                |
+|           _condition_53           |    ipsg_permit_special_ACTION     |                                   |           _condition_13           |
+|           _condition_11           |  ingress_port_properties_ACTION   |                                   |                                   |
+|           _condition_7            |                                   |                                   |                                   |
+
+|               t=28                |               t=29                |               t=30                |               t=31                |
+|                                   |   sflow_ing_take_sample_ACTION    |    outer_ipv6_multicast_MATCH     | outer_ipv4_multicast_star_g_MATCH |
+|                                   | native_packet_over_fabric_ACTION  |       ipv4_dest_vtep_ACTION       |    outer_ipv4_multicast_MATCH     |
+|                                   |           _condition_17           |           _condition_15           | outer_ipv6_multicast_star_g_MATCH |
+|                                   |           _condition_16           |           _condition_18           |            mpls_ACTION            |
+|                                   |           _condition_14           |       ipv6_dest_vtep_ACTION       |                                   |
+|                                   |            ipsg_ACTION            |                                   |                                   |
+
+|               t=32                |               t=33                |               t=34                |               t=35                |
+|    int_sink_update_outer_MATCH    |     ingress_qos_map_pcp_MATCH     |                                   |                                   |
+|    ingress_qos_map_dscp_MATCH     |       ipv4_src_vtep_ACTION        |                                   |                                   |
+|           tunnel_MATCH            |                                   |                                   |                                   |
+|       spanning_tree_ACTION        |                                   |                                   |                                   |
+
+|               t=36                |               t=37                |               t=38                |               t=39                |
+|           _condition_22           |                                   |                                   |    outer_ipv6_multicast_ACTION    |
+|                                   |                                   |                                   |       ipv6_src_vtep_ACTION        |
+
+|               t=40                |               t=41                |               t=42                |               t=43                |
+|         outer_rmac_ACTION         |     tunnel_lookup_miss_ACTION     |     ingress_l4_src_port_MATCH     |       validate_packet_MATCH       |
+|outer_ipv4_multicast_star_g_ACTION |           tunnel_ACTION           |           _condition_44           |           nat_dst_MATCH           |
+|    outer_ipv4_multicast_ACTION    |     adjust_lkp_fields_ACTION      |   int_sink_update_outer_ACTION    |           mac_acl_MATCH           |
+|outer_ipv6_multicast_star_g_ACTION |           _condition_19           |            rmac_MATCH             |          ipv4_fib_MATCH           |
+|                                   |                                   |           _condition_24           |                                   |
+|                                   |                                   |           _condition_25           |                                   |
+|                                   |                                   |          nat_twice_MATCH          |                                   |
+|                                   |                                   |     ingress_l4_dst_port_MATCH     |                                   |
+|                                   |                                   |           _condition_5            |                                   |
+
+|               t=44                |               t=45                |               t=46                |               t=47                |
+|           _condition_6            |    ingress_qos_map_pcp_ACTION     |    ingress_qos_map_dscp_ACTION    |          nat_flow_MATCH           |
+|                                   | ipv4_multicast_route_star_g_MATCH |          ipv6_fib_MATCH           |       storm_control_ACTION        |
+|                                   |                                   |        ipv6_fib_lpm_MATCH         |ipv4_multicast_bridge_star_g_MATCH |
+|                                   |                                   |                                   |    ipv4_multicast_route_MATCH     |
+
+|               t=48                |               t=49                |               t=50                |               t=51                |
+|    ipv6_multicast_route_MATCH     |        ipv4_fib_lpm_MATCH         |    ipv4_multicast_bridge_MATCH    |ipv6_multicast_bridge_star_g_MATCH |
+|                                   |           nat_src_MATCH           |           _condition_48           |    ingress_l4_src_port_ACTION     |
+|                                   |                                   |           _condition_30           |            rmac_ACTION            |
+|                                   |                                   |           _condition_26           |           _condition_34           |
+|                                   |                                   |           _condition_28           |           _condition_33           |
+|                                   |                                   |           _condition_29           |           _condition_32           |
+|                                   |                                   | ipv6_multicast_route_star_g_MATCH |    ipv6_multicast_bridge_MATCH    |
+|                                   |                                   |                                   |    ingress_l4_dst_port_ACTION     |
+|                                   |                                   |                                   |           _condition_27           |
+|                                   |                                   |                                   |           _condition_31           |
+|                                   |                                   |                                   |            dmac_MATCH             |
+
+|               t=52                |               t=53                |               t=54                |               t=55                |
+|          nat_dst_ACTION           |          ipv6_racl_MATCH          |          mac_acl_ACTION           |         nat_twice_ACTION          |
+|          ipv6_acl_MATCH           |     compute_ipv6_hashes_MATCH     |           _condition_45           |          ipv4_urpf_MATCH          |
+|           _condition_40           |          ipv4_racl_MATCH          |     compute_ipv4_hashes_MATCH     |                                   |
+|           _condition_41           |                                   |                                   |                                   |
+|           _condition_35           |                                   |                                   |                                   |
+|           _condition_37           |                                   |                                   |                                   |
+|           _condition_36           |                                   |                                   |                                   |
+|      validate_packet_ACTION       |                                   |                                   |                                   |
+|           _condition_39           |                                   |                                   |                                   |
+|           _condition_23           |                                   |                                   |                                   |
+|           ip_acl_MATCH            |                                   |                                   |                                   |
+|           _condition_38           |                                   |                                   |                                   |
+
+|               t=56                |               t=57                |               t=58                |               t=59                |
+|          ipv4_fib_ACTION          |    ipv6_multicast_route_ACTION    |          nat_flow_ACTION          |ipv4_multicast_route_star_g_ACTION |
+|        ipv6_fib_lpm_ACTION        |            smac_MATCH             |          ipv6_urpf_MATCH          |        ipv4_fib_lpm_ACTION        |
+|          ipv6_fib_ACTION          |        ipv6_urpf_lpm_MATCH        |                                   |                                   |
+|                                   |    ipv4_multicast_route_ACTION    |                                   |                                   |
+|                                   |    compute_non_ip_hashes_MATCH    |                                   |                                   |
+
+|               t=60                |               t=61                |               t=62                |               t=63                |
+|   ipv4_multicast_bridge_ACTION    |        ipv4_urpf_lpm_MATCH        |         ipv6_racl_ACTION          |         fwd_result_MATCH          |
+|ipv6_multicast_route_star_g_ACTION |          ipv6_acl_ACTION          |    compute_ipv6_hashes_ACTION     |        traffic_class_MATCH        |
+|   ipv6_multicast_bridge_ACTION    |           ip_acl_ACTION           |         ipv4_racl_ACTION          |    compute_ipv4_hashes_ACTION     |
+|                                   |ipv6_multicast_bridge_star_g_ACTION|         meter_index_MATCH         |         acl_stats_ACTION          |
+|                                   |            dmac_ACTION            |ipv4_multicast_bridge_star_g_ACTION|                                   |
+
+|               t=64                |               t=65                |               t=66                |               t=67                |
+|    compute_other_hashes_MATCH     |          bd_flood_MATCH           |          nat_src_ACTION           |                                   |
+
+|               t=68                |               t=69                |               t=70                |               t=71                |
+|         ipv4_urpf_ACTION          |       ipv6_urpf_lpm_ACTION        |   compute_non_ip_hashes_ACTION    |                                   |
+|                                   |         ipv6_urpf_ACTION          |       ipv4_urpf_lpm_ACTION        |                                   |
+
+|               t=72                |               t=73                |               t=74                |               t=75                |
+|         fwd_result_ACTION         |           urpf_bd_MATCH           |           _condition_54           |           _condition_42           |
+|            smac_ACTION            |        meter_index_ACTION         |         ecmp_group_MATCH          |                                   |
+|                                   |    compute_other_hashes_ACTION    |           nexthop_MATCH           |                                   |
+
+|               t=76                |               t=77                |               t=78                |               t=79                |
+|       traffic_class_ACTION        |                                   |           _condition_49           |                                   |
+
+|               t=80                |               t=81                |               t=82                |               t=83                |
+|                                   |                                   |          urpf_bd_ACTION           |         ecmp_group_ACTION         |
+|                                   |                                   |                                   |          nexthop_ACTION           |
+
+|               t=84                |               t=85                |               t=86                |               t=87                |
+|          lag_group_MATCH          |                                   |                                   |                                   |
+|        meter_action_MATCH         |                                   |                                   |                                   |
+
+|               t=88                |               t=89                |               t=90                |               t=91                |
+|        learn_notify_MATCH         |   fabric_ingress_src_lkp_MATCH    |                                   |      ingress_bd_stats_ACTION      |
+|     storm_control_stats_MATCH     |         system_acl_MATCH          |                                   |                                   |
+
+|               t=92                |               t=93                |               t=94                |               t=95                |
+|           _condition_50           |         lag_group_ACTION          |         fabric_lag_MATCH          |                                   |
+|          bd_flood_ACTION          |                                   |        meter_action_ACTION        |                                   |
+
+|               t=96                |               t=97                |               t=98                |               t=99                |
+|         drop_stats_ACTION         |                                   |    storm_control_stats_ACTION     |                                   |
+|                                   |                                   |        learn_notify_ACTION        |                                   |
+|                                   |                                   |   fabric_ingress_src_lkp_ACTION   |                                   |
+
+|               t=100               |               t=101               |               t=102               |               t=103               |
+|                                   |                                   |                                   |         fabric_lag_ACTION         |
+|                                   |                                   |                                   |         system_acl_ACTION         |
+
+
+
+
+************************* Steady state on one processor*************************
+******************p[u] is packet from u scheduling periods ago******************
+|                  t=0                   |                  t=1                   |                  t=2                   |                  t=3                   |
+|           p[1]._condition_53           |        p[2].ipv4_fib_lpm_MATCH         |    p[2].ipv4_multicast_bridge_MATCH    |p[2].ipv6_multicast_bridge_star_g_MATCH |
+|           p[0]._condition_46           |    p[1].ipsg_permit_special_ACTION     |           p[3]._condition_54           |    p[2].ingress_l4_src_port_ACTION     |
+|           p[1]._condition_11           |           p[3].urpf_bd_MATCH           |           p[2]._condition_48           |           p[3]._condition_42           |
+|   p[0].validate_outer_ethernet_MATCH   |        p[3].meter_index_ACTION         |           p[2]._condition_30           |            p[2].rmac_ACTION            |
+|    p[0].ingress_port_mapping_MATCH     |    p[3].compute_other_hashes_ACTION    |         p[3].ecmp_group_MATCH          |           p[2]._condition_34           |
+|         p[3].fwd_result_ACTION         |  p[1].ingress_port_properties_ACTION   |           p[2]._condition_26           |           p[2]._condition_33           |
+|    p[2].ipv6_multicast_route_MATCH     |    p[0].switch_config_params_MATCH     |           p[2]._condition_28           |           p[2]._condition_32           |
+|            p[3].smac_ACTION            |           p[2].nat_src_MATCH           |           p[2]._condition_29           |    p[2].ipv6_multicast_bridge_MATCH    |
+|           p[1]._condition_7            |                                        | p[2].ipv6_multicast_route_star_g_MATCH |    p[2].ingress_l4_dst_port_ACTION     |
+|           p[0]._condition_8            |                                        |    p[4].storm_control_stats_ACTION     |           p[2]._condition_27           |
+|         p[4].drop_stats_ACTION         |                                        |        p[4].learn_notify_ACTION        |           p[1]._condition_13           |
+|                                        |                                        |           p[3].nexthop_MATCH           |           p[2]._condition_31           |
+|                                        |                                        |   p[4].fabric_ingress_src_lkp_ACTION   |            p[2].dmac_MATCH             |
+
+|                  t=4                   |                  t=5                   |                  t=6                   |                  t=7                   |
+|          p[2].nat_dst_ACTION           |   p[1].sflow_ing_take_sample_ACTION    |    p[1].outer_ipv6_multicast_MATCH     | p[1].outer_ipv4_multicast_star_g_MATCH |
+|          p[2].ipv6_acl_MATCH           |          p[2].ipv6_racl_MATCH          |           p[3]._condition_49           |         p[2].nat_twice_ACTION          |
+|           p[2]._condition_40           |     p[2].compute_ipv6_hashes_MATCH     |       p[1].ipv4_dest_vtep_ACTION       |         p[4].fabric_lag_ACTION         |
+|           p[2]._condition_41           | p[1].native_packet_over_fabric_ACTION  |   p[0].fabric_ingress_dst_lkp_MATCH    |    p[1].outer_ipv4_multicast_MATCH     |
+|           p[2]._condition_35           |           p[1]._condition_17           |          p[2].mac_acl_ACTION           | p[1].outer_ipv6_multicast_star_g_MATCH |
+|           p[2]._condition_37           |           p[1]._condition_16           |           p[2]._condition_45           |         p[4].system_acl_ACTION         |
+|           p[2]._condition_36           |           p[1]._condition_14           |     p[2].compute_ipv4_hashes_MATCH     |            p[1].mpls_ACTION            |
+|      p[2].validate_packet_ACTION       |            p[1].ipsg_ACTION            |           p[1]._condition_15           |          p[2].ipv4_urpf_MATCH          |
+|           p[2]._condition_39           |          p[2].ipv4_racl_MATCH          |           p[1]._condition_18           |                                        |
+|           p[2]._condition_23           |                                        |       p[1].ipv6_dest_vtep_ACTION       |                                        |
+|       p[3].traffic_class_ACTION        |                                        |                                        |                                        |
+|           p[2].ip_acl_MATCH            |                                        |                                        |                                        |
+|           p[2]._condition_38           |                                        |                                        |                                        |
+
+|                  t=8                   |                  t=9                   |                  t=10                  |                  t=11                  |
+|    p[1].int_sink_update_outer_MATCH    |    p[2].ipv6_multicast_route_ACTION    |          p[3].urpf_bd_ACTION           |p[2].ipv4_multicast_route_star_g_ACTION |
+|          p[2].ipv4_fib_ACTION          |    p[0].ingress_port_mapping_ACTION    |        p[0].sflow_ingress_MATCH        |         p[3].ecmp_group_ACTION         |
+|    p[1].ingress_qos_map_dscp_MATCH     |            p[2].smac_MATCH             |          p[2].nat_flow_ACTION          | p[0].validate_outer_ipv4_packet_MATCH  |
+|           p[1].tunnel_MATCH            |        p[2].ipv6_urpf_lpm_MATCH        |         p[0].int_source_MATCH          |          p[3].nexthop_ACTION           |
+|        p[2].ipv6_fib_lpm_ACTION        |     p[1].ingress_qos_map_pcp_MATCH     |          p[2].ipv6_urpf_MATCH          |   p[0].ingress_port_properties_MATCH   |
+|    p[0].validate_mpls_packet_MATCH     |    p[2].ipv4_multicast_route_ACTION    |      p[0].port_vlan_mapping_MATCH      |        p[0].storm_control_MATCH        |
+|       p[1].spanning_tree_ACTION        |       p[1].ipv4_src_vtep_ACTION        |    p[0].switch_config_params_ACTION    |  p[0].native_packet_over_fabric_MATCH  |
+|          p[2].ipv6_fib_ACTION          |    p[2].compute_non_ip_hashes_MATCH    |  p[0].validate_outer_ethernet_ACTION   |        p[2].ipv4_fib_lpm_ACTION        |
+
+|                  t=12                  |                  t=13                  |                  t=14                  |                  t=15                  |
+|   p[2].ipv4_multicast_bridge_ACTION    |        p[0].int_terminate_MATCH        |         p[2].ipv6_racl_ACTION          |      p[0].adjust_lkp_fields_MATCH      |
+|p[2].ipv6_multicast_route_star_g_ACTION |        p[2].ipv4_urpf_lpm_MATCH        |    p[2].compute_ipv6_hashes_ACTION     |         p[2].fwd_result_MATCH          |
+|          p[3].lag_group_MATCH          |          p[2].ipv6_acl_ACTION          |         p[2].ipv4_racl_ACTION          |    p[1].outer_ipv6_multicast_ACTION    |
+|     p[0].ipsg_permit_special_MATCH     |           p[2].ip_acl_ACTION           |         p[2].meter_index_MATCH         |        p[2].traffic_class_MATCH        |
+|           p[1]._condition_22           | p[0].validate_outer_ipv6_packet_MATCH  |p[2].ipv4_multicast_bridge_star_g_ACTION|     p[0].tunnel_lookup_miss_MATCH      |
+|   p[2].ipv6_multicast_bridge_ACTION    |p[2].ipv6_multicast_bridge_star_g_ACTION|                                        |    p[2].compute_ipv4_hashes_ACTION     |
+|           p[0]._condition_9            |            p[2].dmac_ACTION            |                                        |       p[1].ipv6_src_vtep_ACTION        |
+|        p[3].meter_action_MATCH         |                                        |                                        |         p[2].acl_stats_ACTION          |
+
+|                  t=16                  |                  t=17                  |                  t=18                  |                  t=19                  |
+|        p[3].learn_notify_MATCH         |   p[3].fabric_ingress_src_lkp_MATCH    |           p[0]._condition_52           |       p[0].sflow_ingress_ACTION        |
+|         p[1].outer_rmac_ACTION         |          p[2].bd_flood_MATCH           |     p[1].ingress_l4_src_port_MATCH     |       p[1].validate_packet_MATCH       |
+|p[1].outer_ipv4_multicast_star_g_ACTION |     p[1].tunnel_lookup_miss_ACTION     |           p[1]._condition_44           |           p[1].nat_dst_MATCH           |
+|    p[2].compute_other_hashes_MATCH     |           p[1].tunnel_ACTION           |           p[0]._condition_47           |           p[1].mac_acl_MATCH           |
+|     p[3].storm_control_stats_MATCH     |     p[1].adjust_lkp_fields_ACTION      |   p[1].int_sink_update_outer_ACTION    |     p[0].port_vlan_mapping_ACTION      |
+|    p[1].outer_ipv4_multicast_ACTION    |           p[0]._condition_20           |   p[0].fabric_ingress_dst_lkp_ACTION   |      p[3].ingress_bd_stats_ACTION      |
+|p[1].outer_ipv6_multicast_star_g_ACTION |           p[0]._condition_10           |            p[1].rmac_MATCH             |          p[1].ipv4_fib_MATCH           |
+|                                        |           p[1]._condition_19           |           p[1]._condition_24           |         p[0].int_source_ACTION         |
+|                                        |           p[0]._condition_0            |           p[1]._condition_25           |                                        |
+|                                        |         p[3].system_acl_MATCH          |          p[1].nat_twice_MATCH          |                                        |
+|                                        |                                        |           p[0]._condition_21           |                                        |
+|                                        |                                        |          p[2].nat_src_ACTION           |                                        |
+|                                        |                                        |     p[1].ingress_l4_dst_port_MATCH     |                                        |
+|                                        |                                        |           p[1]._condition_5            |                                        |
+|                                        |                                        |           p[0]._condition_4            |                                        |
+
+|                  t=20                  |                  t=21                  |                  t=22                  |                  t=23                  |
+|    p[0].validate_mpls_packet_ACTION    |        p[0].ipv4_src_vtep_MATCH        |   p[2].compute_non_ip_hashes_ACTION    | p[0].validate_outer_ipv6_packet_ACTION |
+|           p[0]._condition_51           |       p[0].ipv4_dest_vtep_MATCH        |         p[3].fabric_lag_MATCH          |          p[1].nat_flow_MATCH           |
+|           p[3]._condition_50           |    p[1].ingress_qos_map_pcp_ACTION     |    p[1].ingress_qos_map_dscp_ACTION    |        p[0].spanning_tree_MATCH        |
+|       p[0].ipv6_dest_vtep_MATCH        | p[1].ipv4_multicast_route_star_g_MATCH |            p[0].mpls_MATCH             |       p[1].storm_control_ACTION        |
+|           p[1]._condition_6            |        p[0].ipv6_src_vtep_MATCH        |          p[1].ipv6_fib_MATCH           | p[0].validate_outer_ipv4_packet_ACTION |
+|           p[0]._condition_43           |         p[3].lag_group_ACTION          |        p[1].ipv6_fib_lpm_MATCH         |p[1].ipv4_multicast_bridge_star_g_MATCH |
+|         p[2].ipv4_urpf_ACTION          |       p[2].ipv6_urpf_lpm_ACTION        |        p[3].meter_action_ACTION        |    p[1].ipv4_multicast_route_MATCH     |
+|         p[0].outer_rmac_MATCH          |         p[2].ipv6_urpf_ACTION          |       p[2].ipv4_urpf_lpm_ACTION        |       p[0].int_terminate_ACTION        |
+|           p[0]._condition_12           |                                        |                                        |                                        |
+|           p[0]._condition_3            |                                        |                                        |                                        |
+|           p[0]._condition_2            |                                        |                                        |                                        |
+|           p[0]._condition_1            |                                        |                                        |                                        |
+|    p[0].sflow_ing_take_sample_MATCH    |                                        |                                        |                                        |
+|            p[0].ipsg_MATCH             |                                        |                                        |                                        |
+|          p[3].bd_flood_ACTION          |                                        |                                        |                                        |
+
+
+
+
+Match units usage (max = 4 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+|4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |3.0 |3.0 |1.0 |4.0 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+|3.0 |3.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 29 | 32 | 30 | 31 | 32 | 27 | 28 | 32 | 32 | 32 | 32 | 32 | 26 | 32 | 32 | 32 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 32 | 28 | 32 | 32 | 32 | 32 | 32 | 32 |
+
+
+Match packets (max = 4 match packets) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 2  | 3  | 2  | 1  | 1  | 1  | 3  | 2  | 2  | 2  | 2  | 1  | 2  | 2  | 1  | 2  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 2  | 2  | 1  | 1  | 1  | 2  | 3  | 2  |
+
+
+Action packets (max = 4 action packets) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 4  | 2  | 3  | 3  | 2  | 1  | 3  | 3  | 2  | 3  | 3  | 2  | 3  | 1  | 1  | 2  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 1  | 2  | 3  | 2  | 4  | 3  | 3  | 2  |
+
+

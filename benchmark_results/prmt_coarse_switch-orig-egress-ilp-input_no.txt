@@ -1,0 +1,50 @@
+Unpaird action:  egress_filter_drop_ACTION
+Unpaird action:  egress_filter_ACTION
+********************************** Input DAG ***********************************
+# of processors =  12
+# of nodes =  63
+# of edges =  250
+# of matches =  0
+# of actions =  0
+Match unit size =  80
+# of match units =  46.0
+aggregate match_unit_limit =  96
+# of action fields =  364
+aggregate action_fields_limit =  384
+match_proc_limit = 2
+action_proc_limit = 2
+Critical path:  ['rid_TABLE', 'egress_port_mapping_TABLE', '_condition_58', 'vlan_decap_TABLE', 'tunnel_decap_process_outer_TABLE', 'rewrite_TABLE', 'egress_bd_map_TABLE', '_condition_65', 'egress_nat_TABLE', 'tunnel_encap_process_inner_TABLE', 'tunnel_encap_process_outer_TABLE', 'tunnel_rewrite_TABLE', 'tunnel_smac_rewrite_TABLE', 'egress_mac_acl_TABLE', 'egress_system_acl_TABLE']
+Critical path length = 21 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.05494505495
+****************************** Running ILP Solver ******************************
+Optimize a model with 565 rows, 4033 columns and 15116 nonzeros
+Variable types: 0 continuous, 4033 integer (3969 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 6e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 6e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 13 rows and 606 columns
+Presolve time: 0.03s
+Presolved: 552 rows, 3427 columns, 12680 nonzeros
+Variable types: 0 continuous, 3427 integer (3363 binary)
+Found heuristic solution: objective 20.0000000
+Found heuristic solution: objective 13.0000000
+
+Root relaxation: objective 1.200000e+01, 73 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      12.0000000   12.00000  0.00%     -    0s
+
+Explored 0 nodes (94 simplex iterations) in 0.06 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 12 13 20 
+Pool objective bound 12
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+Exceeded num_procs, rejected!!!

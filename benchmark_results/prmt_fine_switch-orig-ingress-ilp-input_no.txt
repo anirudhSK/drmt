@@ -1,0 +1,360 @@
+********************************** Input DAG ***********************************
+# of processors =  24
+# of nodes =  224
+# of edges =  930
+# of matches =  83
+# of actions =  141
+Match unit size =  160
+# of match units =  89.0
+aggregate match_unit_limit =  96
+# of action fields =  743
+aggregate action_fields_limit =  768
+match_proc_limit = 4
+action_proc_limit = 4
+Critical path:  ['ingress_port_mapping_MATCH', 'ingress_port_mapping_ACTION', 'port_vlan_mapping_MATCH', 'port_vlan_mapping_ACTION', 'ipsg_MATCH', 'ipsg_ACTION', 'native_packet_over_fabric_ACTION', 'mpls_ACTION', 'tunnel_MATCH', 'tunnel_lookup_miss_ACTION', 'ingress_l4_src_port_MATCH', 'ingress_l4_src_port_ACTION', 'ipv6_acl_MATCH', 'ipv6_acl_ACTION', 'ipv6_racl_ACTION', 'fwd_result_MATCH', 'fwd_result_ACTION', 'nexthop_MATCH', 'nexthop_ACTION', 'lag_group_MATCH', 'lag_group_ACTION', 'fabric_lag_MATCH', 'fabric_lag_ACTION']
+Critical path length = 102 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.0336473755
+****************************** Running ILP Solver ******************************
+Optimize a model with 2438 rows, 68993 columns and 208388 nonzeros
+Variable types: 0 continuous, 68993 integer (68544 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 3e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 3e+02]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 226 rows and 5823 columns
+Presolve time: 1.64s
+Presolved: 2212 rows, 63170 columns, 191143 nonzeros
+Variable types: 0 continuous, 63170 integer (62945 binary)
+
+Root relaxation: objective 2.558333e+01, 2762 iterations, 0.29 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   25.58333    0  426          -   25.58333      -     -    3s
+     0     0   26.00000    0  383          -   26.00000      -     -    6s
+     0     0   27.00000    0  350          -   27.00000      -     -   21s
+     0     0   27.16210    0  676          -   27.16210      -     -   23s
+     0     0   27.56207    0  724          -   27.56207      -     -   24s
+     0     0   28.49411    0  775          -   28.49411      -     -   25s
+     0     0   29.59988    0  775          -   29.59988      -     -   26s
+     0     0   30.04166    0  798          -   30.04166      -     -   28s
+     0     0   30.52950    0  806          -   30.52950      -     -   30s
+     0     0   30.91793    0  841          -   30.91793      -     -   31s
+     0     0   31.24389    0  842          -   31.24389      -     -   33s
+     0     0   31.33374    0  874          -   31.33374      -     -   35s
+     0     0   31.51186    0  845          -   31.51186      -     -   36s
+     0     0   31.53314    0  867          -   31.53314      -     -   38s
+     0     0   31.60486    0  852          -   31.60486      -     -   39s
+     0     0   31.67106    0  848          -   31.67106      -     -   42s
+     0     0   32.05567    0  806          -   32.05567      -     -   44s
+     0     0   32.25606    0  828          -   32.25606      -     -   46s
+     0     0   32.45055    0  847          -   32.45055      -     -   48s
+     0     0   32.57521    0  849          -   32.57521      -     -   50s
+     0     0   32.74990    0  826          -   32.74990      -     -   52s
+     0     0   32.82522    0  879          -   32.82522      -     -   53s
+     0     0   32.86898    0  872          -   32.86898      -     -   54s
+     0     0   32.95344    0  880          -   32.95344      -     -   56s
+     0     0   33.00945    0  856          -   33.00945      -     -   57s
+     0     0   33.03456    0  867          -   33.03456      -     -   58s
+     0     0   33.05037    0  866          -   33.05037      -     -   59s
+     0     0   33.05861    0  872          -   33.05861      -     -   60s
+     0     0   34.00000    0  842          -   34.00000      -     -   62s
+     0     0   34.00000    0  827          -   34.00000      -     -   64s
+     0     2   34.00000    0  619          -   34.00000      -     -   76s
+     3     4   35.00000    2  500          -   35.00000      -  5320   80s
+   297   296   35.00000  140  534          -   35.00000      -  85.1   85s
+   384   382   36.17612  177  691          -   35.00000      -  92.3   90s
+   390   386   37.00000  178  520          -   35.00000      -  94.6   98s
+   427   423   37.00000  180  483          -   35.00000      -   128  107s
+   449   444   37.00000  184  463          -   35.00000      -   162  111s
+   543   536   37.00000  208  422          -   35.00000      -   165  115s
+   986   973   39.00000  480  347          -   35.00000      -  99.4  120s
+  1524  1509   39.00000  980  306          -   35.00000      -  73.1  125s
+  2202  2178   41.00000 1423  258          -   35.00000      -  55.6  130s
+  2627  2595   45.00000 1761  259          -   35.00000      -  48.6  137s
+  3052  3020   45.00000 2015  256          -   35.00000      -  45.4  141s
+  3360  3317   45.00000 2312  246          -   35.00000      -  43.5  145s
+  4062  4012   45.00000 2760  216          -   35.00000      -  37.0  150s
+  4702  4646   45.00000 3210  216          -   35.00000      -  34.2  156s
+  5499  5434   45.00000 3635  214          -   35.00000      -  29.6  162s
+  6335  6256   45.00000 4072  214          -   35.00000      -  26.5  167s
+  6748  6661   45.00000 4294  213          -   35.00000      -  25.0  170s
+  7586  7479   51.00000 4720  190          -   35.00000      -  22.5  175s
+  8909  8794   51.00000 5299  180          -   35.00000      -  19.3  182s
+  9726  9593   51.00000 5671  178          -   35.00000      -  17.8  186s
+*10063  3293            4126      55.0000000   35.00000  36.4%  17.2  186s
+ 10252  3367   45.00000 4120  383   55.00000   35.00000  36.4%  17.9  191s
+ 10256  3370   45.00000 3932  841   55.00000   36.81853  33.1%  17.8  195s
+ 10258  3371   37.29771  791 1027   55.00000   37.29771  32.2%  17.8  204s
+ 10259  3372   41.00000 1647 1030   55.00000   38.01109  30.9%  17.8  207s
+ 10261  3373   45.00000 3232 1048   55.00000   39.00000  29.1%  17.8  213s
+ 10263  3374   51.00000 5395 1125   55.00000   39.57082  28.1%  17.8  219s
+ 10264  3375   41.00000 1815 1143   55.00000   39.91862  27.4%  17.8  221s
+ 10267  3377   41.00000 1863 1087   55.00000   41.00000  25.5%  17.8  228s
+ 10269  3378   45.00000 4155 1232   55.00000   41.29606  24.9%  17.8  235s
+ 10275  3384   45.00000 2326  541   55.00000   42.00000  23.6%  33.5  240s
+ 10277  3385   51.00000 5437  875   55.00000   43.00000  21.8%  33.5  246s
+ 10279  3387   43.00000 1647  924   55.00000   43.00000  21.8%  33.5  255s
+ 10282  3392   43.00000   20  373   55.00000   43.00000  21.8%  37.7  262s
+ 10288  3396   43.00000   22  331   55.00000   43.00000  21.8%  37.8  265s
+ 10329  3414   43.00000   26  445   55.00000   43.00000  21.8%  37.9  270s
+ 10362  3431   47.00000   28  429   55.00000   43.00000  21.8%  38.1  275s
+ 10579  3497   43.03056   39  533   55.00000   43.00000  21.8%  38.3  280s
+ 10670  3535   43.00000   42  442   55.00000   43.00000  21.8%  38.6  285s
+ 10962  3668   44.00000   67  351   55.00000   43.00000  21.8%  39.2  290s
+ 11227  3786 infeasible  104        55.00000   43.00000  21.8%  40.0  295s
+ 11684  3930   47.00000  164  253   55.00000   43.00000  21.8%  40.3  300s
+ 12368  4211 infeasible  150        55.00000   43.00000  21.8%  40.6  305s
+ 12887  4397   43.10687   48  475   55.00000   43.00000  21.8%  41.0  310s
+ 13312  4586   45.00000   96  425   55.00000   43.00000  21.8%  41.5  316s
+ 13937  4866   44.00000   46  459   55.00000   44.00000  20.0%  41.4  320s
+ 14977  5325   44.00000   63  433   55.00000   44.00000  20.0%  40.9  326s
+ 15915  5703   51.00000  187  230   55.00000   44.00000  20.0%  40.4  330s
+ 17182  6319   53.00000  259  276   55.00000   44.00000  20.0%  39.6  336s
+ 18685  6968   45.00000   79  406   55.00000   44.00000  20.0%  38.8  341s
+ 19909  7593   53.00000  241  275   55.00000   44.00000  20.0%  38.8  347s
+ 20746  8012 infeasible  446        55.00000   44.00000  20.0%  38.8  351s
+ 21597  8743   47.00000  137  383   55.00000   44.00000  20.0%  38.7  552s
+ 21601  8746   51.00000  164  861   55.00000   44.15440  19.7%  38.6  557s
+ 21602  8746   45.00000  143  953   55.00000   45.00000  18.2%  38.6  561s
+ 21603  8747   53.00000  155 1046   55.00000   45.00000  18.2%  38.6  568s
+ 21604  8748   51.00000  169  990   55.00000   45.00000  18.2%  38.6  570s
+ 21605  8748   47.00000  146 1032   55.00000   45.00000  18.2%  38.6  577s
+ 21606  8749   49.00000  102 1281   55.00000   45.07270  18.0%  38.6  581s
+ 21607  8750   45.09394  110 1281   55.00000   45.09394  18.0%  38.6  588s
+ 21609  8751   47.00000  171 1141   55.00000   46.00000  16.4%  38.6  596s
+ 21611  8752   49.00000  161 1159   55.00000   46.00000  16.4%  38.6  605s
+ 21613  8754   47.00000  164 1214   55.00000   46.00000  16.4%  38.6  616s
+ 21614  8754   51.00000   84 1377   55.00000   46.06234  16.3%  38.6  624s
+ 21615  8755   49.00000  104 1355   55.00000   46.06546  16.2%  38.6  632s
+ 21617  8756   47.00000  137 1259   55.00000   47.00000  14.5%  38.6  641s
+ 21619  8758   51.00000  112 1172   55.00000   47.00000  14.5%  38.6  650s
+ 21621  8759   51.00000  164 1210   55.00000   47.00000  14.5%  38.6  659s
+ 21622  8760   47.00000  143 1274   55.00000   47.00000  14.5%  38.6  661s
+ 21623  8760   53.00000  155 1304   55.00000   47.00000  14.5%  38.6  668s
+ 21624  8761   51.00000  169 1308   55.00000   47.00000  14.5%  38.6  670s
+ 21625  8762   47.00000  146 1279   55.00000   47.00000  14.5%  38.6  679s
+ 21626  8762   49.00000  102 1286   55.00000   47.00000  14.5%  38.6  680s
+ 21627  8763   47.00000  110 1295   55.00000   47.00000  14.5%  38.6  689s
+ 21628  8764   49.00000   99 1387   55.00000   47.00000  14.5%  38.6  690s
+ 21629  8764   47.00000  171 1346   55.00000   47.00000  14.5%  38.6  697s
+ 21631  8766   49.00000  161 1300   55.00000   47.00000  14.5%  38.6  705s
+ 21633  8767   47.00000  164 1248   55.00000   47.00000  14.5%  38.6  713s
+ 21635  8768   49.00000  104 1261   55.00000   47.00000  14.5%  38.6  720s
+ 21637  8770   47.00000  137 1221   55.00000   47.00000  14.5%  38.6  729s
+ 21638  8770   47.00000   93 1296   55.00000   47.00000  14.5%  38.6  730s
+ 21639  8771   51.00000  112 1250   55.00000   47.00000  14.5%  38.6  738s
+ 21641  8772   51.00000  164 1243   55.00000   47.00000  14.5%  38.6  747s
+ 21643  8774   53.00000  155 1214   55.00000   47.00000  14.5%  38.6  756s
+ 21645  8775   47.00000  146 1147   55.00000   47.00000  14.5%  38.6  764s
+ 21647  8776   47.00000  110 1130   55.00000   47.00000  14.5%  38.6  771s
+ 21649  8778   47.00000  171 1122   55.00000   47.00000  14.5%  38.6  779s
+ 21650  8778   47.00000  144 1142   55.00000   47.00000  14.5%  38.6  780s
+ 21651  8779   49.00000  161 1139   55.00000   47.00000  14.5%  38.6  786s
+ 21653  8780   47.00000  164 1146   55.00000   47.00000  14.5%  38.6  794s
+ 21654  8781   51.00000   84 1138   55.00000   47.00000  14.5%  38.6  795s
+ 21655  8782   49.00000  104 1141   55.00000   47.00000  14.5%  38.6  802s
+ 21657  8783   47.00000  137 1162   55.00000   47.00000  14.5%  38.5  810s
+ 21659  8784   51.00000  112 1137   55.00000   47.00000  14.5%  38.5  818s
+ 21661  8786   51.00000  164 1094   55.00000   47.00000  14.5%  38.5  826s
+ 21663  8787   53.00000  155 1117   55.00000   47.00000  14.5%  38.5  834s
+ 21664  8788   51.00000  169 1098   55.00000   47.00000  14.5%  38.5  835s
+ 21665  8788   47.00000  146 1098   55.00000   47.00000  14.5%  38.5  841s
+ 21667  8790   47.00000  110 1079   55.00000   47.00000  14.5%  38.5  849s
+ 21669  8791   47.00000  171 1061   55.00000   47.00000  14.5%  38.5  857s
+ 21671  8792   49.00000  161 1043   55.00000   47.00000  14.5%  38.5  865s
+ 21673  8794   47.00000  164 1042   55.00000   47.00000  14.5%  38.5  873s
+ 21675  8795   49.00000  104 1013   55.00000   47.00000  14.5%  38.5  880s
+ 21677  8796   47.00000  137 1052   55.00000   47.00000  14.5%  38.5  889s
+ 21679  8798   51.00000  112 1034   55.00000   47.00000  14.5%  38.5  896s
+ 21681  8799   51.00000  164 1026   55.00000   47.00000  14.5%  38.5  905s
+ 21683  8800   53.00000  155 1002   55.00000   47.00000  14.5%  38.5  913s
+ 21685  8802   47.00000  146  962   55.00000   47.00000  14.5%  38.5  920s
+ 21687  8803   47.00000  110  976   55.00000   47.00000  14.5%  38.5  928s
+ 21689  8804   47.00000  171  995   55.00000   47.00000  14.5%  38.5  936s
+ 21691  8806   49.00000  161  988   55.00000   47.00000  14.5%  38.5  944s
+ 21692  8806   47.00000  226 1010   55.00000   47.00000  14.5%  38.5  945s
+ 21693  8807   47.00000  164 1001   55.00000   47.00000  14.5%  38.5  954s
+ 21695  8808   49.00000  104 1003   55.00000   47.00000  14.5%  38.5  962s
+ 21697  8810   47.00000  137  979   55.00000   47.00000  14.5%  38.5  970s
+ 21699  8811   51.00000  112  999   55.00000   47.00000  14.5%  38.5  979s
+ 21701  8812   51.00000  164  994   55.00000   47.00000  14.5%  38.5  986s
+ 21703  8814   53.00000  155  981   55.00000   47.00000  14.5%  38.5  994s
+ 21704  8814   51.00000  169  984   55.00000   47.00000  14.5%  38.5 1003s
+ 21706  8816   49.00000  102  965   55.00000   47.00000  14.5%  38.5 1011s
+ 21707  8816   47.00000  110  966   55.00000   47.00000  14.5%  38.5 1019s
+ 21708  8817   49.00000   99  958   55.00000   47.00000  14.5%  38.5 1036s
+ 21709  8818   47.00000  171  144   55.00000   47.00000  14.5%  38.5 1051s
+ 21711  8822   47.00000   34  212   55.00000   47.00000  14.5%  45.1 1063s
+ 21713  8825   47.00000   35  152   55.00000   47.00000  14.5%  45.2 1066s
+ 21725  8833   47.00000   37  127   55.00000   47.00000  14.5%  45.3 1070s
+ 21738  8841   53.00000   38  525   55.00000   47.00000  14.5%  45.4 1083s
+ 21762  8856   47.00000   41  140   55.00000   47.00000  14.5%  45.4 1086s
+ 21796  8879   47.00000   43  135   55.00000   47.00000  14.5%  45.5 1092s
+ 21803  8883   47.00000   44  135   55.00000   47.00000  14.5%  45.6 1099s
+ 21816  8887   47.00000   48  111   55.00000   47.00000  14.5%  46.0 1103s
+ 21894  8939   47.00000   61  117   55.00000   47.00000  14.5%  46.2 1108s
+ 22100  9079   47.00000   69  104   55.00000   47.00000  14.5%  46.4 1112s
+*22592  8413             183      53.0000000   47.00000  11.3%  46.3 1114s
+H22773  7926                      51.0000000   47.00000  7.84%  46.0 1116s
+H22774  7232                      47.0000000   47.00000  0.00%  46.0 1116s
+
+Cutting planes:
+  Gomory: 12
+  Cover: 142
+  Implied bound: 42
+  Clique: 240
+  MIR: 1105
+  StrongCG: 17
+  Flow cover: 1257
+  GUB cover: 1153
+  Zero half: 51
+
+Explored 22898 nodes (1065915 simplex iterations) in 1116.85 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 4: 47 51 53 55 
+Pool objective bound 47
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.700000000000e+01, best bound 4.700000000000e+01, gap 0.0000%
+Number of pipeline stages: 24.000000
+*********************************** Schedule************************************
+|                t=0                |                t=1                |                t=2                |                t=3                |
+|         int_source_MATCH          |           _condition_43           |        int_terminate_MATCH        |           _condition_53           |
+|   ingress_port_properties_MATCH   |           _condition_46           |      port_vlan_mapping_MATCH      |           _condition_52           |
+|   validate_outer_ethernet_MATCH   |    ingress_port_mapping_ACTION    |  native_packet_over_fabric_MATCH  |           _condition_6            |
+|    ingress_port_mapping_MATCH     |  ingress_port_properties_ACTION   |    switch_config_params_MATCH     |    switch_config_params_ACTION    |
+|                                   |  validate_outer_ethernet_ACTION   |                                   |           _condition_5            |
+|                                   |           _condition_1            |                                   |           _condition_7            |
+|                                   |           _condition_0            |                                   |     port_vlan_mapping_ACTION      |
+|                                   |           _condition_4            |                                   |           _condition_2            |
+|                                   |           _condition_8            |                                   |           _condition_9            |
+|                                   |                                   |                                   |       int_terminate_ACTION        |
+
+|                t=4                |                t=5                |                t=6                |                t=7                |
+|        sflow_ingress_MATCH        |       sflow_ingress_ACTION        |   fabric_ingress_src_lkp_MATCH    |   sflow_ing_take_sample_ACTION    |
+|   fabric_ingress_dst_lkp_MATCH    |   fabric_ingress_dst_lkp_ACTION   | outer_ipv4_multicast_star_g_MATCH |    ipsg_permit_special_ACTION     |
+|         outer_rmac_MATCH          |            ipsg_ACTION            |     ipsg_permit_special_MATCH     |           _condition_47           |
+|            ipsg_MATCH             |         int_source_ACTION         |    sflow_ing_take_sample_MATCH    |           _condition_48           |
+|                                   |                                   |                                   |           _condition_11           |
+|                                   |                                   |                                   | native_packet_over_fabric_ACTION  |
+|                                   |                                   |                                   |           _condition_21           |
+|                                   |                                   |                                   |           _condition_12           |
+|                                   |                                   |                                   |           _condition_10           |
+|                                   |                                   |                                   |           _condition_14           |
+|                                   |                                   |                                   |           _condition_3            |
+
+|                t=8                |                t=9                |               t=10                |               t=11                |
+| validate_outer_ipv4_packet_MATCH  | validate_outer_ipv6_packet_ACTION |       ipv4_dest_vtep_MATCH        |    validate_mpls_packet_ACTION    |
+|        spanning_tree_MATCH        |outer_ipv4_multicast_star_g_ACTION |    int_sink_update_outer_MATCH    |           _condition_13           |
+| validate_outer_ipv6_packet_MATCH  | validate_outer_ipv4_packet_ACTION |        ipv6_src_vtep_MATCH        |           _condition_17           |
+|    outer_ipv4_multicast_MATCH     |   fabric_ingress_src_lkp_ACTION   |    validate_mpls_packet_MATCH     |           _condition_16           |
+|                                   |                                   |                                   |           _condition_15           |
+|                                   |                                   |                                   |           _condition_18           |
+|                                   |                                   |                                   |       ipv6_src_vtep_ACTION        |
+|                                   |                                   |                                   |       spanning_tree_ACTION        |
+
+|               t=12                |               t=13                |               t=14                |               t=15                |
+|        ipv4_src_vtep_MATCH        |         outer_rmac_ACTION         |    outer_ipv6_multicast_MATCH     |    outer_ipv6_multicast_ACTION    |
+|            mpls_MATCH             |       ipv4_dest_vtep_ACTION       |       ipv6_dest_vtep_MATCH        |outer_ipv6_multicast_star_g_ACTION |
+|     ingress_qos_map_pcp_MATCH     |    outer_ipv4_multicast_ACTION    |    ingress_qos_map_dscp_MATCH     |       ipv6_dest_vtep_ACTION       |
+| outer_ipv6_multicast_star_g_MATCH |            mpls_ACTION            |                                   |       ipv4_src_vtep_ACTION        |
+
+|               t=16                |               t=17                |               t=18                |               t=19                |
+|      adjust_lkp_fields_MATCH      |     tunnel_lookup_miss_ACTION     |          ipv6_urpf_MATCH          |    ingress_qos_map_dscp_ACTION    |
+|           tunnel_MATCH            |           tunnel_ACTION           |            rmac_MATCH             |           _condition_44           |
+|        storm_control_MATCH        |     adjust_lkp_fields_ACTION      |          nat_twice_MATCH          |           _condition_45           |
+|     tunnel_lookup_miss_MATCH      |           _condition_22           |    ipv4_multicast_route_MATCH     |    ingress_qos_map_pcp_ACTION     |
+|                                   |           _condition_19           |                                   |           _condition_37           |
+|                                   |                                   |                                   |           _condition_33           |
+|                                   |                                   |                                   |           _condition_39           |
+|                                   |                                   |                                   |           _condition_23           |
+|                                   |                                   |                                   |    ipv4_multicast_route_ACTION    |
+|                                   |                                   |                                   |           _condition_31           |
+|                                   |                                   |                                   |           _condition_38           |
+
+|               t=20                |               t=21                |               t=22                |               t=23                |
+|        ipv4_urpf_lpm_MATCH        |           _condition_40           |        ipv6_urpf_lpm_MATCH        |    ipv6_multicast_route_ACTION    |
+|     ingress_l4_src_port_MATCH     |           _condition_41           |    ipv6_multicast_route_MATCH     |    ingress_l4_src_port_ACTION     |
+|       validate_packet_MATCH       |       storm_control_ACTION        |     ingress_l4_dst_port_MATCH     |           _condition_30           |
+|          ipv4_urpf_MATCH          |           _condition_35           |                                   |           _condition_24           |
+|                                   |           _condition_34           |                                   |           _condition_26           |
+|                                   |           _condition_36           |                                   |           _condition_27           |
+|                                   |         ipv4_urpf_ACTION          |                                   |           _condition_28           |
+|                                   |           _condition_32           |                                   |           _condition_29           |
+|                                   |           _condition_25           |                                   |         ipv6_urpf_ACTION          |
+|                                   |           _condition_20           |                                   |                                   |
+|                                   |       ipv4_urpf_lpm_ACTION        |                                   |                                   |
+
+|               t=24                |               t=25                |               t=26                |               t=27                |
+|           mac_acl_MATCH           |      validate_packet_ACTION       |ipv6_multicast_bridge_star_g_MATCH |          nat_dst_ACTION           |
+|          ipv6_fib_MATCH           |    ingress_l4_dst_port_ACTION     |           nat_dst_MATCH           |            rmac_ACTION            |
+|        ipv6_fib_lpm_MATCH         |         nat_twice_ACTION          |ipv4_multicast_bridge_star_g_MATCH |        ipv6_fib_lpm_ACTION        |
+|            dmac_MATCH             |       ipv6_urpf_lpm_ACTION        |           ip_acl_MATCH            |          ipv6_fib_ACTION          |
+
+|               t=28                |               t=29                |               t=30                |               t=31                |
+|          nat_flow_MATCH           |          mac_acl_ACTION           |    ipv4_multicast_bridge_MATCH    |          nat_flow_ACTION          |
+|    compute_non_ip_hashes_MATCH    |           ip_acl_ACTION           |        ipv4_fib_lpm_MATCH         |ipv6_multicast_bridge_star_g_ACTION|
+|           nat_src_MATCH           |          ipv4_fib_ACTION          |    ipv6_multicast_bridge_MATCH    |      ingress_bd_stats_ACTION      |
+|          ipv4_fib_MATCH           |            dmac_ACTION            |                                   |        ipv4_fib_lpm_ACTION        |
+
+|               t=32                |               t=33                |               t=34                |               t=35                |
+|          ipv6_acl_MATCH           |ipv4_multicast_route_star_g_ACTION |          ipv6_racl_MATCH          |   ipv4_multicast_bridge_ACTION    |
+| ipv4_multicast_route_star_g_MATCH |          ipv6_acl_ACTION          | ipv6_multicast_route_star_g_MATCH |ipv6_multicast_route_star_g_ACTION |
+|                                   |   ipv6_multicast_bridge_ACTION    |          ipv4_racl_MATCH          |         ipv6_racl_ACTION          |
+|                                   |ipv4_multicast_bridge_star_g_ACTION|                                   |         ipv4_racl_ACTION          |
+
+|               t=36                |               t=37                |               t=38                |               t=39                |
+|         fwd_result_MATCH          |   compute_non_ip_hashes_ACTION    |    compute_other_hashes_MATCH     |           _condition_49           |
+|           urpf_bd_MATCH           |    compute_ipv6_hashes_ACTION     |        traffic_class_MATCH        |           _condition_54           |
+|     compute_ipv6_hashes_MATCH     |         fwd_result_ACTION         |         meter_index_MATCH         |           _condition_51           |
+|     compute_ipv4_hashes_MATCH     |    compute_ipv4_hashes_ACTION     |           nexthop_MATCH           |           _condition_42           |
+|                                   |                                   |                                   |        meter_index_ACTION         |
+|                                   |                                   |                                   |    compute_other_hashes_ACTION    |
+|                                   |                                   |                                   |         drop_stats_ACTION         |
+
+|               t=40                |               t=41                |               t=42                |               t=43                |
+|          bd_flood_MATCH           |         ecmp_group_ACTION         |          lag_group_MATCH          |           _condition_50           |
+|            smac_MATCH             |          nexthop_ACTION           |                                   |         lag_group_ACTION          |
+|         ecmp_group_MATCH          |          nat_src_ACTION           |                                   |       traffic_class_ACTION        |
+|        meter_action_MATCH         |            smac_ACTION            |                                   |          bd_flood_ACTION          |
+
+|               t=44                |               t=45                |               t=46                |               t=47                |
+|        learn_notify_MATCH         |          urpf_bd_ACTION           |         system_acl_MATCH          |         fabric_lag_ACTION         |
+|         fabric_lag_MATCH          |   int_sink_update_outer_ACTION    |                                   |         system_acl_ACTION         |
+|     storm_control_stats_MATCH     |         acl_stats_ACTION          |                                   |    storm_control_stats_ACTION     |
+|                                   |        learn_notify_ACTION        |                                   |        meter_action_ACTION        |
+
+
+
+
+Match units usage (max = 4 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+|4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|t=24|t=25|t=26|t=27|t=28|t=29|t=30|t=31|
+|4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |
+
+|t=32|t=33|t=34|t=35|t=36|t=37|t=38|t=39|t=40|t=41|t=42|t=43|t=44|t=45|t=46|t=47|
+|4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |4.0 | 0  |1.0 | 0  |3.0 | 0  |1.0 | 0  |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 0  | 30 | 0  | 31 | 0  | 32 | 0  | 32 | 0  | 32 | 0  | 29 | 0  | 32 | 0  | 32 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|t=24|t=25|t=26|t=27|t=28|t=29|t=30|t=31|
+| 0  | 26 | 0  | 32 | 0  | 32 | 0  | 30 | 0  | 32 | 0  | 32 | 0  | 32 | 0  | 32 |
+
+|t=32|t=33|t=34|t=35|t=36|t=37|t=38|t=39|t=40|t=41|t=42|t=43|t=44|t=45|t=46|t=47|
+| 0  | 32 | 0  | 32 | 0  | 32 | 0  | 28 | 0  | 32 | 0  | 25 | 0  | 32 | 0  | 32 |
+
+
+Match packets (max = 4 match packets) on one processor
+empty dictionary
+Action packets (max = 4 action packets) on one processor
+empty dictionary

@@ -1,0 +1,183 @@
+Unpaird action:  acl_stats_ACTION
+Unpaird action:  drop_stats_ACTION
+Unpaird action:  ingress_bd_stats_ACTION
+********************************** Input DAG ***********************************
+# of processors =  24
+# of nodes =  141
+# of edges =  847
+# of matches =  0
+# of actions =  0
+Match unit size =  160
+# of match units =  89.0
+aggregate match_unit_limit =  96
+# of action fields =  743
+aggregate action_fields_limit =  768
+match_proc_limit = 4
+action_proc_limit = 4
+Critical path:  ['ingress_port_mapping_TABLE', 'switch_config_params_TABLE', 'fabric_ingress_dst_lkp_TABLE', '_condition_13', 'outer_rmac_TABLE', '_condition_14', '_condition_15', 'outer_ipv6_multicast_TABLE', 'outer_ipv6_multicast_star_g_TABLE', 'tunnel_TABLE', 'tunnel_lookup_miss_TABLE', 'nat_twice_TABLE', 'nat_dst_TABLE', 'nat_src_TABLE', 'nat_flow_TABLE', 'fwd_result_TABLE', 'nexthop_TABLE', 'lag_group_TABLE', 'fabric_lag_TABLE']
+Critical path length = 64 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.0336473755
+**************************** Running Greedy Solver *****************************
+****************************** Running ILP Solver ******************************
+Optimize a model with 1336 rows, 4795 columns and 18674 nonzeros
+Variable types: 0 continuous, 4795 integer (4653 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 3e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 3e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 8 rows and 1720 columns
+Presolve time: 0.06s
+Presolved: 1328 rows, 3075 columns, 12306 nonzeros
+
+Loaded MIP start with objective 32
+
+Variable types: 0 continuous, 3075 integer (2933 binary)
+
+Root relaxation: objective 1.768290e+01, 2932 iterations, 0.20 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   17.68290    0  436   32.00000   17.68290  44.7%     -    0s
+     0     0   18.67925    0  303   32.00000   18.67925  41.6%     -    1s
+     0     0   18.67925    0  278   32.00000   18.67925  41.6%     -    1s
+     0     0   19.00000    0  315   32.00000   19.00000  40.6%     -    1s
+     0     0   19.00000    0  409   32.00000   19.00000  40.6%     -    2s
+     0     0   19.25546    0  495   32.00000   19.25546  39.8%     -    3s
+     0     0   19.27003    0  509   32.00000   19.27003  39.8%     -    3s
+     0     0   19.39336    0  528   32.00000   19.39336  39.4%     -    4s
+     0     0   19.40674    0  542   32.00000   19.40674  39.4%     -    4s
+     0     0   19.50579    0  571   32.00000   19.50579  39.0%     -    5s
+     0     0   19.51698    0  582   32.00000   19.51698  39.0%     -    5s
+     0     0   19.54601    0  607   32.00000   19.54601  38.9%     -    5s
+     0     0   19.54601    0  588   32.00000   19.54601  38.9%     -    6s
+     0     2   19.54601    0  587   32.00000   19.54601  38.9%     -    7s
+   741   569   30.00000   52  303   32.00000   20.00000  37.5%  21.8   12s
+   747   573   20.00000   24  441   32.00000   20.00000  37.5%  21.6   15s
+   755   578   21.00000   31  268   32.00000   21.00000  34.4%  21.4   20s
+H  851   557                      31.0000000   21.00000  32.3%  86.1   24s
+   869   550   24.00000   20  329   31.00000   21.00000  32.3%  85.3   25s
+H  901   511                      30.0000000   21.00000  30.0%  83.3   25s
+H 1136   520                      29.0000000   21.00000  27.6%  76.0   26s
+H 1183   406                      25.0000000   22.00000  12.0%  75.8   26s
+H 1223   352                      24.0000000   22.00000  8.33%  74.8   27s
+  1825   542   23.00000   52  186   24.00000   22.00000  8.33%  67.2   30s
+  2599   929   23.00000   87  181   24.00000   22.00000  8.33%  57.2   35s
+  3226  1293 infeasible  168        24.00000   22.00000  8.33%  60.2   40s
+  5901  2237 infeasible  154        24.00000   23.00000  4.17%  47.4   45s
+H 6511    22                      23.0000000   23.00000  0.00%  46.4   45s
+
+Cutting planes:
+  Gomory: 7
+  Cover: 46
+  Implied bound: 5
+  Clique: 83
+  MIR: 98
+  Flow cover: 171
+  GUB cover: 292
+  Inf proof: 16
+  Zero half: 25
+
+Explored 6610 nodes (311037 simplex iterations) in 45.99 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 7: 23 24 25 ... 32
+Pool objective bound 23
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.300000000000e+01, best bound 2.300000000000e+01, gap 0.0000%
+Number of pipeline stages: 24.000000 
+
+
+*********************************** Schedule
+*********************************** |               t=0                |               t=1                |               t=2                |               t=3                |
+|    ingress_port_mapping_TABLE    |       int_terminate_TABLE        |            ipsg_TABLE            | validate_outer_ipv4_packet_TABLE |
+|          _condition_43           |          _condition_47           |       sflow_ingress_TABLE        |    ipsg_permit_special_TABLE     |
+|          _condition_46           |     port_vlan_mapping_TABLE      |   fabric_ingress_dst_lkp_TABLE   |         int_source_TABLE         |
+|  validate_outer_ethernet_TABLE   |           _condition_7           |    validate_mpls_packet_TABLE    |    ingress_qos_map_pcp_TABLE     |
+|           _condition_4           |           _condition_6           |                                  |                                  |
+|           _condition_8           |           _condition_5           |                                  |                                  |
+|  ingress_port_properties_TABLE   |           _condition_2           |                                  |                                  |
+|                                  |           _condition_1           |                                  |                                  |
+|                                  |           _condition_0           |                                  |                                  |
+|                                  |           _condition_9           |                                  |                                  |
+|                                  |    switch_config_params_TABLE    |                                  |                                  |
+
+|               t=4                |               t=5                |               t=6                |               t=7                |
+|         outer_rmac_TABLE         |    outer_ipv6_multicast_TABLE    |       ipv6_dest_vtep_TABLE       |       ipv4_dest_vtep_TABLE       |
+|   sflow_ing_take_sample_TABLE    |       ipv6_src_vtep_TABLE        | native_packet_over_fabric_TABLE  |outer_ipv6_multicast_star_g_TABLE |
+|       spanning_tree_TABLE        |          _condition_11           |       ipv4_src_vtep_TABLE        |            mpls_TABLE            |
+|          _condition_20           |          _condition_17           | validate_outer_ipv6_packet_TABLE |outer_ipv4_multicast_star_g_TABLE |
+|          _condition_21           |          _condition_16           |                                  |                                  |
+|          _condition_13           |          _condition_15           |                                  |                                  |
+|          _condition_12           |          _condition_14           |                                  |                                  |
+|          _condition_10           |          _condition_18           |                                  |                                  |
+|           _condition_3           |    outer_ipv4_multicast_TABLE    |                                  |                                  |
+
+|               t=8                |               t=9                |               t=10               |               t=11               |
+|    ingress_qos_map_dscp_TABLE    |   int_sink_update_outer_TABLE    |            rmac_TABLE            |      validate_packet_TABLE       |
+|           tunnel_TABLE           |     tunnel_lookup_miss_TABLE     |    ingress_l4_dst_port_TABLE     |    ipv4_multicast_route_TABLE    |
+|          _condition_53           |   fabric_ingress_src_lkp_TABLE   |            dmac_TABLE            |          _condition_40           |
+|          _condition_52           |       storm_control_TABLE        |            smac_TABLE            |          _condition_41           |
+|          _condition_24           |                                  |                                  |          _condition_31           |
+|          _condition_25           |                                  |                                  |          _condition_35           |
+|          _condition_22           |                                  |                                  |          _condition_34           |
+|          _condition_23           |                                  |                                  |          _condition_37           |
+|     adjust_lkp_fields_TABLE      |                                  |                                  |          _condition_33           |
+|          _condition_19           |                                  |                                  |          _condition_38           |
+|                                  |                                  |                                  |   ipv6_multicast_bridge_TABLE    |
+
+|               t=12               |               t=13               |               t=14               |               t=15               |
+|         nat_twice_TABLE          |          ipv6_fib_TABLE          |         ipv4_urpf_TABLE          |       ipv4_urpf_lpm_TABLE        |
+|    ingress_l4_src_port_TABLE     |          nat_dst_TABLE           |          _condition_44           |    compute_ipv4_hashes_TABLE     |
+|         ipv6_urpf_TABLE          |          ipv4_fib_TABLE          |          _condition_45           |   ipv4_multicast_bridge_TABLE    |
+|ipv6_multicast_bridge_star_g_TABLE|       ipv6_urpf_lpm_TABLE        |          _condition_48           |    compute_ipv6_hashes_TABLE     |
+|                                  |                                  |          _condition_36           |                                  |
+|                                  |                                  |          _condition_30           |                                  |
+|                                  |                                  |          _condition_32           |                                  |
+|                                  |                                  |          ipv6_acl_TABLE          |                                  |
+|                                  |                                  |          _condition_26           |                                  |
+|                                  |                                  |          _condition_27           |                                  |
+|                                  |                                  |          _condition_28           |                                  |
+|                                  |                                  |          _condition_29           |                                  |
+|                                  |                                  |          _condition_39           |                                  |
+
+|               t=16               |               t=17               |               t=18               |               t=19               |
+|          mac_acl_TABLE           |         ipv4_racl_TABLE          |        meter_index_TABLE         |        ipv4_fib_lpm_TABLE        |
+|           ip_acl_TABLE           |         ipv6_racl_TABLE          |    ipv6_multicast_route_TABLE    |        ipv6_fib_lpm_TABLE        |
+|          nat_src_TABLE           |     ingress_bd_stats_ACTION      |          nat_flow_TABLE          |ipv4_multicast_route_star_g_TABLE |
+|ipv4_multicast_bridge_star_g_TABLE|   compute_non_ip_hashes_TABLE    |         acl_stats_ACTION         |ipv6_multicast_route_star_g_TABLE |
+
+|               t=20               |               t=21               |               t=22               |               t=23               |
+|    compute_other_hashes_TABLE    |         ecmp_group_TABLE         |         lag_group_TABLE          |        learn_notify_TABLE        |
+|         fwd_result_TABLE         |          _condition_54           |          _condition_50           |         fabric_lag_TABLE         |
+|    storm_control_stats_TABLE     |          _condition_51           |          _condition_42           |        meter_action_TABLE        |
+|       traffic_class_TABLE        |          _condition_49           |          urpf_bd_TABLE           |         system_acl_TABLE         |
+|                                  |        drop_stats_ACTION         |          bd_flood_TABLE          |                                  |
+|                                  |          nexthop_TABLE           |                                  |                                  |
+
+
+
+
+Match units usage (max = 4 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+|3.0 |3.0 |4.0 |4.0 |3.0 |4.0 |4.0 |4.0 |3.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |4.0 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+|4.0 |4.0 |4.0 |4.0 |4.0 |2.0 |3.0 |4.0 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 28 | 32 | 32 | 32 | 30 | 30 | 32 | 32 | 31 | 32 | 32 | 32 | 32 | 32 | 27 | 32 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 32 | 32 | 32 | 32 | 32 | 27 | 26 | 32 |
+
+
+Match packets (max = 4 match packets) on one processor
+empty dictionary
+Action packets (max = 4 action packets) on one processor
+empty dictionary

@@ -1,0 +1,60 @@
+Unpaird action:  egress_filter_drop_ACTION
+Unpaird action:  egress_filter_ACTION
+********************************** Input DAG ***********************************
+# of processors =  12
+# of nodes =  63
+# of edges =  250
+# of matches =  0
+# of actions =  0
+Match unit size =  80
+# of match units =  46.0
+aggregate match_unit_limit =  96
+# of action fields =  364
+aggregate action_fields_limit =  384
+match_proc_limit = 2
+action_proc_limit = 2
+Critical path:  ['rid_TABLE', 'egress_port_mapping_TABLE', '_condition_58', 'vlan_decap_TABLE', 'tunnel_decap_process_outer_TABLE', 'rewrite_TABLE', 'egress_bd_map_TABLE', '_condition_65', 'egress_nat_TABLE', 'tunnel_encap_process_inner_TABLE', 'tunnel_encap_process_outer_TABLE', 'tunnel_rewrite_TABLE', 'tunnel_smac_rewrite_TABLE', 'egress_mac_acl_TABLE', 'egress_system_acl_TABLE']
+Critical path length = 21 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.05494505495
+**************************** Running Greedy Solver *****************************
+****************************** Running ILP Solver ******************************
+Optimize a model with 475 rows, 1198 columns and 4766 nonzeros
+Variable types: 0 continuous, 1198 integer (1134 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 2e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 2e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 95 rows and 606 columns
+Presolve time: 0.01s
+Presolved: 380 rows, 592 columns, 2185 nonzeros
+
+Loaded MIP start with objective 17
+
+Variable types: 0 continuous, 592 integer (528 binary)
+
+Root relaxation: objective 1.200000e+01, 179 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   12.00000    0    7   17.00000   12.00000  29.4%     -    0s
+H    0     0                      14.0000000   12.00000  14.3%     -    0s
+     0     0   12.00000    0    4   14.00000   12.00000  14.3%     -    0s
+     0     0   12.00000    0    2   14.00000   12.00000  14.3%     -    0s
+H    0     0                      13.0000000   12.00000  7.69%     -    0s
+*    0     0               0      12.0000000   12.00000  0.00%     -    0s
+
+Cutting planes:
+  Gomory: 1
+
+Explored 0 nodes (651 simplex iterations) in 0.04 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 4: 12 13 14 17 
+Pool objective bound 12
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+Exceeded num_procs, rejected!!!
