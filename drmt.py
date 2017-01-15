@@ -206,9 +206,9 @@ try:
     print_problem(G, input_spec)
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
-
+# TODO: What happenened to  Q_MAX?
     if (seed_greedy):
-      greedy_initial = solver.greedy_find_initial_solution(60)
+      greedy_initial = greedy_find_initial_solution(G, 60)
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
                                 greedy_initial if seed_greedy else None)

@@ -25,7 +25,7 @@ def random_topological_sort_recursive(self):
 
   return list(reversed(order))
 
-def index_dag_sieve(self, index, bound):
+def index_dag_sieve(index, bound):
   # final schedule           
   schedule = []
   
@@ -355,48 +355,38 @@ def index_dag_sieve(self, index, bound):
   return schedule
     
     
-def greedy_find_initial_solution(self, time):
-    
-    
-     star_time = tm.time()
-     curr_time = tm.time()
-    
-     path, delay = self.G.critical_path()
-    
-     best = 2*delay
-     best_schedule = None 
+def greedy_find_initial_solution(dag, time_limit):
+  star_time = tm.time()
+  curr_time = tm.time()
+  greedy_initial = {}
+  path, delay = dag.critical_path() 
+  best = 2 * delay
+  best_schedule = None 
+  index = 0 
 
-     index = 0 
+  nodes = dag.number_of_nodes() 
+  print 'Looking for greedy feasible solution for %d seconds' % time_limit 
+  second_counter = 0            
+  
+  while curr_time - star_time < time_limit:
+      if second_counter < curr_time - star_time:
+          print second_counter,
+          second_counter += 1
+      schedule = index_dag_sieve(index%nodes, 2*delay) #TODO: resume here
+      index += 1
+      if schedule != None:
+          max_val = max([k[1] for k in schedule])
+          min_val = min([k[1] for k in schedule])
+          if max_val - min_val < best:
+              best = max_val - min_val
+              best_schedule = schedule
+              print '\n'
+              print 'Found Feasible Solution With Latency', best
+              print '\n'
+              
+      curr_time = tm.time()
 
-     nodes = self.G.number_of_nodes() 
-     
-     print 'Looking for greedy feasible solution for %d seconds' % time 
-
-     second_counter = 0            
-    
-     while curr_time - star_time < time:
-         
-         if second_counter < curr_time - star_time:
-             print second_counter,
-             second_counter += 1
-                                           
-         schedule = self.index_dag_sieve(index%nodes, 2*delay)
-         
-         index += 1
-                      
-         if schedule != None:
-             max_val = max([k[1] for k in schedule])
-             min_val = min([k[1] for k in schedule])
-             if max_val - min_val < best:
-                 best = max_val - min_val
-                 best_schedule = schedule
-                 print '\n'
-                 print 'Found Feasible Solution With Latency', best
-                 print '\n'
-                 
-         curr_time = tm.time()
-
-     min_val = min([k[1] for k in best_schedule])
-             
-     for i in best_schedule:
-         self.greedy_initial[i[0]] = i[1] - min_val
+  min_val = min([k[1] for k in best_schedule])
+  for i in best_schedule:
+    greedy_initial[i[0]] = i[1] - min_val
+  return greedy_initial
