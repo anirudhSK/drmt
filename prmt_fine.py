@@ -6,6 +6,7 @@ import math
 from sets import Set
 from schedule_dag import ScheduleDAG
 from greedy_prmt_solver import GreedyPrmtSolver
+from fine_to_coarse import contract_dag
 from printers import *
 from solution import Solution
 
@@ -43,13 +44,13 @@ class PrmtScheduleSolver:
         m = Model()
 
         # Create variables
-        # t is the start time for each DAG node
+        # t is the start substage (one match and one action substage make an RMT stage) for each DAG node
         t = m.addVars(nodes, lb=0, ub=T_MAX, vtype=GRB.INTEGER, name="t")
 
         # k is the even/odd quotient for each DAG node, i.e., t = 2*k + 1 or 2*k
         k = m.addVars(nodes, lb=0, ub=T_MAX, vtype=GRB.INTEGER, name="k")
 
-        # indicator[v, t] = 1 if v is scheduled at t 
+        # indicator[v, t] = 1 if v is at substage t 
         indicator  = m.addVars(list(itertools.product(nodes, range(T_MAX))),\
                                vtype=GRB.BINARY, name="indicator")
 
@@ -73,7 +74,7 @@ class PrmtScheduleSolver:
                      for v in nodes),\
                      "constr_equality")
 
-        # Respect dependencies in DAG
+        # Respect dependencies in DAG, threshold delays at 0
         m.addConstrs((t[v] - t[u] >= int(self.G.edge[u][v]['delay'] > 0) for (u,v) in edges),\
                      "constr_dag_dependencies")
 
@@ -98,7 +99,8 @@ class PrmtScheduleSolver:
                       "constr_action_fields")
 
         # The num_procs constraint, length of schedule (i.e., length + 1)
-        # is lesser than twice the number of stages (one for match and one for action)
+        # is lesser than the number of substages, i.e., twice the number of stages
+        # because each stage has a match and an action substage
         m.addConstr(length + 1 <= 2 * self.input_spec.num_procs, "constr_num_procs")
 
         # Initialize schedule
@@ -152,13 +154,24 @@ try:
 
     if seed_greedy:
       print '{:*^80}'.format(' Running Greedy Solver ')
-      gsolver = GreedyPrmtSolver(G, input_spec)
+      gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
       gschedule = gsolver.solve()
+      # gschedule was obtained as a solution to the coarse-grained model.
+      # it needs to be modified to support the fine-grained model
+      # although any solution to prmt_coarse is a solution to prmt_fine
+      fine_grained_schedule = dict()
+      for v in gschedule:
+        if v.endswith('TABLE'):
+          fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
+          fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
+        else:
+          assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
+          fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
+
     print '{:*^80}'.format(' Running ILP Solver ')
-    # Directly feed in input_spec
     solver = PrmtScheduleSolver(G,
                                 input_spec,
-                                init_schedule = gschedule if seed_greedy else None)
+                                init_schedule = fine_grained_schedule if seed_greedy else None)
     solution = solver.solve()
 
     print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
