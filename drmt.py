@@ -208,6 +208,7 @@ try:
     print '\n\n'
     if (seed_greedy):
       greedy_initial = greedy_find_initial_solution(input_spec, G, 60)
+      Q_MAX = int(math.ceil((1.0 * (max(greedy_initial.values()) + 1)) / period_duration))
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
                                 greedy_initial if seed_greedy else None)
