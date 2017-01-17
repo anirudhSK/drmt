@@ -10,7 +10,7 @@ from fine_to_coarse import contract_dag
 from printers import *
 from solution import Solution
 
-class PrmtScheduleSolver:
+class PrmtFineSolver:
     def __init__(self, dag,
                  input_spec, init_schedule):
         self.G = dag
@@ -164,9 +164,9 @@ try:
           fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
 
     print '{:*^80}'.format(' Running ILP Solver ')
-    solver = PrmtScheduleSolver(G,
-                                input_spec,
-                                init_schedule = fine_grained_schedule if seed_greedy else None)
+    solver = PrmtFineSolver(G,
+                            input_spec,
+                            init_schedule = fine_grained_schedule if seed_greedy else None)
     solution = solver.solve()
     if (solution.length > 2 * input_spec.num_procs):
       print "Exceeded num_procs, rejected!!!"
