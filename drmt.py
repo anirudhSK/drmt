@@ -211,6 +211,7 @@ try:
     print '\n\n'
     if (seed_prmt):
       psolver = PrmtFineSolver(G, input_spec, init_schedule = None)
+      # For now, we aren't further seeding PrmtFineSolver itself. Too recusive for me.
       solution = psolver.solve()
       init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
       assert(init_drmt_schedule)
