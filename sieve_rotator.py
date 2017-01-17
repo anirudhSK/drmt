@@ -29,14 +29,18 @@ def sieve_rotator(pipe_schedule, num_procs, dM, dA):
   for t in range(max_time + 1):
     # schedule match column in table
     if (t%2 == 0):
-      while (proc_occupied[current_time%num_procs].match_slot): current_time += 1
+      while (proc_occupied[current_time%num_procs].match_slot):
+        current_time += 1
+        print "Incurred one match no-op"
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].match_slot = True
       current_time += dM
 
     # schedule action column in table
     else:
-      while (proc_occupied[current_time%num_procs].action_slot): current_time += 1
+      while (proc_occupied[current_time%num_procs].action_slot):
+        current_time += 1
+        print "Incurred one action no-op"
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].action_slot = True
       current_time += dA
