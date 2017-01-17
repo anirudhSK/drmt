@@ -1,0 +1,164 @@
+Unpaird action:  acl_stats_ACTION
+Unpaird action:  drop_stats_ACTION
+Unpaird action:  ingress_bd_stats_ACTION
+********************************** Input DAG ***********************************
+# of processors =  24
+# of nodes =  141
+# of edges =  847
+# of matches =  0
+# of actions =  0
+Match unit size =  80
+# of match units =  120.0
+aggregate match_unit_limit =  192
+# of action fields =  387
+aggregate action_fields_limit =  768
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['ingress_port_mapping_TABLE', 'switch_config_params_TABLE', 'fabric_ingress_dst_lkp_TABLE', '_condition_13', 'outer_rmac_TABLE', '_condition_14', '_condition_15', 'outer_ipv6_multicast_TABLE', 'outer_ipv6_multicast_star_g_TABLE', 'tunnel_TABLE', 'tunnel_lookup_miss_TABLE', 'nat_twice_TABLE', 'nat_dst_TABLE', 'nat_src_TABLE', 'nat_flow_TABLE', 'fwd_result_TABLE', 'nexthop_TABLE', 'lag_group_TABLE', 'fabric_lag_TABLE']
+Critical path length = 64 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.6
+**************************** Scheduling coarse PRMT ****************************
+*************************** Running greedy heuristic ***************************
+********************************* Running ILP **********************************
+Optimize a model with 1322 rows, 3808 columns and 15028 nonzeros
+Variable types: 0 continuous, 3808 integer (3666 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 3e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 3e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 95 rows and 1794 columns
+Presolve time: 0.08s
+Presolved: 1227 rows, 2014 columns, 8317 nonzeros
+
+Loaded MIP start with objective 25
+
+Variable types: 0 continuous, 2014 integer (1872 binary)
+
+Root relaxation: objective 1.695238e+01, 757 iterations, 0.02 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   16.95238    0  179   25.00000   16.95238  32.2%     -    0s
+H    0     0                      21.0000000   16.95238  19.3%     -    0s
+     0     0   17.07873    0  235   21.00000   17.07873  18.7%     -    0s
+     0     0   17.07873    0  184   21.00000   17.07873  18.7%     -    0s
+     0     0   18.00000    0  267   21.00000   18.00000  14.3%     -    0s
+     0     0   18.00000    0  315   21.00000   18.00000  14.3%     -    0s
+     0     0   18.00000    0  237   21.00000   18.00000  14.3%     -    0s
+     0     0   18.00000    0  215   21.00000   18.00000  14.3%     -    0s
+     0     0   18.00000    0  303   21.00000   18.00000  14.3%     -    0s
+     0     0   18.00000    0   39   21.00000   18.00000  14.3%     -    0s
+H    0     0                      19.0000000   18.00000  5.26%     -    0s
+     0     0 infeasible    0        19.00000   19.00000  0.00%     -    0s
+
+Explored 0 nodes (5362 simplex iterations) in 0.86 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 19 21 25 
+Pool objective bound 19
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.900000000000e+01, best bound 1.900000000000e+01, gap 0.0000%
+Number of pipeline stages: 20.000000 
+
+
+*********************************** Schedule************************************
+
+
+
+|               t=0                |               t=1                |               t=2                |               t=3                |
+|    ingress_port_mapping_TABLE    |          _condition_52           |          _condition_48           |         outer_rmac_TABLE         |
+|          _condition_43           | validate_outer_ipv6_packet_TABLE |   fabric_ingress_dst_lkp_TABLE   |       int_terminate_TABLE        |
+|  validate_outer_ethernet_TABLE   |          _condition_47           |     port_vlan_mapping_TABLE      |          _condition_51           |
+|           _condition_4           | validate_outer_ipv4_packet_TABLE |                                  |            ipsg_TABLE            |
+|           _condition_8           |    ipsg_permit_special_TABLE     |                                  |          _condition_13           |
+|  ingress_port_properties_TABLE   |          _condition_20           |                                  |                                  |
+|                                  |          _condition_10           |                                  |                                  |
+|                                  |         int_source_TABLE         |                                  |                                  |
+|                                  |    validate_mpls_packet_TABLE    |                                  |                                  |
+|                                  |           _condition_7           |                                  |                                  |
+|                                  |           _condition_6           |                                  |                                  |
+|                                  |           _condition_5           |                                  |                                  |
+|                                  |           _condition_2           |                                  |                                  |
+|                                  |           _condition_1           |                                  |                                  |
+|                                  |           _condition_0           |                                  |                                  |
+|                                  |    ingress_qos_map_pcp_TABLE     |                                  |                                  |
+|                                  |           _condition_9           |                                  |                                  |
+|                                  |    switch_config_params_TABLE    |                                  |                                  |
+
+|               t=4                |               t=5                |               t=6                |               t=7                |
+| native_packet_over_fabric_TABLE  |    ingress_qos_map_dscp_TABLE    |       ipv6_dest_vtep_TABLE       |           tunnel_TABLE           |
+|          _condition_53           |   int_sink_update_outer_TABLE    |       ipv4_dest_vtep_TABLE       |          _condition_22           |
+|       sflow_ingress_TABLE        |       ipv4_src_vtep_TABLE        |outer_ipv6_multicast_star_g_TABLE |     adjust_lkp_fields_TABLE      |
+|    outer_ipv6_multicast_TABLE    |   sflow_ing_take_sample_TABLE    |            mpls_TABLE            |          _condition_19           |
+|       spanning_tree_TABLE        |          _condition_46           |outer_ipv4_multicast_star_g_TABLE |   fabric_ingress_src_lkp_TABLE   |
+|          _condition_12           |       ipv6_src_vtep_TABLE        |       storm_control_TABLE        |                                  |
+|          _condition_11           |          _condition_21           |                                  |                                  |
+|          _condition_17           |    outer_ipv4_multicast_TABLE    |                                  |                                  |
+|          _condition_16           |                                  |                                  |                                  |
+|          _condition_15           |                                  |                                  |                                  |
+|          _condition_14           |                                  |                                  |                                  |
+|          _condition_18           |                                  |                                  |                                  |
+|           _condition_3           |                                  |                                  |                                  |
+
+|               t=8                |               t=9                |               t=10               |               t=11               |
+|     tunnel_lookup_miss_TABLE     |            rmac_TABLE            |    compute_ipv6_hashes_TABLE     |    ipv6_multicast_route_TABLE    |
+|          _condition_44           |         nat_twice_TABLE          |          _condition_40           |          nat_dst_TABLE           |
+|          _condition_45           |      validate_packet_TABLE       |          _condition_41           |           ip_acl_TABLE           |
+|          _condition_30           |    ingress_l4_dst_port_TABLE     |          _condition_31           |          _condition_39           |
+|          _condition_26           |            dmac_TABLE            |          _condition_35           |                                  |
+|          _condition_27           |    ingress_l4_src_port_TABLE     |          _condition_34           |                                  |
+|          _condition_25           |                                  |          _condition_37           |                                  |
+|          _condition_23           |                                  |          _condition_36           |                                  |
+|          _condition_28           |                                  |          _condition_33           |                                  |
+|          _condition_29           |                                  |          _condition_32           |                                  |
+|                                  |                                  |          _condition_38           |                                  |
+|                                  |                                  |          ipv6_acl_TABLE          |                                  |
+|                                  |                                  |     ingress_bd_stats_ACTION      |                                  |
+|                                  |                                  |   compute_non_ip_hashes_TABLE    |                                  |
+
+|               t=12               |               t=13               |               t=14               |               t=15               |
+|   ipv4_multicast_bridge_TABLE    |    compute_ipv4_hashes_TABLE     |         ipv4_racl_TABLE          |          nat_flow_TABLE          |
+|    ipv4_multicast_route_TABLE    |          ipv6_fib_TABLE          |        ipv6_fib_lpm_TABLE        |    compute_other_hashes_TABLE    |
+|   ipv6_multicast_bridge_TABLE    |          mac_acl_TABLE           |         ipv6_racl_TABLE          |         acl_stats_ACTION         |
+|          nat_src_TABLE           |        ipv4_fib_lpm_TABLE        |                                  |       traffic_class_TABLE        |
+|          ipv4_fib_TABLE          |ipv4_multicast_route_star_g_TABLE |                                  |ipv6_multicast_bridge_star_g_TABLE|
+|                                  |ipv4_multicast_bridge_star_g_TABLE|                                  |ipv6_multicast_route_star_g_TABLE |
+
+|               t=16               |               t=17               |               t=18               |               t=19               |
+|         ipv4_urpf_TABLE          |       ipv4_urpf_lpm_TABLE        |         lag_group_TABLE          |         fabric_lag_TABLE         |
+|         fwd_result_TABLE         |         ecmp_group_TABLE         |          _condition_50           |         system_acl_TABLE         |
+|          _condition_24           |        meter_index_TABLE         |          _condition_42           |                                  |
+|         ipv6_urpf_TABLE          |          _condition_54           |        learn_notify_TABLE        |                                  |
+|                                  |          _condition_49           |          urpf_bd_TABLE           |                                  |
+|                                  |            smac_TABLE            |          bd_flood_TABLE          |                                  |
+|                                  |        drop_stats_ACTION         |        meter_action_TABLE        |                                  |
+|                                  |       ipv6_urpf_lpm_TABLE        |    storm_control_stats_TABLE     |                                  |
+|                                  |          nexthop_TABLE           |                                  |                                  |
+
+
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+|4.0 |8.0 |2.0 |4.0 |8.0 |8.0 |8.0 |3.0 |1.0 |8.0 |7.0 |7.0 |8.0 |8.0 |8.0 |8.0 |
+
+|t=16|t=17|t=18|t=19|
+|4.0 |7.0 |6.0 |3.0 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 15 | 29 | 32 | 32 | 23 | 16 | 24 | 24 | 17 | 13 | 24 | 19 | 12 | 24 | 19 | 16 |
+
+|t=16|t=17|t=18|t=19|
+| 13 | 19 | 8  | 8  |
+
+
+Match packets (max = 1 match packets) on one processor
+empty dictionary
+Action packets (max = 1 action packets) on one processor
+empty dictionary

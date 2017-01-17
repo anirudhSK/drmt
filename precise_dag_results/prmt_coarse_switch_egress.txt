@@ -1,0 +1,105 @@
+Unpaird action:  egress_filter_drop_ACTION
+Unpaird action:  egress_filter_ACTION
+********************************** Input DAG ***********************************
+# of processors =  12
+# of nodes =  63
+# of edges =  250
+# of matches =  0
+# of actions =  0
+Match unit size =  80
+# of match units =  46.0
+aggregate match_unit_limit =  96
+# of action fields =  197
+aggregate action_fields_limit =  384
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['rid_TABLE', 'egress_port_mapping_TABLE', '_condition_58', 'vlan_decap_TABLE', 'tunnel_decap_process_outer_TABLE', 'rewrite_TABLE', 'egress_bd_map_TABLE', '_condition_65', 'egress_nat_TABLE', 'tunnel_encap_process_inner_TABLE', 'tunnel_encap_process_outer_TABLE', 'tunnel_rewrite_TABLE', 'tunnel_smac_rewrite_TABLE', 'egress_mac_acl_TABLE', 'egress_system_acl_TABLE']
+Critical path length = 21 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.94923857868
+**************************** Scheduling coarse PRMT ****************************
+*************************** Running greedy heuristic ***************************
+********************************* Running ILP **********************************
+Optimize a model with 467 rows, 946 columns and 3804 nonzeros
+Variable types: 0 continuous, 946 integer (882 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 2e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 315 rows and 736 columns
+Presolve time: 0.01s
+Presolved: 152 rows, 210 columns, 810 nonzeros
+
+Loaded MIP start with objective 13
+
+Variable types: 0 continuous, 210 integer (189 binary)
+Found heuristic solution: objective 12.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 2: 12 13 
+Pool objective bound 12
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+REJECT: pipeline length  13 exceeded the available  12  stages
+Number of pipeline stages: 13.000000 
+
+
+*********************************** Schedule************************************
+
+
+
+|              t=0               |              t=1               |              t=2               |              t=3               |
+|           rid_TABLE            |   egress_port_mapping_TABLE    |      egress_qos_map_TABLE      |         _condition_64          |
+|         _condition_55          |         _condition_72          |         _condition_62          |      int_inst_1215_TABLE       |
+|          mirror_TABLE          |       replica_type_TABLE       |         _condition_60          |tunnel_decap_process_outer_TABLE|
+|         _condition_57          |                                |         _condition_61          |      int_inst_0407_TABLE       |
+|         _condition_56          |                                |        vlan_decap_TABLE        |      int_inst_0811_TABLE       |
+|         _condition_74          |                                |        int_insert_TABLE        |      int_inst_0003_TABLE       |
+|                                |                                |         _condition_71          |         _condition_70          |
+|                                |                                |         _condition_59          |                                |
+|                                |                                |         _condition_58          |                                |
+|                                |                                |tunnel_decap_process_inner_TABLE|                                |
+
+|              t=4               |              t=5               |              t=6               |              t=7               |
+|  int_meta_header_update_TABLE  |         _condition_63          |         _condition_65          |tunnel_encap_process_inner_TABLE|
+|    rewrite_multicast_TABLE     |         _condition_66          |       smac_rewrite_TABLE       |   egress_l4port_fields_TABLE   |
+|         rewrite_TABLE          |         _condition_67          |        egress_nat_TABLE        |                                |
+|         int_bos_TABLE          |           mtu_TABLE            |                                |                                |
+|                                |      egress_bd_map_TABLE       |                                |                                |
+|                                |        l3_rewrite_TABLE        |                                |                                |
+|                                |        egress_vni_TABLE        |                                |                                |
+
+|              t=8               |              t=9               |              t=10              |              t=11              |
+|    egress_l4_src_port_TABLE    |      tunnel_rewrite_TABLE      |   tunnel_dmac_rewrite_TABLE    |     egress_ipv6_acl_TABLE      |
+|    egress_l4_dst_port_TABLE    |         _condition_68          |   tunnel_smac_rewrite_TABLE    |      egress_mac_acl_TABLE      |
+|tunnel_encap_process_outer_TABLE|         _condition_69          |    tunnel_src_rewrite_TABLE    |      egress_ip_acl_TABLE       |
+|     egress_bd_stats_TABLE      |        tunnel_mtu_TABLE        |    tunnel_dst_rewrite_TABLE    |      egress_filter_ACTION      |
+|                                |     int_outer_encap_TABLE      |                                |                                |
+
+|              t=12              |
+|    egress_system_acl_TABLE     |
+|   egress_filter_drop_ACTION    |
+|    egress_vlan_xlate_TABLE     |
+|         _condition_73          |
+
+
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|
+|2.0 |2.0 |4.0 |5.0 |4.0 |4.0 |2.0 |2.0 |4.0 |3.0 |4.0 |8.0 |2.0 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|
+| 16 | 6  | 31 | 27 | 10 | 11 | 8  | 8  | 27 | 28 | 4  | 9  | 12 |
+
+
+Match packets (max = 1 match packets) on one processor
+empty dictionary
+Action packets (max = 1 action packets) on one processor
+empty dictionary
