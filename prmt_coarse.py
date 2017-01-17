@@ -16,7 +16,6 @@ class PrmtCoarseSolver:
                  input_spec, seed_greedy):
         self.G = dag
         self.input_spec          = input_spec
-        self.init_schedule       = init_schedule
         self.seed_greedy         = seed_greedy
 
     def solve(self):
@@ -43,7 +42,7 @@ class PrmtCoarseSolver:
         (_, cplen) = self.G.critical_path()
 
         # Set T_MAX as the max of initial schedule + 1
-        if (self.init_schedule is not None):
+        if (self.seed_greedy):
           T_MAX = max(gschedule.values()) + 1
         else:
           T_MAX = 3 * cplen
@@ -95,9 +94,9 @@ class PrmtCoarseSolver:
                       "constr_action_fields")
 
         # Initialize schedule
-        if (gschedule is not None):
+        if (self.seed_greedy):
           for v in nodes:
-            t[v].start = self.init_schedule[v]
+            t[v].start = gschedule[v]
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -122,41 +121,35 @@ class PrmtCoarseSolver:
             solution.action_fields_usage[tv] += self.G.node[v]['num_fields']
         return solution
 
-try:
-    # Cmd line args
-    if (len(sys.argv) != 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
-      exit(1)
-    elif (len(sys.argv) == 3):
-      input_file = sys.argv[1]
-      seed_greedy = bool(sys.argv[2] == "yes")
+if __name__ == "__main__":
+  # Cmd line args
+  if (len(sys.argv) != 3):
+    print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
+    exit(1)
+  elif (len(sys.argv) == 3):
+    input_file = sys.argv[1]
+    seed_greedy = bool(sys.argv[2] == "yes")
 
-    # Input example
-    input_spec = importlib.import_module(input_file, "*")
-    G = contract_dag(input_spec)
-    assert(nx.is_directed_acyclic_graph(G))
+  # Input example
+  input_spec = importlib.import_module(input_file, "*")
+  G = contract_dag(input_spec)
+  assert(nx.is_directed_acyclic_graph(G))
 
-    print '{:*^80}'.format(' Input DAG ')
-    print_problem(G, input_spec, 'table', 'table')
+  print '{:*^80}'.format(' Input DAG ')
+  print_problem(G, input_spec, 'table', 'table')
 
-    print '{:*^80}'.format(' Scheduling coarse PRMT ')
-    solver = PrmtCoarseSolver(G,
-                              input_spec,
-                              seed_greedy)
-    solution = solver.solve()
+  print '{:*^80}'.format(' Scheduling coarse PRMT ')
+  solver = PrmtCoarseSolver(G,
+                            input_spec,
+                            seed_greedy)
+  solution = solver.solve()
 
-    if solution.length > input_spec.num_procs:
-      print "REJECT: pipeline length ", solution.length, "exceeded the available ",\
-            input_spec.num_procs, " stages"
-    print 'Number of pipeline stages: %f' % (solution.length), '\n\n'
+  if solution.length > input_spec.num_procs:
+    print "REJECT: pipeline length ", solution.length, "exceeded the available ",\
+          input_spec.num_procs, " stages"
+  print 'Number of pipeline stages: %f' % (solution.length), '\n\n'
 
-    print '{:*^80}'.format(' Schedule')
-    print '\n\n'
-    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
-    print_resource_usage(input_spec, solution)
-
-except GurobiError as e:
-    print('Error code ' + str(e.errno) + ": " + str(e))
-
-except AttributeError as e:
-    print('Encountered an attribute error ' + str(e))
+  print '{:*^80}'.format(' Schedule')
+  print '\n\n'
+  print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+  print_resource_usage(input_spec, solution)

@@ -31,9 +31,9 @@ class DrmtScheduleSolver:
         """
         if (self.seed_prmt_fine):
           print '{:*^80}'.format(' Running PRMT fine ILP solver ')
-          psolver = PrmtFineSolver(self.G, input_spec, seed_greedy=True)
+          psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
           solution = psolver.solve()
-          init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs,\
+          init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.input_spec.num_procs,\
                                              input_spec.dM, input_spec.dA)
           assert(init_drmt_schedule)
           Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / period_duration))
@@ -129,7 +129,7 @@ class DrmtScheduleSolver:
                       for r in range(T)), "constr_action_proc")
 
         # Seed initial values
-        if init_drmt_schedule is not None:
+        if self.seed_prmt_fine:
           for i in nodes:
             t[i].start = init_drmt_schedule[i]
 
@@ -195,51 +195,44 @@ class DrmtScheduleSolver:
                 self.action_proc_set[r].add(k)
                 self.action_proc_usage[r] = len(self.action_proc_set[r])
 
-try:
-    # Cmd line args
-    if (len(sys.argv) != 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>"
-      exit(1)
-    elif (len(sys.argv) == 3):
-      input_file = sys.argv[1]
-      seed_prmt_fine = bool(sys.argv[2] == "yes")
+if __name__ == "__main__":
+  # Cmd line args
+  if (len(sys.argv) != 3):
+    print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>"
+    exit(1)
+  elif (len(sys.argv) == 3):
+    input_file = sys.argv[1]
+    seed_prmt_fine = bool(sys.argv[2] == "yes")
 
-    # Input example
-    input_spec = importlib.import_module(input_file, "*")
+  # Input example
+  input_spec = importlib.import_module(input_file, "*")
 
-    # Derive period_duration from num_procs and throughput
-    period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
+  # Derive period_duration from num_procs and throughput
+  period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
 
-    # Create G
-    G = ScheduleDAG()
-    G.create_dag(input_spec.nodes, input_spec.edges)
-    cpath, cplat = G.critical_path()
- 
-    print '{:*^80}'.format(' Input DAG ')
-    print_problem(G, input_spec)
-    print '\n\n'
+  # Create G
+  G = ScheduleDAG()
+  G.create_dag(input_spec.nodes, input_spec.edges)
+  cpath, cplat = G.critical_path()
 
-    print '{:*^80}'.format(' Scheduling DRMT ')
-    solver = DrmtScheduleSolver(G, input_spec,\
-                                init_drmt_schedule if seed_prmt_fine else None)
-    solution = solver.solve()
+  print '{:*^80}'.format(' Input DAG ')
+  print_problem(G, input_spec)
+  print '\n\n'
 
-    print 'Optimal schedule length = %d cycles' % solver.length
-    print 'Critical path length = %d cycles' % cplat
+  print '{:*^80}'.format(' Scheduling DRMT ')
+  solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine)
+  solution = solver.solve()
 
-    print '\n\n'
+  print 'Optimal schedule length = %d cycles' % solver.length
+  print 'Critical path length = %d cycles' % cplat
 
-    print '{:*^80}'.format(' First scheduling period on one processor')
-    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+  print '\n\n'
 
-    print '{:*^80}'.format(' Steady state on one processor')
-    print '{:*^80}'.format('p[u] is packet from u scheduling periods ago')
-    print timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n'
+  print '{:*^80}'.format(' First scheduling period on one processor')
+  print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
 
-    print_resource_usage(input_spec, solution)
+  print '{:*^80}'.format(' Steady state on one processor')
+  print '{:*^80}'.format('p[u] is packet from u scheduling periods ago')
+  print timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n'
 
-except GurobiError as e:
-    print('Error code ' + str(e.errno) + ": " + str(e))
-
-except AttributeError as e:
-    print('Encountered an attribute error ' + str(e))
+  print_resource_usage(input_spec, solution)

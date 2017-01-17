@@ -31,7 +31,7 @@ class PrmtFineSolver:
         """
         if self.seed_greedy:
           print '{:*^80}'.format(' Running greedy heuristic ')
-          gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
+          gsolver = GreedyPrmtSolver(contract_dag(self.input_spec), self.input_spec)
           gschedule = gsolver.solve()
           # gschedule was obtained as a solution to the coarse-grained model.
           # it needs to be modified to support the fine-grained model
@@ -53,8 +53,8 @@ class PrmtFineSolver:
         (_, cplen) = self.G.critical_path()
 
         # Set T_MAX as the max of initial schedule + 1
-        if (self.init_schedule is not None):
-          T_MAX = max(self.init_schedule.values()) + 1
+        if (self.seed_greedy):
+          T_MAX = max(fine_grained_schedule.values()) + 1
         else:
           T_MAX = 3 * cplen
 
@@ -116,9 +116,9 @@ class PrmtFineSolver:
                       "constr_action_fields")
 
         # Initialize schedule
-        if (fine_grained_schedule is not None):
+        if (self.seed_greedy):
           for v in nodes:
-            t[v].start = fine_grained_schedule
+            t[v].start = fine_grained_schedule[v]
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -148,36 +148,29 @@ class PrmtFineSolver:
         return solution
 
 if __name__ == "__main__":
-  try:
-      # Cmd line args
-      if (len(sys.argv) != 3):
-        print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
-        exit(1)
-      elif (len(sys.argv) == 3):
-        input_file = sys.argv[1]
-        seed_greedy = bool(sys.argv[2] == "yes")
+  # Cmd line args
+  if (len(sys.argv) != 3):
+    print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
+    exit(1)
+  elif (len(sys.argv) == 3):
+    input_file = sys.argv[1]
+    seed_greedy = bool(sys.argv[2] == "yes")
   
-      # Input example
-      input_spec = importlib.import_module(input_file, "*")
-      G = ScheduleDAG()
-      G.create_dag(input_spec.nodes, input_spec.edges)
+  # Input example
+  input_spec = importlib.import_module(input_file, "*")
+  G = ScheduleDAG()
+  G.create_dag(input_spec.nodes, input_spec.edges)
   
-      print '{:*^80}'.format(' Input DAG ')
-      print_problem(G, input_spec)
+  print '{:*^80}'.format(' Input DAG ')
+  print_problem(G, input_spec)
   
-      print '{:*^80}'.format(' Scheduling PRMT fine ')
-      solver = PrmtFineSolver(G, input_spec, seed_greedy)
-      solution = solver.solve()
-      if (solution.length > 2 * input_spec.num_procs):
-        print "Exceeded num_procs, rejected!!!"
-        exit(1)
-      print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
-      print '{:*^80}'.format(' Schedule')
-      print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
-      print_resource_usage(input_spec, solution)
-  
-  except GurobiError as e:
-      print('Error code ' + str(e.errno) + ": " + str(e))
-  
-  except AttributeError as e:
-      print('Encountered an attribute error ' + str(e))
+  print '{:*^80}'.format(' Scheduling PRMT fine ')
+  solver = PrmtFineSolver(G, input_spec, seed_greedy)
+  solution = solver.solve()
+  if (solution.length > 2 * input_spec.num_procs):
+    print "Exceeded num_procs, rejected!!!"
+    exit(1)
+  print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
+  print '{:*^80}'.format(' Schedule')
+  print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
+  print_resource_usage(input_spec, solution)
