@@ -1158,3 +1158,19 @@ edges = \
  ('validate_packet_ACTION', 'ingress_bd_stats_ACTION'): {'delay': dA},
  ('validate_packet_ACTION', 'system_acl_MATCH'): {'delay': dA},
  ('validate_packet_MATCH', 'validate_packet_ACTION'): {'delay': dM}}
+
+# Number of processors in system
+num_procs = 24
+
+# Match key and action field limit for each processor
+# We assume the processors don't share resources for now
+action_fields_limit = 32
+match_unit_limit = 8
+match_unit_size = 80
+
+# Number of packets that can be concurrently matched/acted upon
+action_proc_limit = 2
+match_proc_limit = 2
+
+# Throughput required
+throughput = 1.0
