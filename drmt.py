@@ -8,7 +8,6 @@ from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
 from randomized_sieve import *
-from fine_to_coarse import contract_dag
 from prmt_fine import PrmtFineSolver
 from sieve_rotator import *
 
@@ -210,12 +209,13 @@ try:
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
     if (seed_prmt):
+      print '{:*^80}'.format(' Running PRMT fine ILP Solver ')
       psolver = PrmtFineSolver(G, input_spec, init_schedule = None)
       # For now, we aren't further seeding PrmtFineSolver itself. Too recusive for me.
       solution = psolver.solve()
       init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
       assert(init_drmt_schedule)
-    print '{:*^80}'.format(' Running Solver ')
+    print '{:*^80}'.format(' Running DRMT ILP Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
                                 init_drmt_schedule if seed_prmt else None)
     solution = solver.solve()
