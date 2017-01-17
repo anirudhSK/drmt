@@ -130,54 +130,55 @@ class PrmtFineSolver:
                assert(False)
         return solution
 
-try:
-    # Cmd line args
-    if (len(sys.argv) != 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
-      exit(1)
-    elif (len(sys.argv) == 3):
-      input_file = sys.argv[1]
-      seed_greedy = bool(sys.argv[2] == "yes")
-
-    # Input example
-    input_spec = importlib.import_module(input_file, "*")
-    G = ScheduleDAG()
-    G.create_dag(input_spec.nodes, input_spec.edges)
-
-    print '{:*^80}'.format(' Input DAG ')
-    print_problem(G, input_spec)
-
-    if seed_greedy:
-      print '{:*^80}'.format(' Running Greedy Solver ')
-      gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
-      gschedule = gsolver.solve()
-      # gschedule was obtained as a solution to the coarse-grained model.
-      # it needs to be modified to support the fine-grained model
-      # although any solution to prmt_coarse is a solution to prmt_fine
-      fine_grained_schedule = dict()
-      for v in gschedule:
-        if v.endswith('TABLE'):
-          fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
-          fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
-        else:
-          assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
-          fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
-
-    print '{:*^80}'.format(' Running ILP Solver ')
-    solver = PrmtFineSolver(G,
-                            input_spec,
-                            init_schedule = fine_grained_schedule if seed_greedy else None)
-    solution = solver.solve()
-    if (solution.length > 2 * input_spec.num_procs):
-      print "Exceeded num_procs, rejected!!!"
-      exit(1)
-    print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
-    print '{:*^80}'.format(' Schedule')
-    print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
-    print_resource_usage(input_spec, solution)
-
-except GurobiError as e:
-    print('Error code ' + str(e.errno) + ": " + str(e))
-
-except AttributeError as e:
-    print('Encountered an attribute error ' + str(e))
+if __name__ == "__main__":
+  try:
+      # Cmd line args
+      if (len(sys.argv) != 3):
+        print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy, no to run ILP directly>"
+        exit(1)
+      elif (len(sys.argv) == 3):
+        input_file = sys.argv[1]
+        seed_greedy = bool(sys.argv[2] == "yes")
+  
+      # Input example
+      input_spec = importlib.import_module(input_file, "*")
+      G = ScheduleDAG()
+      G.create_dag(input_spec.nodes, input_spec.edges)
+  
+      print '{:*^80}'.format(' Input DAG ')
+      print_problem(G, input_spec)
+  
+      if seed_greedy:
+        print '{:*^80}'.format(' Running Greedy Solver ')
+        gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
+        gschedule = gsolver.solve()
+        # gschedule was obtained as a solution to the coarse-grained model.
+        # it needs to be modified to support the fine-grained model
+        # although any solution to prmt_coarse is a solution to prmt_fine
+        fine_grained_schedule = dict()
+        for v in gschedule:
+          if v.endswith('TABLE'):
+            fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
+            fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
+          else:
+            assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
+            fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
+  
+      print '{:*^80}'.format(' Running ILP Solver ')
+      solver = PrmtFineSolver(G,
+                              input_spec,
+                              init_schedule = fine_grained_schedule if seed_greedy else None)
+      solution = solver.solve()
+      if (solution.length > 2 * input_spec.num_procs):
+        print "Exceeded num_procs, rejected!!!"
+        exit(1)
+      print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
+      print '{:*^80}'.format(' Schedule')
+      print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
+      print_resource_usage(input_spec, solution)
+  
+  except GurobiError as e:
+      print('Error code ' + str(e.errno) + ": " + str(e))
+  
+  except AttributeError as e:
+      print('Encountered an attribute error ' + str(e))
