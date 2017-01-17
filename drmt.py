@@ -9,7 +9,7 @@ from printers import *
 from solution import Solution
 from randomized_sieve import *
 from fine_to_coarse import contract_dag
-from greedy_prmt_solver import GreedyPrmtSolver
+from prmt_fine import PrmtFineSolver
 from sieve_rotator import *
 
 class DrmtScheduleSolver:
@@ -210,9 +210,9 @@ try:
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
     if (seed_greedy):
-      gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
-      gschedule = gsolver.solve()
-      init_drmt_schedule = sieve_rotator(gschedule, input_spec.num_procs, input_spec.dM, input_spec.dA)
+      gsolver = PrmtFineSolver(G, input_spec, init_schedule = None)
+      solution = gsolver.solve()
+      init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
       assert(init_drmt_schedule)
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
