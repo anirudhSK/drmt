@@ -1,5 +1,5 @@
 # The sieve/rotator algorithm
-# Take a coarse PRMT schedule and
+# Take a fine-grained PRMT schedule and
 # turn it into a DRMT schedule for num_procs processors
 
 class SlotOccupancy:
@@ -21,31 +21,29 @@ def sieve_rotator(pipe_schedule, num_procs, dM, dA):
   # Construct drmt schedule as a dictionary
   drmt_schedule = dict()
 
-  for v in pipe_schedule:
-    # go through each node in the pipe_schedule
-    if v.endswith('TABLE'):
-
-      # schedule match column in table
+  # Transform pipe_schedule into a form that gives all the match operations or all the action operations in each time slot
+  print pipe_schedule
+  max_time=max(pipe_schedule)
+  print max_time
+  assert((max_time + 1) <= (2 * num_procs)) # otherwise reject it outright
+  for t in range(max_time + 1):
+    # schedule match column in table
+    if (t%2 == 0):
       while (proc_occupied[current_time%num_procs].match_slot):
         current_time += 1
-      drmt_schedule[v.strip('TABLE') + 'MATCH'] = current_time
+        print "NOP current_time incremented to ", current_time
+      print "scheduled a match column at", current_time
+      for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].match_slot = True
       current_time += dM
 
-      # schedule action column in table
-      while (proc_occupied[current_time%num_procs].action_slot):
-        current_time += 1
-      drmt_schedule[v.strip('TABLE') + 'ACTION'] = current_time
-      proc_occupied[current_time%num_procs].action_slot = True
-      current_time += dA
-
+    # schedule action column in table
     else:
-
-      assert(v.startswith('_condition') or v.endswith('ACTION'))
-      # schedule action column in table, there's no match
       while (proc_occupied[current_time%num_procs].action_slot):
         current_time += 1
-      drmt_schedule[v.strip('TABLE') + 'ACTION'] = current_time
+        print "NOP current_time incremented to ", current_time
+      print "scheduled an action at", current_time
+      for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].action_slot = True
       current_time += dA
 
