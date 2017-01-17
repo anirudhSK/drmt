@@ -8,6 +8,9 @@ from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
 from randomized_sieve import *
+from fine_to_coarse import contract_dag
+from greedy_prmt_solver import GreedyPrmtSolver
+from sieve_rotator import *
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec, init_schedule):
@@ -207,12 +210,13 @@ try:
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
     if (seed_greedy):
-      greedy_initial = greedy_find_initial_solution(input_spec, G, 60)
-      if (greedy_initial):
-        Q_MAX = int(math.ceil((1.0 * (max(greedy_initial.values()) + 1)) / period_duration))
+      gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
+      gschedule = gsolver.solve()
+      init_drmt_schedule = sieve_rotator(gschedule, input_spec.num_procs, input_spec.dM, input_spec.dA)
+      assert(init_drmt_schedule)
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
-                                greedy_initial if seed_greedy else None)
+                                init_drmt_schedule if seed_greedy else None)
     solution = solver.solve()
 
     print 'Optimal schedule length = %d cycles' % solver.length
