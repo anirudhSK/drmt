@@ -185,11 +185,11 @@ class DrmtScheduleSolver:
 try:
     # Cmd line args
     if (len(sys.argv) != 3):
-      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy sol., no otherwise>"
+      print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>"
       exit(1)
     elif (len(sys.argv) == 3):
       input_file = sys.argv[1]
-      seed_greedy = bool(sys.argv[2] == "yes")
+      seed_prmt = bool(sys.argv[2] == "yes")
 
     # Input example
     input_spec = importlib.import_module(input_file, "*")
@@ -209,14 +209,14 @@ try:
     print_problem(G, input_spec)
     print 'Q_MAX = ', Q_MAX
     print '\n\n'
-    if (seed_greedy):
-      gsolver = PrmtFineSolver(G, input_spec, init_schedule = None)
-      solution = gsolver.solve()
+    if (seed_prmt):
+      psolver = PrmtFineSolver(G, input_spec, init_schedule = None)
+      solution = psolver.solve()
       init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
       assert(init_drmt_schedule)
     print '{:*^80}'.format(' Running Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
-                                init_drmt_schedule if seed_greedy else None)
+                                init_drmt_schedule if seed_prmt else None)
     solution = solver.solve()
 
     print 'Optimal schedule length = %d cycles' % solver.length
