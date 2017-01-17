@@ -215,6 +215,7 @@ try:
       solution = psolver.solve()
       init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
       assert(init_drmt_schedule)
+      Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / period_duration))
     print '{:*^80}'.format(' Running DRMT ILP Solver ')
     solver = DrmtScheduleSolver(G, input_spec,\
                                 init_drmt_schedule if seed_prmt else None)
