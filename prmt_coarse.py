@@ -13,10 +13,11 @@ import networkx as nx
 
 class PrmtCoarseSolver:
     def __init__(self, dag,
-                 input_spec, init_schedule):
+                 input_spec, seed_greedy):
         self.G = dag
         self.input_spec          = input_spec
         self.init_schedule       = init_schedule
+        self.seed_greedy         = seed_greedy
 
     def solve(self):
         """ Returns the optimal schedule
@@ -30,13 +31,20 @@ class PrmtCoarseSolver:
         length : int
             Maximum latency of optimal schedule
         """
+        if self.seed_greedy:
+          print '{:*^80}'.format(' Running greedy heuristic ')
+          gsolver = GreedyPrmtSolver(G,
+                                    input_spec)
+          gschedule = gsolver.solve()
+
+        print '{:*^80}'.format(' Running ILP ')
         nodes = self.G.nodes()
         edges = self.G.edges()
         (_, cplen) = self.G.critical_path()
 
         # Set T_MAX as the max of initial schedule + 1
         if (self.init_schedule is not None):
-          T_MAX = max(self.init_schedule.values()) + 1
+          T_MAX = max(gschedule.values()) + 1
         else:
           T_MAX = 3 * cplen
 
@@ -87,7 +95,7 @@ class PrmtCoarseSolver:
                       "constr_action_fields")
 
         # Initialize schedule
-        if (self.init_schedule is not None):
+        if (gschedule is not None):
           for v in nodes:
             t[v].start = self.init_schedule[v]
 
@@ -131,15 +139,10 @@ try:
     print '{:*^80}'.format(' Input DAG ')
     print_problem(G, input_spec, 'table', 'table')
 
-    if seed_greedy:
-      print '{:*^80}'.format(' Running Greedy Solver ')
-      gsolver = GreedyPrmtSolver(G,
-                               input_spec)
-      gschedule = gsolver.solve()
-    print '{:*^80}'.format(' Running ILP Solver ')
+    print '{:*^80}'.format(' Scheduling coarse PRMT ')
     solver = PrmtCoarseSolver(G,
                               input_spec,
-                              init_schedule = gschedule if seed_greedy else None)
+                              seed_greedy)
     solution = solver.solve()
 
     if solution.length > input_spec.num_procs:
