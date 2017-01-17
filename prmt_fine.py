@@ -12,10 +12,10 @@ from solution import Solution
 
 class PrmtFineSolver:
     def __init__(self, dag,
-                 input_spec, init_schedule):
+                 input_spec, seed_greedy):
         self.G = dag
         self.input_spec          = input_spec
-        self.init_schedule       = init_schedule
+        self.seed_greedy         = seed_greedy
 
     def solve(self):
         """ Returns the optimal schedule
@@ -29,6 +29,23 @@ class PrmtFineSolver:
         length : int
             Maximum latency of optimal schedule
         """
+        if self.seed_greedy:
+          print '{:*^80}'.format(' Running greedy heuristic ')
+          gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
+          gschedule = gsolver.solve()
+          # gschedule was obtained as a solution to the coarse-grained model.
+          # it needs to be modified to support the fine-grained model
+          # although any solution to prmt_coarse is a solution to prmt_fine
+          fine_grained_schedule = dict()
+          for v in gschedule:
+            if v.endswith('TABLE'):
+              fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
+              fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
+            else:
+              assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
+              fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
+
+        print '{:*^80}'.format(' Running ILP solver ') 
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
         action_nodes = self.G.nodes(select='action')
@@ -99,9 +116,9 @@ class PrmtFineSolver:
                       "constr_action_fields")
 
         # Initialize schedule
-        if (self.init_schedule is not None):
+        if (fine_grained_schedule is not None):
           for v in nodes:
-            t[v].start = self.init_schedule[v]
+            t[v].start = fine_grained_schedule
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -148,26 +165,8 @@ if __name__ == "__main__":
       print '{:*^80}'.format(' Input DAG ')
       print_problem(G, input_spec)
   
-      if seed_greedy:
-        print '{:*^80}'.format(' Running Greedy Solver ')
-        gsolver = GreedyPrmtSolver(contract_dag(input_spec), input_spec)
-        gschedule = gsolver.solve()
-        # gschedule was obtained as a solution to the coarse-grained model.
-        # it needs to be modified to support the fine-grained model
-        # although any solution to prmt_coarse is a solution to prmt_fine
-        fine_grained_schedule = dict()
-        for v in gschedule:
-          if v.endswith('TABLE'):
-            fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
-            fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
-          else:
-            assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
-            fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
-  
-      print '{:*^80}'.format(' Running ILP Solver ')
-      solver = PrmtFineSolver(G,
-                              input_spec,
-                              init_schedule = fine_grained_schedule if seed_greedy else None)
+      print '{:*^80}'.format(' Scheduling PRMT fine ')
+      solver = PrmtFineSolver(G, input_spec, seed_greedy)
       solution = solver.solve()
       if (solution.length > 2 * input_spec.num_procs):
         print "Exceeded num_procs, rejected!!!"
