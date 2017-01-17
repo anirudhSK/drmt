@@ -6,13 +6,16 @@ class SlotOccupancy:
   def __init__(self):
     self.match_slot = False
     self.action_slot = False
+  def __str__(self):
+    return "\nmatch: " + str(self.match_slot) + "\n" + "action: " + str(self.action_slot)
+  def __repr__(self):
+    return "\nmatch: " + str(self.match_slot) + "\n" + "action: " + str(self.action_slot)
 
 def sieve_rotator(pipe_schedule, num_procs, dM, dA):
   # For each processor is the match, action slot taken already?
   proc_occupied = [SlotOccupancy() for i in range(num_procs)]
 
   # Current time (starting from 0) after scheduling a certain number of nodes
-  # When this is done, current time + 1 gives us the length of the schedule
   current_time = 0
 
   # Construct drmt schedule as a dictionary
