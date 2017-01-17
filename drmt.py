@@ -12,10 +12,10 @@ from prmt_fine import PrmtFineSolver
 from sieve_rotator import *
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec, init_schedule):
+    def __init__(self, dag, input_spec, seed_prmt_fine):
         self.G = dag
         self.input_spec = input_spec
-        self.init_schedule = init_schedule
+        self.seed_prmt_fine = seed_prmt_fine
 
     def solve(self):
         """ Returns the optimal schedule
@@ -29,6 +29,20 @@ class DrmtScheduleSolver:
         length : int
             Maximum latency of optimal schedule
         """
+        if (self.seed_prmt_fine):
+          print '{:*^80}'.format(' Running PRMT fine ILP solver ')
+          psolver = PrmtFineSolver(self.G, input_spec, seed_greedy=True)
+          solution = psolver.solve()
+          init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs,\
+                                             input_spec.dM, input_spec.dA)
+          assert(init_drmt_schedule)
+          Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / period_duration))
+        else:
+          # Set Q_MAX based on critical path
+          cpath, cplat = self.G.critical_path()
+          Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
+
+        print '{:*^80}'.format(' Running DRMT ILP solver ')
         T = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
@@ -115,9 +129,9 @@ class DrmtScheduleSolver:
                       for r in range(T)), "constr_action_proc")
 
         # Seed initial values
-        if self.init_schedule is not None:
+        if init_drmt_schedule is not None:
           for i in nodes:
-            t[i].start = self.init_schedule[i]
+            t[i].start = init_drmt_schedule[i]
 
         # Solve model
         m.optimize()
@@ -188,7 +202,7 @@ try:
       exit(1)
     elif (len(sys.argv) == 3):
       input_file = sys.argv[1]
-      seed_prmt = bool(sys.argv[2] == "yes")
+      seed_prmt_fine = bool(sys.argv[2] == "yes")
 
     # Input example
     input_spec = importlib.import_module(input_file, "*")
@@ -199,26 +213,15 @@ try:
     # Create G
     G = ScheduleDAG()
     G.create_dag(input_spec.nodes, input_spec.edges)
-
-    # Set Q_MAX
     cpath, cplat = G.critical_path()
-    Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
  
     print '{:*^80}'.format(' Input DAG ')
     print_problem(G, input_spec)
-    print 'Q_MAX = ', Q_MAX
     print '\n\n'
-    if (seed_prmt):
-      print '{:*^80}'.format(' Running PRMT fine ILP Solver ')
-      psolver = PrmtFineSolver(G, input_spec, init_schedule = None)
-      # For now, we aren't further seeding PrmtFineSolver itself. Too recusive for me.
-      solution = psolver.solve()
-      init_drmt_schedule = sieve_rotator(solution.ops_at_time, input_spec.num_procs, input_spec.dM, input_spec.dA)
-      assert(init_drmt_schedule)
-      Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / period_duration))
-    print '{:*^80}'.format(' Running DRMT ILP Solver ')
+
+    print '{:*^80}'.format(' Scheduling DRMT ')
     solver = DrmtScheduleSolver(G, input_spec,\
-                                init_drmt_schedule if seed_prmt else None)
+                                init_drmt_schedule if seed_prmt_fine else None)
     solution = solver.solve()
 
     print 'Optimal schedule length = %d cycles' % solver.length
