@@ -419,8 +419,8 @@ match_unit_limit = 8
 match_unit_size  = 80
 
 # Number of packets that can be concurrently matched
-action_proc_limit = 2
-match_proc_limit = 2
+action_proc_limit = 1
+match_proc_limit = 1
 
 # Throughput required
 throughput = 1.0
