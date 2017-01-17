@@ -21,28 +21,22 @@ def sieve_rotator(pipe_schedule, num_procs, dM, dA):
   # Construct drmt schedule as a dictionary
   drmt_schedule = dict()
 
-  # Transform pipe_schedule into a form that gives all the match operations or all the action operations in each time slot
-  print pipe_schedule
+  # Check that pipeline depth (max_time + 1) is at most half the number of processors
   max_time=max(pipe_schedule)
-  print max_time
   assert((max_time + 1) <= (2 * num_procs)) # otherwise reject it outright
+
+  # Now schedule match and actions alternatively
   for t in range(max_time + 1):
     # schedule match column in table
     if (t%2 == 0):
-      while (proc_occupied[current_time%num_procs].match_slot):
-        current_time += 1
-        print "NOP current_time incremented to ", current_time
-      print "scheduled a match column at", current_time
+      while (proc_occupied[current_time%num_procs].match_slot): current_time += 1
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].match_slot = True
       current_time += dM
 
     # schedule action column in table
     else:
-      while (proc_occupied[current_time%num_procs].action_slot):
-        current_time += 1
-        print "NOP current_time incremented to ", current_time
-      print "scheduled an action at", current_time
+      while (proc_occupied[current_time%num_procs].action_slot): current_time += 1
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].action_slot = True
       current_time += dA
