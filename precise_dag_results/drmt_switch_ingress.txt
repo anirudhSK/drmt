@@ -21,9 +21,64 @@ Upper bound on throughput =  1.6
 ******************************* Scheduling DRMT ********************************
 ************************* Running PRMT fine ILP solver *************************
 *************************** Running greedy heuristic ***************************
-Unpaird action:  acl_stats_ACTION
-Unpaird action:  drop_stats_ACTION
-Unpaird action:  ingress_bd_stats_ACTION
+Unpaired action or condition:  _condition_49
+Unpaired action or condition:  _condition_53
+Unpaired action or condition:  _condition_54
+Unpaired action or condition:  _condition_52
+Unpaired action or condition:  _condition_51
+Unpaired action or condition:  _condition_50
+Unpaired action or condition:  _condition_6
+Unpaired action or condition:  _condition_40
+Unpaired action or condition:  _condition_41
+Unpaired action or condition:  _condition_42
+Unpaired action or condition:  _condition_43
+Unpaired action or condition:  _condition_44
+Unpaired action or condition:  _condition_45
+Unpaired action or condition:  _condition_46
+Unpaired action or condition:  _condition_47
+Unpaired action or condition:  _condition_48
+Unpaired action or condition:  _condition_11
+Unpaired action or condition:  _condition_35
+Unpaired action or condition:  _condition_34
+Unpaired action or condition:  _condition_37
+Unpaired action or condition:  _condition_36
+Unpaired action or condition:  _condition_30
+Unpaired action or condition:  _condition_33
+Unpaired action or condition:  _condition_32
+Unpaired action or condition:  _condition_39
+Unpaired action or condition:  _condition_24
+Unpaired action or condition:  _condition_26
+Unpaired action or condition:  _condition_27
+Unpaired action or condition:  _condition_25
+Unpaired action or condition:  _condition_22
+Unpaired action or condition:  _condition_23
+Unpaired action or condition:  _condition_20
+Unpaired action or condition:  _condition_28
+Unpaired action or condition:  _condition_29
+Unpaired action or condition:  _condition_21
+Unpaired action or condition:  _condition_13
+Unpaired action or condition:  _condition_12
+Unpaired action or condition:  _condition_10
+Unpaired action or condition:  _condition_17
+Unpaired action or condition:  _condition_16
+Unpaired action or condition:  _condition_15
+Unpaired action or condition:  _condition_14
+Unpaired action or condition:  _condition_19
+Unpaired action or condition:  _condition_18
+Unpaired action or condition:  _condition_5
+Unpaired action or condition:  _condition_7
+Unpaired action or condition:  _condition_3
+Unpaired action or condition:  _condition_2
+Unpaired action or condition:  _condition_1
+Unpaired action or condition:  _condition_0
+Unpaired action or condition:  _condition_4
+Unpaired action or condition:  acl_stats_ACTION
+Unpaired action or condition:  _condition_9
+Unpaired action or condition:  _condition_8
+Unpaired action or condition:  drop_stats_ACTION
+Unpaired action or condition:  _condition_31
+Unpaired action or condition:  ingress_bd_stats_ACTION
+Unpaired action or condition:  _condition_38
 ****************************** Running ILP solver ******************************
 Optimize a model with 1930 rows, 12097 columns and 37492 nonzeros
 Variable types: 0 continuous, 12097 integer (11648 binary)
@@ -33,7 +88,7 @@ Coefficient statistics:
   Bounds range     [1e+00, 5e+01]
   RHS range        [1e+00, 3e+01]
 Presolve removed 231 rows and 5771 columns
-Presolve time: 0.17s
+Presolve time: 0.15s
 Presolved: 1699 rows, 6326 columns, 20434 nonzeros
 
 Loaded MIP start with objective 51
@@ -53,11 +108,11 @@ Root relaxation: objective 2.500000e+01, 1263 iterations, 0.03 seconds
      0     0   29.00000    0  657   51.00000   29.00000  43.1%     -    2s
      0     0   29.00000    0  223   51.00000   29.00000  43.1%     -    2s
      0     2   29.00000    0  195   51.00000   29.00000  43.1%     -    3s
-  1188   864   41.00000   85  389   51.00000   29.00000  43.1%   8.2    5s
+  1190   865   41.00000  248  270   51.00000   29.00000  43.1%   8.2    5s
   1201   873   45.00000   99  813   51.00000   31.00000  39.2%   8.1   10s
 H 1204   831                      39.0000000   31.00000  20.5%   8.1   12s
   1216   840   39.00000  253  186   39.00000   31.00000  20.5%  28.3   16s
-  1227   847   39.00000  291  450   39.00000   33.00000  15.4%  28.1   20s
+  1226   846   39.00000   67  396   39.00000   33.00000  15.4%  28.1   20s
 H 1229   805                      37.0000000   33.00000  10.8%  28.0   21s
 H 1235   768                      35.0000000   33.00000  5.71%  27.9   22s
 H 1237   731                      33.0000000   33.00000  0.00%  27.8   22s
@@ -72,7 +127,7 @@ Cutting planes:
   GUB cover: 183
   Zero half: 25
 
-Explored 1237 nodes (79739 simplex iterations) in 22.61 seconds
+Explored 1237 nodes (79739 simplex iterations) in 22.96 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 5: 33 35 37 ... 51
@@ -80,6 +135,7 @@ Pool objective bound 33
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 3.300000000000e+01, best bound 3.300000000000e+01, gap 0.0000%
+Incurred one match no-op
 *************************** Running DRMT ILP solver ****************************
 Optimize a model with 2082 rows, 43617 columns and 174340 nonzeros
 Variable types: 0 continuous, 43617 integer (43392 binary)
@@ -103,13 +159,13 @@ Root relaxation: objective 1.010000e+02, 1764 iterations, 0.07 seconds
 
      0     0  101.00000    0   89  170.00000  101.00000  40.6%     -    1s
      0     0  101.50000    0  779  170.00000  101.50000  40.3%     -    1s
-     0     0  102.00000    0  651  170.00000  102.00000  40.0%     -    2s
+     0     0  102.00000    0  651  170.00000  102.00000  40.0%     -    3s
      0     0  102.00000    0  553  170.00000  102.00000  40.0%     -    3s
      0     0  102.00000    0  558  170.00000  102.00000  40.0%     -    4s
      0     0  102.00000    0  565  170.00000  102.00000  40.0%     -    5s
-     0     0  102.00000    0  180  170.00000  102.00000  40.0%     -    5s
-H    0     0                     122.0000000  102.00000  16.4%     -    6s
-H    0     0                     102.0000000  102.00000  0.00%     -    6s
+     0     0  102.00000    0  180  170.00000  102.00000  40.0%     -    6s
+H    0     0                     122.0000000  102.00000  16.4%     -    7s
+H    0     0                     102.0000000  102.00000  0.00%     -    7s
 
 Cutting planes:
   Cover: 98
@@ -120,7 +176,7 @@ Cutting planes:
   GUB cover: 59
   Zero half: 2
 
-Explored 0 nodes (14582 simplex iterations) in 6.36 seconds
+Explored 0 nodes (14582 simplex iterations) in 7.36 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 3: 102 122 170 

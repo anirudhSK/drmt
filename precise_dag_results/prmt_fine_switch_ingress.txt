@@ -17,9 +17,64 @@ Required throughput: 1 packets / cycle
 Upper bound on throughput =  1.6
 ***************************** Scheduling PRMT fine *****************************
 *************************** Running greedy heuristic ***************************
-Unpaird action:  acl_stats_ACTION
-Unpaird action:  drop_stats_ACTION
-Unpaird action:  ingress_bd_stats_ACTION
+Unpaired action or condition:  _condition_49
+Unpaired action or condition:  _condition_53
+Unpaired action or condition:  _condition_54
+Unpaired action or condition:  _condition_52
+Unpaired action or condition:  _condition_51
+Unpaired action or condition:  _condition_50
+Unpaired action or condition:  _condition_6
+Unpaired action or condition:  _condition_40
+Unpaired action or condition:  _condition_41
+Unpaired action or condition:  _condition_42
+Unpaired action or condition:  _condition_43
+Unpaired action or condition:  _condition_44
+Unpaired action or condition:  _condition_45
+Unpaired action or condition:  _condition_46
+Unpaired action or condition:  _condition_47
+Unpaired action or condition:  _condition_48
+Unpaired action or condition:  _condition_11
+Unpaired action or condition:  _condition_35
+Unpaired action or condition:  _condition_34
+Unpaired action or condition:  _condition_37
+Unpaired action or condition:  _condition_36
+Unpaired action or condition:  _condition_30
+Unpaired action or condition:  _condition_33
+Unpaired action or condition:  _condition_32
+Unpaired action or condition:  _condition_39
+Unpaired action or condition:  _condition_24
+Unpaired action or condition:  _condition_26
+Unpaired action or condition:  _condition_27
+Unpaired action or condition:  _condition_25
+Unpaired action or condition:  _condition_22
+Unpaired action or condition:  _condition_23
+Unpaired action or condition:  _condition_20
+Unpaired action or condition:  _condition_28
+Unpaired action or condition:  _condition_29
+Unpaired action or condition:  _condition_21
+Unpaired action or condition:  _condition_13
+Unpaired action or condition:  _condition_12
+Unpaired action or condition:  _condition_10
+Unpaired action or condition:  _condition_17
+Unpaired action or condition:  _condition_16
+Unpaired action or condition:  _condition_15
+Unpaired action or condition:  _condition_14
+Unpaired action or condition:  _condition_19
+Unpaired action or condition:  _condition_18
+Unpaired action or condition:  _condition_5
+Unpaired action or condition:  _condition_7
+Unpaired action or condition:  _condition_3
+Unpaired action or condition:  _condition_2
+Unpaired action or condition:  _condition_1
+Unpaired action or condition:  _condition_0
+Unpaired action or condition:  _condition_4
+Unpaired action or condition:  acl_stats_ACTION
+Unpaired action or condition:  _condition_9
+Unpaired action or condition:  _condition_8
+Unpaired action or condition:  drop_stats_ACTION
+Unpaired action or condition:  _condition_31
+Unpaired action or condition:  ingress_bd_stats_ACTION
+Unpaired action or condition:  _condition_38
 ****************************** Running ILP solver ******************************
 Optimize a model with 1930 rows, 12097 columns and 37492 nonzeros
 Variable types: 0 continuous, 12097 integer (11648 binary)
@@ -29,7 +84,7 @@ Coefficient statistics:
   Bounds range     [1e+00, 5e+01]
   RHS range        [1e+00, 3e+01]
 Presolve removed 231 rows and 5771 columns
-Presolve time: 0.14s
+Presolve time: 0.19s
 Presolved: 1699 rows, 6326 columns, 20434 nonzeros
 
 Loaded MIP start with objective 51
@@ -45,18 +100,18 @@ Root relaxation: objective 2.500000e+01, 1263 iterations, 0.04 seconds
      0     0   25.11679    0  389   51.00000   25.11679  50.8%     -    0s
      0     0   28.05405    0  435   51.00000   28.05405  45.0%     -    1s
      0     0   29.00000    0  529   51.00000   29.00000  43.1%     -    1s
-     0     0   29.00000    0  609   51.00000   29.00000  43.1%     -    1s
+     0     0   29.00000    0  609   51.00000   29.00000  43.1%     -    2s
      0     0   29.00000    0  657   51.00000   29.00000  43.1%     -    2s
-     0     0   29.00000    0  223   51.00000   29.00000  43.1%     -    2s
-     0     2   29.00000    0  195   51.00000   29.00000  43.1%     -    2s
-  1190   865   41.00000  248  270   51.00000   29.00000  43.1%   8.2    5s
-  1203   874   45.00000  100   93   51.00000   31.00000  39.2%   8.1   10s
-H 1204   831                      39.0000000   31.00000  20.5%   8.1   11s
-  1218   841   39.00000  137  142   39.00000   32.00000  17.9%  28.3   15s
-H 1229   805                      37.0000000   33.00000  10.8%  28.0   19s
-  1232   807   37.00000   92   62   37.00000   33.00000  10.8%  27.9   20s
-H 1235   768                      35.0000000   33.00000  5.71%  27.9   20s
-H 1237   731                      33.0000000   33.00000  0.00%  27.8   20s
+     0     0   29.00000    0  223   51.00000   29.00000  43.1%     -    3s
+     0     2   29.00000    0  195   51.00000   29.00000  43.1%     -    3s
+  1015   760 infeasible  325        51.00000   29.00000  43.1%   8.9    5s
+  1198   871   45.00000  137  649   51.00000   30.05880  41.1%   8.1   10s
+H 1204   831                      39.0000000   31.00000  20.5%   8.1   13s
+  1214   838   39.00000  139  694   39.00000   31.00000  20.5%  28.4   15s
+  1224   845   32.04367   93  353   39.00000   32.04367  17.8%  28.1   20s
+H 1229   805                      37.0000000   33.00000  10.8%  28.0   22s
+H 1235   768                      35.0000000   33.00000  5.71%  27.9   23s
+H 1237   731                      33.0000000   33.00000  0.00%  27.8   23s
 
 Cutting planes:
   Gomory: 18
@@ -68,7 +123,7 @@ Cutting planes:
   GUB cover: 183
   Zero half: 25
 
-Explored 1237 nodes (79739 simplex iterations) in 20.98 seconds
+Explored 1237 nodes (79739 simplex iterations) in 23.58 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 5: 33 35 37 ... 51

@@ -17,8 +17,28 @@ Required throughput: 1 packets / cycle
 Upper bound on throughput =  1.94923857868
 ***************************** Scheduling PRMT fine *****************************
 *************************** Running greedy heuristic ***************************
-Unpaird action:  egress_filter_drop_ACTION
-Unpaird action:  egress_filter_ACTION
+Unpaired action or condition:  _condition_68
+Unpaired action or condition:  _condition_62
+Unpaired action or condition:  _condition_63
+Unpaired action or condition:  _condition_60
+Unpaired action or condition:  _condition_66
+Unpaired action or condition:  _condition_67
+Unpaired action or condition:  _condition_64
+Unpaired action or condition:  _condition_65
+Unpaired action or condition:  _condition_69
+Unpaired action or condition:  _condition_57
+Unpaired action or condition:  _condition_56
+Unpaired action or condition:  _condition_55
+Unpaired action or condition:  _condition_59
+Unpaired action or condition:  _condition_58
+Unpaired action or condition:  _condition_61
+Unpaired action or condition:  egress_filter_drop_ACTION
+Unpaired action or condition:  egress_filter_ACTION
+Unpaired action or condition:  _condition_71
+Unpaired action or condition:  _condition_70
+Unpaired action or condition:  _condition_73
+Unpaired action or condition:  _condition_72
+Unpaired action or condition:  _condition_74
 ****************************** Running ILP solver ******************************
 Optimize a model with 763 rows, 3121 columns and 9650 nonzeros
 Variable types: 0 continuous, 3121 integer (2912 binary)
@@ -43,7 +63,7 @@ Root relaxation: objective 2.100000e+01, 223 iterations, 0.00 seconds
      0     0   21.00000    0   18   27.00000   21.00000  22.2%     -    0s
 H    0     0                      21.0000000   21.00000  0.00%     -    0s
 
-Explored 0 nodes (325 simplex iterations) in 0.06 seconds
+Explored 0 nodes (325 simplex iterations) in 0.07 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 2: 21 27 

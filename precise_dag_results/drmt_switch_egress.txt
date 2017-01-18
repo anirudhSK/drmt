@@ -21,8 +21,28 @@ Upper bound on throughput =  1.94923857868
 ******************************* Scheduling DRMT ********************************
 ************************* Running PRMT fine ILP solver *************************
 *************************** Running greedy heuristic ***************************
-Unpaird action:  egress_filter_drop_ACTION
-Unpaird action:  egress_filter_ACTION
+Unpaired action or condition:  _condition_68
+Unpaired action or condition:  _condition_62
+Unpaired action or condition:  _condition_63
+Unpaired action or condition:  _condition_60
+Unpaired action or condition:  _condition_66
+Unpaired action or condition:  _condition_67
+Unpaired action or condition:  _condition_64
+Unpaired action or condition:  _condition_65
+Unpaired action or condition:  _condition_69
+Unpaired action or condition:  _condition_57
+Unpaired action or condition:  _condition_56
+Unpaired action or condition:  _condition_55
+Unpaired action or condition:  _condition_59
+Unpaired action or condition:  _condition_58
+Unpaired action or condition:  _condition_61
+Unpaired action or condition:  egress_filter_drop_ACTION
+Unpaired action or condition:  egress_filter_ACTION
+Unpaired action or condition:  _condition_71
+Unpaired action or condition:  _condition_70
+Unpaired action or condition:  _condition_73
+Unpaired action or condition:  _condition_72
+Unpaired action or condition:  _condition_74
 ****************************** Running ILP solver ******************************
 Optimize a model with 763 rows, 3121 columns and 9650 nonzeros
 Variable types: 0 continuous, 3121 integer (2912 binary)
@@ -55,6 +75,7 @@ Pool objective bound 21
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 2.100000000000e+01, best bound 2.100000000000e+01, gap 0.0000%
+Incurred one match no-op
 *************************** Running DRMT ILP solver ****************************
 Optimize a model with 891 rows, 12825 columns and 50830 nonzeros
 Variable types: 0 continuous, 12825 integer (12720 binary)
@@ -64,7 +85,7 @@ Coefficient statistics:
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 3e+01]
 Presolve removed 121 rows and 6534 columns
-Presolve time: 0.17s
+Presolve time: 0.15s
 Presolved: 770 rows, 6291 columns, 24655 nonzeros
 
 Loaded MIP start with objective 110
@@ -92,31 +113,30 @@ H    0     0                     100.0000000   87.00000  13.0%     -    2s
      0     2   87.00000    0  113  100.00000   87.00000  13.0%     -    3s
    828   717   89.00000  336  157  100.00000   87.00000  13.0%  31.5    6s
    838   724   88.00000  348  567  100.00000   88.00000  12.0%  31.1   10s
-   843   727   88.00000  204  341  100.00000   88.00000  12.0%  31.0   15s
-   849   731   88.00000  117  257  100.00000   88.00000  12.0%  30.7   20s
-   860   740   97.00000  125  456  100.00000   88.00000  12.0%   110   25s
-   865   743   88.00000  351  302  100.00000   88.00000  12.0%   110   30s
-   870   747   96.00000   63  408  100.00000   88.00000  12.0%   109   35s
-   876   751   96.00000  124  715  100.00000   89.00000  11.0%   108   40s
-   879   753   97.00000   36  316  100.00000   89.00000  11.0%   108   46s
-   883   755   89.00000  204  344  100.00000   89.00000  11.0%   108   52s
-   890   762   96.00000   63  526  100.00000   89.00000  11.0%   197   55s
-   895   765   97.00000    7  292  100.00000   89.00000  11.0%   196   60s
-   900   768   97.00000  125  398  100.00000   89.00000  11.0%   195   65s
-   904   771   97.00000  125  419  100.00000   89.00000  11.0%   194   70s
-   909   774   89.00000  117  220  100.00000   89.00000  11.0%   193   75s
-   920   784   96.00000   41  340  100.00000   89.00000  11.0%   257   80s
-   975   782 infeasible   48       100.00000   89.00000  11.0%   257   85s
-  1079   830   94.00000   54  196  100.00000   89.00000  11.0%   255   90s
-* 1122   723              96      97.0000000   89.00000  8.25%   251   91s
-  1223   708   94.00000   73   48   97.00000   89.00000  8.25%   246   95s
-* 1300   660              56      96.0000000   89.00000  7.29%   242   97s
-  1353   671   91.00000   49  325   96.00000   89.00000  7.29%   241  100s
-H 1361   612                      95.0000000   89.00000  6.32%   240  100s
-H 1500   513                      94.0000000   89.00000  5.32%   236  103s
-  1607   490 infeasible   45        94.00000   89.00000  5.32%   228  105s
-  1888   402   92.00000   98   19   94.00000   90.00000  4.26%   219  110s
-H 1902   321                      92.0000000   90.00000  2.17%   217  110s
+   844   728   97.00000  125  440  100.00000   88.00000  12.0%  30.9   15s
+   850   732   96.00000   63  394  100.00000   88.00000  12.0%  30.7   20s
+   861   741   97.00000   32  267  100.00000   88.00000  12.0%   110   25s
+   867   745   97.00000  160  281  100.00000   88.00000  12.0%   110   30s
+   874   749   89.00000   76  599  100.00000   89.00000  11.0%   109   35s
+   877   751   89.00000  279  277  100.00000   89.00000  11.0%   108   40s
+   881   754   97.00000   32  312  100.00000   89.00000  11.0%   108   45s
+   890   762   96.00000   63  526  100.00000   89.00000  11.0%   197   50s
+   895   765   97.00000    7  292  100.00000   89.00000  11.0%   196   55s
+   900   768   97.00000  125  398  100.00000   89.00000  11.0%   195   60s
+   905   772   89.00000  351  301  100.00000   89.00000  11.0%   194   66s
+   910   778   89.00000   39  215  100.00000   89.00000  11.0%   256   70s
+   920   784   96.00000   41  340  100.00000   89.00000  11.0%   257   75s
+   990   788   94.00000   48  334  100.00000   89.00000  11.0%   260   80s
+  1100   840   99.00000   55  281  100.00000   89.00000  11.0%   253   85s
+* 1122   723              96      97.0000000   89.00000  8.25%   251   85s
+  1223   708   94.00000   73   48   97.00000   89.00000  8.25%   246   90s
+* 1300   660              56      96.0000000   89.00000  7.29%   242   92s
+H 1361   612                      95.0000000   89.00000  6.32%   240   94s
+  1405   607   91.05357   57  339   95.00000   89.00000  6.32%   237   95s
+H 1500   513                      94.0000000   89.00000  5.32%   236   97s
+  1687   443   90.39921   54  316   94.00000   89.00000  5.32%   223  100s
+H 1902   321                      92.0000000   90.00000  2.17%   217  104s
+  1987   248     cutoff   80        92.00000   90.00000  2.17%   215  105s
 
 Cutting planes:
   Cover: 82
@@ -127,7 +147,7 @@ Cutting planes:
   GUB cover: 70
   Zero half: 7
 
-Explored 2044 nodes (445344 simplex iterations) in 111.51 seconds
+Explored 2044 nodes (445344 simplex iterations) in 105.32 seconds
 Thread count was 4 (of 4 available processors)
 
 Solution count 7: 92 94 95 ... 110
