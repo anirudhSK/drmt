@@ -1,7 +1,7 @@
 import sys
 import importlib
 import networkx as nx
-from schedule_dag import ScheduleDAG
+from   schedule_dag import ScheduleDAG
 
 def contract_dag(input_spec):
   G = ScheduleDAG()
@@ -32,14 +32,12 @@ def contract_dag(input_spec):
       exit(1)
   
   for a in action_nodes:
-    if (a.startswith("_condition")):
-      continue
     if a not in found_table:
-      print "Unpaird action: ", a
-  
+      print "Unpaired action or condition: ", a
+ 
   # Contract table edges
   for table in tables:
-    match = table[0]
+    match  = table[0]
     action = table[1]
     table_name = match.strip('MATCH') + 'TABLE'
     key_width  = G.node[match]['key_width']
@@ -50,7 +48,7 @@ def contract_dag(input_spec):
     G.node[table_name]['key_width'] = key_width
     G.node[table_name]['num_fields'] = num_fields
 
-  # Create dummy tables for the test
+  # Create dummy tables for the rest
   for v in G.nodes():
     if (G.node[v]['type'] != 'table'):
       G.node[v]['type'] = 'table'
