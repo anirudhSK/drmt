@@ -8,7 +8,7 @@ from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
 from randomized_sieve import *
-from prmt_fine import PrmtFineSolver
+from prmt import PrmtFineSolver
 from sieve_rotator import *
 
 class DrmtScheduleSolver:
@@ -32,7 +32,7 @@ class DrmtScheduleSolver:
         if (self.seed_prmt_fine):
           print '{:*^80}'.format(' Running PRMT fine ILP solver ')
           psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
-          solution = psolver.solve()
+          solution = psolver.solve(solve_coarse = False)
           init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.input_spec.num_procs,\
                                              input_spec.dM, input_spec.dA)
           assert(init_drmt_schedule)
