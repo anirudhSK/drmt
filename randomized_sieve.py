@@ -2,7 +2,7 @@ from random import shuffle
 import time as tm
 import numpy as np
 import math
-import Queue
+import queue
 
 def random_topological_sort_recursive(dag):
   # This is basically taken from networkx's topological_sort_recursive.
@@ -10,8 +10,8 @@ def random_topological_sort_recursive(dag):
   # 1. Randomization of the order we explore node's sucsessors.
   # 2. Removed cycle detection checks.
   def _dfs(v):
-    keys=dag[v].keys()
-    shuffle(keys)
+    keys=list(dag[v].keys())
+    shuffle(list(keys))
     for w in keys:   
         if w not in explored:
             _dfs(w)
@@ -72,8 +72,8 @@ def index_dag_sieve(input_spec, dag, index, bound):
   ts = random_topological_sort_recursive(dag) 
       
 
-  ts_ff_queue = Queue.Queue()
-  ts_rw_queue = Queue.Queue()
+  ts_ff_queue = queue.Queue()
+  ts_rw_queue = queue.Queue()
           
   for i in ts[index:]:
       ts_ff_queue.put(i)
@@ -367,12 +367,12 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
   index = 0 
 
   nodes = dag.number_of_nodes() 
-  print 'Looking for greedy feasible solution for %d seconds' % time_limit 
+  print ('Looking for greedy feasible solution for %d seconds' % time_limit)
   second_counter = 0            
   
   while curr_time - star_time < time_limit:
       if second_counter < curr_time - star_time:
-          print second_counter,
+          print (second_counter,)
           second_counter += 1
       schedule = index_dag_sieve(input_spec, dag, index%nodes, 2*delay)
       index += 1
@@ -382,9 +382,9 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
           if max_val - min_val < best:
               best = max_val - min_val
               best_schedule = schedule
-              print '\n'
-              print 'Found Feasible Solution With Latency', best
-              print '\n'
+              print ('\n')
+              print ('Found Feasible Solution With Latency', best)
+              print ('\n')
               
       curr_time = tm.time()
   if (best_schedule == None):

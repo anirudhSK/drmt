@@ -3,7 +3,6 @@ import numpy as np
 import collections
 import importlib
 import math
-from sets import Set
 from schedule_dag import ScheduleDAG
 from greedy_prmt_solver import GreedyPrmtSolver
 from fine_to_coarse import contract_dag
@@ -30,7 +29,7 @@ class PrmtFineSolver:
             Maximum latency of optimal schedule
         """
         if self.seed_greedy:
-          print '{:*^80}'.format(' Running greedy heuristic ')
+          print ('{:*^80}'.format(' Running greedy heuristic '))
           gsolver = GreedyPrmtSolver(contract_dag(self.input_spec), self.input_spec)
           gschedule = gsolver.solve()
           # gschedule was obtained as a solution to the coarse-grained model.
@@ -45,7 +44,7 @@ class PrmtFineSolver:
               assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
               fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
 
-        print '{:*^80}'.format(' Running ILP solver ') 
+        print ('{:*^80}'.format(' Running ILP solver '))
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
         action_nodes = self.G.nodes(select='action')
@@ -165,7 +164,7 @@ class PrmtFineSolver:
 if __name__ == "__main__":
   # Cmd line args
   if (len(sys.argv) != 4):
-    print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy> <coarse/fine>"
+    print ("Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy> <coarse/fine>")
     exit(1)
   elif (len(sys.argv) == 4):
     input_file = sys.argv[1]
@@ -179,16 +178,16 @@ if __name__ == "__main__":
   G = ScheduleDAG()
   G.create_dag(input_spec.nodes, input_spec.edges)
   
-  print '{:*^80}'.format(' Input DAG ')
+  print ('{:*^80}'.format(' Input DAG '))
   print_problem(G, input_spec)
   
-  print '{:*^80}'.format(' Scheduling PRMT fine ')
+  print ('{:*^80}'.format(' Scheduling PRMT fine '))
   solver = PrmtFineSolver(G, input_spec, seed_greedy)
   solution = solver.solve(solve_coarse)
   if (solution.length > 2 * input_spec.num_procs):
-    print "Exceeded num_procs, rejected!!!"
+    print ("Exceeded num_procs, rejected!!!")
     exit(1)
-  print 'Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0))
-  print '{:*^80}'.format(' Schedule')
-  print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n'
+  print ('Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0)))
+  print ('{:*^80}'.format(' Schedule'))
+  print (timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n')
   print_resource_usage(input_spec, solution)

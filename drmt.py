@@ -3,7 +3,6 @@ import numpy as np
 import collections
 import importlib
 import math
-from sets import Set
 from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
@@ -30,7 +29,7 @@ class DrmtScheduleSolver:
             Maximum latency of optimal schedule
         """
         if (self.seed_prmt_fine):
-          print '{:*^80}'.format(' Running PRMT fine ILP solver ')
+          print ('{:*^80}'.format(' Running PRMT fine ILP solver '))
           psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
           solution = psolver.solve(solve_coarse = False)
           init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.input_spec.num_procs,\
@@ -42,7 +41,7 @@ class DrmtScheduleSolver:
           cpath, cplat = self.G.critical_path()
           Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
 
-        print '{:*^80}'.format(' Running DRMT ILP solver ')
+        print ('{:*^80}'.format(' Running DRMT ILP solver '))
         T = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
@@ -176,9 +175,9 @@ class DrmtScheduleSolver:
           self.match_key_usage[t]     = 0
           self.action_fields_usage[t] = 0
           self.match_units_usage[t]   = 0
-          self.match_proc_set[t]      = Set()
+          self.match_proc_set[t]      = set()
           self.match_proc_usage[t]    = 0
-          self.action_proc_set[t]     = Set()
+          self.action_proc_set[t]     = set()
           self.action_proc_usage[t]   = 0
 
         for v in self.G.nodes():
@@ -198,7 +197,7 @@ class DrmtScheduleSolver:
 if __name__ == "__main__":
   # Cmd line args
   if (len(sys.argv) != 3):
-    print "Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>"
+    print ("Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>")
     exit(1)
   elif (len(sys.argv) == 3):
     input_file = sys.argv[1]
@@ -215,24 +214,24 @@ if __name__ == "__main__":
   G.create_dag(input_spec.nodes, input_spec.edges)
   cpath, cplat = G.critical_path()
 
-  print '{:*^80}'.format(' Input DAG ')
+  print ('{:*^80}'.format(' Input DAG '))
   print_problem(G, input_spec)
-  print '\n\n'
+  print ('\n\n')
 
-  print '{:*^80}'.format(' Scheduling DRMT ')
+  print ('{:*^80}'.format(' Scheduling DRMT '))
   solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine)
   solution = solver.solve()
 
-  print 'Optimal schedule length = %d cycles' % solver.length
-  print 'Critical path length = %d cycles' % cplat
+  print ('Optimal schedule length = %d cycles' % solver.length)
+  print ('Critical path length = %d cycles' % cplat)
 
-  print '\n\n'
+  print ('\n\n')
 
-  print '{:*^80}'.format(' First scheduling period on one processor')
-  print timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n'
+  print ('{:*^80}'.format(' First scheduling period on one processor'))
+  print (timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n')
 
-  print '{:*^80}'.format(' Steady state on one processor')
-  print '{:*^80}'.format('p[u] is packet from u scheduling periods ago')
-  print timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n'
+  print ('{:*^80}'.format(' Steady state on one processor'))
+  print ('{:*^80}'.format('p[u] is packet from u scheduling periods ago'))
+  print (timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n')
 
   print_resource_usage(input_spec, solution)

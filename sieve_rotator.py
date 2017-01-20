@@ -31,7 +31,7 @@ def sieve_rotator(pipe_schedule, num_procs, dM, dA):
     if (t%2 == 0):
       while (proc_occupied[current_time%num_procs].match_slot):
         current_time += 1
-        print "Incurred one match no-op"
+        print ("Incurred one match no-op")
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].match_slot = True
       current_time += dM
@@ -40,7 +40,7 @@ def sieve_rotator(pipe_schedule, num_procs, dM, dA):
     else:
       while (proc_occupied[current_time%num_procs].action_slot):
         current_time += 1
-        print "Incurred one action no-op"
+        print ("Incurred one action no-op")
       for v in pipe_schedule[t]: drmt_schedule[v] = current_time
       proc_occupied[current_time%num_procs].action_slot = True
       current_time += dA

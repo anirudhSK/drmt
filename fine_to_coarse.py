@@ -28,12 +28,12 @@ def contract_dag(input_spec):
   
   for m in match_nodes:
     if m not in found_table:
-      print "Unpaired match, ERROR!!!"
+      print ("Unpaired match, ERROR!!!")
       exit(1)
   
   for a in action_nodes:
     if a not in found_table:
-      print "Unpaired action or condition: ", a
+      print ("Unpaired action or condition: ", a)
  
   # Contract table edges
   for table in tables:
