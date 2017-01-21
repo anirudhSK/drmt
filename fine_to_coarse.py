@@ -33,7 +33,8 @@ def contract_dag(input_spec):
   
   for a in action_nodes:
     if a not in found_table:
-      print ("Unpaired action or condition: ", a)
+      pass
+  #    print ("Unpaired action or condition: ", a, file=sys.stderr)
  
   # Contract table edges
   for table in tables:

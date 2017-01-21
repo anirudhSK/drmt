@@ -7,7 +7,10 @@ from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
 from randomized_sieve import *
-RND_SIEVE_TIME = 15
+from sieve_rotator import *
+from prmt import PrmtFineSolver
+
+RND_SIEVE_TIME = 5
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec, seed_rnd_sieve, period_duration, minute_limit):
@@ -44,12 +47,20 @@ class DrmtScheduleSolver:
             init_drmt_schedule = None
           elif ((rnd_sch == None)):
             print ("Picking output from PRMT")
+            print ("Latency for PRMT ", max(prmt_sch.values()))
             init_drmt_schedule = prmt_sch
           elif ((prmt_sch == None)):
             print ("Picking output from RND sieve")
+            print ("Latency for RND sieve: ", max(rnd_sch.values()))
             init_drmt_schedule = rnd_sch
           else:
-            init_drmt_schedule = prmt_sch if (max(prmt_sch.values()) < max(rnd_sch.values())) else rnd_sch
+            print ("Latencies, PRMT: ", max(prmt_sch.values()), " RND sieve: ", max(rnd_sch.values()))
+            if (max(prmt_sch.values()) < max(rnd_sch.values())):
+              print ("Picking output from PRMT")
+              init_drmt_schedule = prmt_sch
+            else:
+              print ("Picking output from RND sieve")
+              init_drmt_schedule = rnd_sch
 
         if (init_drmt_schedule):
           Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / self.period_duration))
