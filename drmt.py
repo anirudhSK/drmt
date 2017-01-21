@@ -195,15 +195,24 @@ class DrmtScheduleSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 3):
-    print ("Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with prmt fine., no otherwise>")
+  if (len(sys.argv) != 5):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <yes to prime ILP> <# processors>")
     exit(1)
-  elif (len(sys.argv) == 3):
+  elif (len(sys.argv) == 5):
     input_file = sys.argv[1]
-    seed_prmt_fine = bool(sys.argv[2] == "yes")
+    hw_file = sys.argv[2]
+    seed_prmt_fine = bool(sys.argv[3] == "yes")
+    num_proc = int(sys.argv[4])
 
-  # Input example
+  # Input specification
   input_spec = importlib.import_module(input_file, "*")
+  hw_spec    = importlib.import_module(hw_file, "*")
+  input_spec.action_fields_limit = hw_spec.action_fields_limit
+  input_spec.match_unit_limit    = hw_spec.match_unit_limit
+  input_spec.match_unit_size     = hw_spec.match_unit_size
+  input_spec.action_proc_limit   = hw_spec.action_proc_limit
+  input_spec.match_proc_limit    = hw_spec.match_proc_limit
+  input_spec.throughput          = 1.0 # TODO, for now.
 
   # Derive period_duration from num_procs and throughput
   period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
