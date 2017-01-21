@@ -5,7 +5,7 @@
 # of matches =  41
 # of actions =  63
 Match unit size =  80
-# of match units =  46.0
+# of match units =  46
 aggregate match_unit_limit =  96
 # of action fields =  197
 aggregate action_fields_limit =  384
@@ -14,31 +14,31 @@ action_proc_limit = 1
 Critical path:  ['rid_MATCH', 'rid_ACTION', 'replica_type_MATCH', 'replica_type_ACTION', 'rewrite_ACTION', 'egress_bd_map_MATCH', 'egress_bd_map_ACTION', '_condition_65', 'egress_nat_ACTION', 'egress_l4port_fields_ACTION', 'egress_l4_src_port_MATCH', 'egress_l4_src_port_ACTION', 'tunnel_encap_process_outer_ACTION', 'tunnel_rewrite_MATCH', 'tunnel_rewrite_ACTION', 'tunnel_smac_rewrite_MATCH', 'tunnel_smac_rewrite_ACTION', 'egress_mac_acl_MATCH', 'egress_mac_acl_ACTION', 'egress_system_acl_MATCH', 'egress_system_acl_ACTION']
 Critical path length = 83 cycles
 Required throughput: 1 packets / cycle 
-Upper bound on throughput =  1.94923857868
+Upper bound on throughput =  1.9492385786802031
 ***************************** Scheduling PRMT fine *****************************
 *************************** Running greedy heuristic ***************************
-Unpaired action or condition:  _condition_68
-Unpaired action or condition:  _condition_62
-Unpaired action or condition:  _condition_63
-Unpaired action or condition:  _condition_60
-Unpaired action or condition:  _condition_66
-Unpaired action or condition:  _condition_67
-Unpaired action or condition:  _condition_64
-Unpaired action or condition:  _condition_65
-Unpaired action or condition:  _condition_69
-Unpaired action or condition:  _condition_57
-Unpaired action or condition:  _condition_56
-Unpaired action or condition:  _condition_55
-Unpaired action or condition:  _condition_59
-Unpaired action or condition:  _condition_58
-Unpaired action or condition:  _condition_61
-Unpaired action or condition:  egress_filter_drop_ACTION
-Unpaired action or condition:  egress_filter_ACTION
 Unpaired action or condition:  _condition_71
 Unpaired action or condition:  _condition_70
-Unpaired action or condition:  _condition_73
-Unpaired action or condition:  _condition_72
+Unpaired action or condition:  _condition_67
 Unpaired action or condition:  _condition_74
+Unpaired action or condition:  _condition_61
+Unpaired action or condition:  _condition_55
+Unpaired action or condition:  _condition_69
+Unpaired action or condition:  _condition_57
+Unpaired action or condition:  egress_filter_ACTION
+Unpaired action or condition:  egress_filter_drop_ACTION
+Unpaired action or condition:  _condition_66
+Unpaired action or condition:  _condition_64
+Unpaired action or condition:  _condition_68
+Unpaired action or condition:  _condition_58
+Unpaired action or condition:  _condition_60
+Unpaired action or condition:  _condition_59
+Unpaired action or condition:  _condition_72
+Unpaired action or condition:  _condition_65
+Unpaired action or condition:  _condition_62
+Unpaired action or condition:  _condition_63
+Unpaired action or condition:  _condition_73
+Unpaired action or condition:  _condition_56
 ****************************** Running ILP solver ******************************
 Optimize a model with 804 rows, 3121 columns and 9732 nonzeros
 Variable types: 0 continuous, 3121 integer (2912 binary)
@@ -48,22 +48,22 @@ Coefficient statistics:
   Bounds range     [1e+00, 3e+01]
   RHS range        [1e+00, 3e+01]
 Presolve removed 511 rows and 2728 columns
-Presolve time: 0.05s
+Presolve time: 0.10s
 Presolved: 293 rows, 393 columns, 1581 nonzeros
 
 Loaded MIP start with objective 27
 
 Variable types: 0 continuous, 393 integer (341 binary)
 
-Root relaxation: objective 2.300000e+01, 102 iterations, 0.00 seconds
+Root relaxation: objective 2.300000e+01, 100 iterations, 0.00 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
 *    0     0               0      23.0000000   23.00000  0.00%     -    0s
 
-Explored 0 nodes (102 simplex iterations) in 0.07 seconds
-Thread count was 4 (of 4 available processors)
+Explored 0 nodes (100 simplex iterations) in 0.13 seconds
+Thread count was 32 (of 48 available processors)
 
 Solution count 2: 23 27 
 Pool objective bound 23
@@ -73,71 +73,71 @@ Best objective 2.300000000000e+01, best bound 2.300000000000e+01, gap 0.0000%
 Number of pipeline stages: 12.000000
 *********************************** Schedule************************************
 |               t=0               |               t=1               |               t=2               |               t=3               |
-|            rid_MATCH            |          _condition_57          |        vlan_decap_MATCH         |   egress_port_mapping_ACTION    |
-|          mirror_MATCH           |          _condition_56          |        int_insert_MATCH         |          _condition_62          |
-|                                 |          _condition_55          |       replica_type_MATCH        |          _condition_60          |
-|                                 |          mirror_ACTION          |    egress_port_mapping_MATCH    |        int_insert_ACTION        |
-|                                 |           rid_ACTION            |                                 |          _condition_59          |
-|                                 |          _condition_74          |                                 |        vlan_decap_ACTION        |
-|                                 |                                 |                                 |          _condition_58          |
-|                                 |                                 |                                 |       replica_type_ACTION       |
+|          mirror_MATCH           |          _condition_74          |       replica_type_MATCH        |       replica_type_ACTION       |
+|            rid_MATCH            |          _condition_55          |        vlan_decap_MATCH         |        int_insert_ACTION        |
+|                                 |          _condition_57          |        int_insert_MATCH         |        vlan_decap_ACTION        |
+|                                 |           rid_ACTION            |    egress_port_mapping_MATCH    |          _condition_58          |
+|                                 |          mirror_ACTION          |                                 |          _condition_60          |
+|                                 |          _condition_56          |                                 |          _condition_59          |
 |                                 |                                 |                                 |          _condition_72          |
+|                                 |                                 |                                 |          _condition_62          |
+|                                 |                                 |                                 |   egress_port_mapping_ACTION    |
 
 |               t=4               |               t=5               |               t=6               |               t=7               |
-|       int_inst_0003_MATCH       |          _condition_64          |          int_bos_MATCH          |         int_bos_ACTION          |
-|       int_inst_0811_MATCH       |      int_inst_0811_ACTION       |  int_meta_header_update_MATCH   |  int_meta_header_update_ACTION  |
-|       int_inst_1215_MATCH       |      int_inst_0407_ACTION       |     rewrite_multicast_MATCH     |         rewrite_ACTION          |
-|tunnel_decap_process_outer_MATCH |          _condition_61          |          rewrite_MATCH          |    rewrite_multicast_ACTION     |
-|tunnel_decap_process_inner_MATCH |      egress_qos_map_ACTION      |                                 |          _condition_70          |
-|       int_inst_0407_MATCH       |      int_inst_0003_ACTION       |                                 |                                 |
-|      egress_qos_map_MATCH       |      int_inst_1215_ACTION       |                                 |                                 |
-|                                 |tunnel_decap_process_inner_ACTION|                                 |                                 |
+|       int_inst_0003_MATCH       |      int_inst_1215_ACTION       |          rewrite_MATCH          |         int_bos_ACTION          |
+|       int_inst_1215_MATCH       |          _condition_71          |tunnel_decap_process_inner_MATCH |  int_meta_header_update_ACTION  |
+|tunnel_decap_process_outer_MATCH |          _condition_70          |     rewrite_multicast_MATCH     |    rewrite_multicast_ACTION     |
+|       int_inst_0407_MATCH       |          _condition_61          |  int_meta_header_update_MATCH   |         rewrite_ACTION          |
+|       int_inst_0811_MATCH       |      int_inst_0003_ACTION       |          int_bos_MATCH          |tunnel_decap_process_inner_ACTION|
+|      egress_qos_map_MATCH       |      int_inst_0407_ACTION       |                                 |                                 |
 |                                 |tunnel_decap_process_outer_ACTION|                                 |                                 |
-|                                 |          _condition_71          |                                 |                                 |
+|                                 |          _condition_64          |                                 |                                 |
+|                                 |      egress_qos_map_ACTION      |                                 |                                 |
+|                                 |      int_inst_0811_ACTION       |                                 |                                 |
 
 |               t=8               |               t=9               |              t=10               |              t=11               |
-|        egress_vni_MATCH         |          _condition_63          |        egress_nat_MATCH         |          _condition_65          |
-|        l3_rewrite_MATCH         |          _condition_66          |       smac_rewrite_MATCH        |        egress_nat_ACTION        |
-|            mtu_MATCH            |          _condition_67          |                                 |       smac_rewrite_ACTION       |
-|      egress_bd_stats_MATCH      |           mtu_ACTION            |                                 |                                 |
-|       egress_bd_map_MATCH       |        l3_rewrite_ACTION        |                                 |                                 |
+|       egress_bd_map_MATCH       |          _condition_67          |        egress_nat_MATCH         |        egress_nat_ACTION        |
+|        egress_vni_MATCH         |        egress_vni_ACTION        |       smac_rewrite_MATCH        |       smac_rewrite_ACTION       |
+|      egress_bd_stats_MATCH      |           mtu_ACTION            |                                 |          _condition_65          |
+|            mtu_MATCH            |          _condition_66          |                                 |                                 |
+|        l3_rewrite_MATCH         |        l3_rewrite_ACTION        |                                 |                                 |
 |                                 |      egress_bd_map_ACTION       |                                 |                                 |
-|                                 |        egress_vni_ACTION        |                                 |                                 |
 |                                 |     egress_bd_stats_ACTION      |                                 |                                 |
+|                                 |          _condition_63          |                                 |                                 |
 
 |              t=12               |              t=13               |              t=14               |              t=15               |
-|   egress_l4port_fields_MATCH    |   egress_l4port_fields_ACTION   |tunnel_encap_process_outer_MATCH |    egress_l4_src_port_ACTION    |
-|tunnel_encap_process_inner_MATCH |tunnel_encap_process_inner_ACTION|    egress_l4_dst_port_MATCH     |tunnel_encap_process_outer_ACTION|
-|                                 |                                 |    egress_l4_src_port_MATCH     |    egress_l4_dst_port_ACTION    |
+|   egress_l4port_fields_MATCH    |tunnel_encap_process_inner_ACTION|    egress_l4_src_port_MATCH     |    egress_l4_src_port_ACTION    |
+|tunnel_encap_process_inner_MATCH |   egress_l4port_fields_ACTION   |    egress_l4_dst_port_MATCH     |    egress_l4_dst_port_ACTION    |
+|                                 |                                 |tunnel_encap_process_outer_MATCH |tunnel_encap_process_outer_ACTION|
 
 |              t=16               |              t=17               |              t=18               |              t=19               |
-|        tunnel_mtu_MATCH         |          _condition_68          |    tunnel_dst_rewrite_MATCH     |   tunnel_smac_rewrite_ACTION    |
-|      int_outer_encap_MATCH      |          _condition_69          |    tunnel_dmac_rewrite_MATCH    |    tunnel_src_rewrite_ACTION    |
-|      tunnel_rewrite_MATCH       |      tunnel_rewrite_ACTION      |    tunnel_smac_rewrite_MATCH    |      egress_filter_ACTION       |
-|                                 |        tunnel_mtu_ACTION        |    tunnel_src_rewrite_MATCH     |    tunnel_dst_rewrite_ACTION    |
-|                                 |     int_outer_encap_ACTION      |                                 |   tunnel_dmac_rewrite_ACTION    |
+|      int_outer_encap_MATCH      |        tunnel_mtu_ACTION        |    tunnel_dst_rewrite_MATCH     |   tunnel_smac_rewrite_ACTION    |
+|      tunnel_rewrite_MATCH       |          _condition_69          |    tunnel_dmac_rewrite_MATCH    |   tunnel_dmac_rewrite_ACTION    |
+|        tunnel_mtu_MATCH         |          _condition_68          |    tunnel_smac_rewrite_MATCH    |      egress_filter_ACTION       |
+|                                 |      tunnel_rewrite_ACTION      |    tunnel_src_rewrite_MATCH     |    tunnel_src_rewrite_ACTION    |
+|                                 |     int_outer_encap_ACTION      |                                 |    tunnel_dst_rewrite_ACTION    |
 
 |              t=20               |              t=21               |              t=22               |              t=23               |
-|      egress_mac_acl_MATCH       |     egress_ipv6_acl_ACTION      |     egress_vlan_xlate_MATCH     |    egress_system_acl_ACTION     |
-|      egress_ipv6_acl_MATCH      |      egress_ip_acl_ACTION       |     egress_system_acl_MATCH     |    egress_vlan_xlate_ACTION     |
+|      egress_ipv6_acl_MATCH      |     egress_ipv6_acl_ACTION      |     egress_vlan_xlate_MATCH     |    egress_system_acl_ACTION     |
+|      egress_mac_acl_MATCH       |      egress_ip_acl_ACTION       |     egress_system_acl_MATCH     |    egress_vlan_xlate_ACTION     |
 |       egress_ip_acl_MATCH       |    egress_filter_drop_ACTION    |                                 |                                 |
-|                                 |          _condition_73          |                                 |                                 |
 |                                 |      egress_mac_acl_ACTION      |                                 |                                 |
+|                                 |          _condition_73          |                                 |                                 |
 
-
+ 
 
 
 Match units usage (max = 8 units) on one processor
 |t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
-|2.0 | 0  |4.0 | 0  |7.0 | 0  |4.0 | 0  |5.0 | 0  |2.0 | 0  |2.0 | 0  |3.0 | 0  |
+| 2  | 0  | 4  | 0  | 6  | 0  | 5  | 0  | 5  | 0  | 2  | 0  | 2  | 0  | 3  | 0  |
 
 |t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
-|3.0 | 0  |4.0 | 0  |8.0 | 0  |2.0 | 0  |
+| 3  | 0  | 4  | 0  | 8  | 0  | 2  | 0  |
 
 
 Action fields usage (max = 32 fields) on one processor
 |t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
-| 0  | 16 | 0  | 31 | 0  | 32 | 0  | 11 | 0  | 11 | 0  | 8  | 0  | 8  | 0  | 27 |
+| 0  | 16 | 0  | 31 | 0  | 30 | 0  | 13 | 0  | 11 | 0  | 8  | 0  | 8  | 0  | 27 |
 
 |t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
 | 0  | 28 | 0  | 7  | 0  | 8  | 0  | 10 |
