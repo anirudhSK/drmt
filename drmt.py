@@ -10,10 +10,12 @@ from prmt import PrmtFineSolver
 from sieve_rotator import *
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec, seed_prmt_fine):
+    def __init__(self, dag, input_spec, seed_prmt_fine, period_duration, minute_limit):
         self.G = dag
         self.input_spec = input_spec
         self.seed_prmt_fine = seed_prmt_fine
+        self.period_duration = period_duration
+        self.minute_limit    = minute_limit
 
     def solve(self):
         """ Returns the optimal schedule
@@ -31,17 +33,17 @@ class DrmtScheduleSolver:
           print ('{:*^80}'.format(' Running PRMT fine ILP solver '))
           psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
           solution = psolver.solve(solve_coarse = False)
-          init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.input_spec.num_procs,\
+          init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.period_duration,\
                                              input_spec.dM, input_spec.dA)
           assert(init_drmt_schedule)
-          Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / period_duration))
+          Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / self.period_duration))
         else:
           # Set Q_MAX based on critical path
           cpath, cplat = self.G.critical_path()
-          Q_MAX = int(math.ceil(1.5 * cplat / period_duration))
+          Q_MAX = int(math.ceil(1.5 * cplat / self.period_duration))
 
         print ('{:*^80}'.format(' Running DRMT ILP solver '))
-        T = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
+        T = self.period_duration
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
         action_nodes = self.G.nodes(select='action')
@@ -132,7 +134,16 @@ class DrmtScheduleSolver:
             t[i].start = init_drmt_schedule[i]
 
         # Solve model
+        m.setParam('TimeLimit', self.minute_limit * 60)
         m.optimize()
+        ret = m.Status
+
+        print ('Return code is ', ret)
+        if (ret == GRB.INFEASIBLE):
+          return None
+        elif ((ret == GRB.TIME_LIMIT) or (ret == GRB.INTERRUPTED)):
+          if (m.SolCount == 0):
+            return None
 
         # Construct and return schedule
         self.time_of_op = {}
@@ -161,7 +172,7 @@ class DrmtScheduleSolver:
         return solution
 
     def compute_periodic_schedule(self):
-        T = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
+        T = self.period_duration
         self.ops_on_ring = collections.defaultdict(list)
         self.match_key_usage = dict()
         self.action_fields_usage = dict()
@@ -196,13 +207,13 @@ class DrmtScheduleSolver:
 if __name__ == "__main__":
   # Cmd line args
   if (len(sys.argv) != 5):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <yes to prime ILP> <# processors>")
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <# processors> <time limit in mins>")
     exit(1)
   elif (len(sys.argv) == 5):
     input_file = sys.argv[1]
     hw_file = sys.argv[2]
-    seed_prmt_fine = bool(sys.argv[3] == "yes")
-    num_proc = int(sys.argv[4])
+    num_procs = int(sys.argv[3])
+    minute_limit = int(sys.argv[4])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
@@ -212,10 +223,6 @@ if __name__ == "__main__":
   input_spec.match_unit_size     = hw_spec.match_unit_size
   input_spec.action_proc_limit   = hw_spec.action_proc_limit
   input_spec.match_proc_limit    = hw_spec.match_proc_limit
-  input_spec.throughput          = 1.0 # TODO, for now.
-
-  # Derive period_duration from num_procs and throughput
-  period_duration = int(math.ceil((1.0 * input_spec.num_procs) / input_spec.throughput))
 
   # Create G
   G = ScheduleDAG()
@@ -223,23 +230,49 @@ if __name__ == "__main__":
   cpath, cplat = G.critical_path()
 
   print ('{:*^80}'.format(' Input DAG '))
-  print_problem(G, input_spec)
+  tpt_upper_bound = print_problem(G, input_spec)
+  tpt_lower_bound = 0.1 # Just for kicks
   print ('\n\n')
 
-  print ('{:*^80}'.format(' Scheduling DRMT '))
-  solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine)
-  solution = solver.solve()
+  # Try to max. throughput
+  # We do this by min. the period
+  period_lower_bound = int(math.ceil((1.0 * num_procs) / tpt_upper_bound))
+  period_upper_bound = int(math.ceil((1.0 * num_procs) / tpt_lower_bound))
+  period = period_upper_bound
+  last_good_solution = None
+  last_good_period   = None
+  print ('Searching between limits ', period_lower_bound, ' and ', period_upper_bound, ' cycles')
+  low = period_lower_bound
+  high = period_upper_bound
+  while (low <= high):
+    assert(low > 0)
+    assert(high > 0)
+    period = int(math.ceil((low + high)/2.0))
+    print ('period =', period, ' cycles')
+    print ('{:*^80}'.format(' Scheduling DRMT '))
+    solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine = False, period_duration = period, minute_limit = minute_limit)
+    solution = solver.solve()
+    if (solution):
+      last_good_period   = period
+      last_good_solution = solution
+      high = period - 1
+    else:
+      low  = period + 1
+  if (last_good_solution == None):
+    print ("Best throughput so far is below ", tpt_lower_bound, " packets/cycle.")
+    exit(1)
 
-  print ('Optimal schedule length = %d cycles' % solver.length)
+  print ('Best achieved throughput = %f packets / cycle' % (num_procs / last_good_period))
+  print ('Schedule length (thread count) = %d cycles' % last_good_solution.length)
   print ('Critical path length = %d cycles' % cplat)
 
   print ('\n\n')
 
   print ('{:*^80}'.format(' First scheduling period on one processor'))
-  print (timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n')
+  print (timeline_str(last_good_solution.ops_at_time, white_space=0, timeslots_per_row=4),'\n\n')
 
   print ('{:*^80}'.format(' Steady state on one processor'))
   print ('{:*^80}'.format('p[u] is packet from u scheduling periods ago'))
-  print (timeline_str(solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n')
+  print (timeline_str(last_good_solution.ops_on_ring, white_space=0, timeslots_per_row=4), '\n\n')
 
-  print_resource_usage(input_spec, solution)
+  print_resource_usage(input_spec, last_good_solution)

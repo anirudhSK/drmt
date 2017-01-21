@@ -105,6 +105,8 @@ def print_problem(dag, input_spec, match_selector = 'match', action_selector = '
   print ('Upper bound on throughput = ', throughput_upper_bound)
   if (input_spec.throughput > throughput_upper_bound) :
     print ('Throughput cannot be supported with the current resources')
+    exit(1)
+  return throughput_upper_bound
 
 def print_resource_usage(input_spec, solution):
   print ('Match units usage (max = %d units) on one processor' % input_spec.match_unit_limit)
