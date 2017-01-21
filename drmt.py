@@ -6,7 +6,6 @@ import math
 from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
-from randomized_sieve import *
 from prmt import PrmtFineSolver
 from sieve_rotator import *
 
