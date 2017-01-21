@@ -27,11 +27,11 @@ def random_topological_sort_recursive(dag):
 
   return list(reversed(order))
 
-def index_dag_sieve(input_spec, dag, index, bound):
+def index_dag_sieve(input_spec, dag, index, bound, period_duration):
   # final schedule           
   schedule = []
   
-  Procs = input_spec.num_procs
+  period_duration
       
   # wild card intensity
   rf_m = 10**4
@@ -54,7 +54,7 @@ def index_dag_sieve(input_spec, dag, index, bound):
   concurrent_action_limit = {}
   
   # Init resource usage
-  for i in range(Procs):
+  for i in range(period_duration):
       
       # total resources at cycle
       match_limit[i] = 0
@@ -120,17 +120,17 @@ def index_dag_sieve(input_spec, dag, index, bound):
              # loop until success
              while flag:
                                                                                                       
-                # check resources availability at time%Procs
+                # check resources availability at time%period_duration
                                                                                                       
-                match_limit_cond = match_limit[time%Procs] + \
+                match_limit_cond = match_limit[time%period_duration] + \
                 math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)\
                 <= input_spec.match_unit_limit
               
                 con_match_limit_cond = \
-                len(set(concurrent_match_limit[time%Procs])) < input_spec.match_proc_limit                                                                                      
+                len(set(concurrent_match_limit[time%period_duration])) < input_spec.match_proc_limit                                                                                      
                 
                 same_con_match_limit_cond = \
-                time in concurrent_match_limit[time%Procs]
+                time in concurrent_match_limit[time%period_duration]
                 
                 wild_card = np.random.choice(rf_m) > 0
                 
@@ -141,11 +141,11 @@ def index_dag_sieve(input_spec, dag, index, bound):
                     dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    match_limit[time%Procs] += \
+                    match_limit[time%period_duration] += \
                     math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)
                     
                     # update different packet matches at that cycle
-                    concurrent_match_limit[time%Procs].append(time)
+                    concurrent_match_limit[time%period_duration].append(time)
                     
                     # add to final schedule
                     schedule.append((curr_node, time))
@@ -177,16 +177,16 @@ def index_dag_sieve(input_spec, dag, index, bound):
              # loop until success
              while flag:
                                                                       
-                # check resources availability at time%Procs
+                # check resources availability at time%period_duration
                                                                       
-                action_limit_cond = action_limit[time%Procs] + \
+                action_limit_cond = action_limit[time%period_duration] + \
                 dag.node[curr_node]['num_fields'] <= input_spec.action_fields_limit
   
                 con_action_limit_cond = \
-                len(set(concurrent_action_limit[time%Procs])) < input_spec.action_proc_limit
+                len(set(concurrent_action_limit[time%period_duration])) < input_spec.action_proc_limit
                 
                 same_con_action_limit_cond = \
-                time in concurrent_action_limit[time%Procs]
+                time in concurrent_action_limit[time%period_duration]
                 
                 wild_card = np.random.choice(rf_a) > 0
                                           
@@ -197,10 +197,10 @@ def index_dag_sieve(input_spec, dag, index, bound):
                     dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    action_limit[time%Procs] += dag.node[curr_node]['num_fields']
+                    action_limit[time%period_duration] += dag.node[curr_node]['num_fields']
                     
                     # update different packet actions at that cycle
-                    concurrent_action_limit[time%Procs].append(time) 
+                    concurrent_action_limit[time%period_duration].append(time) 
                                               
                     # add to final schedule
                     schedule.append((curr_node, time))
@@ -251,17 +251,17 @@ def index_dag_sieve(input_spec, dag, index, bound):
              # loop until success
              while flag:
                                                                                                       
-                # check resources availability at time%Procs
+                # check resources availability at time%period_duration
                                                                                                       
-                match_limit_cond = match_limit[time%Procs] + \
+                match_limit_cond = match_limit[time%period_duration] + \
                 math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)\
                 <= input_spec.match_unit_limit
               
                 con_match_limit_cond = \
-                len(set(concurrent_match_limit[time%Procs])) < input_spec.match_proc_limit                                                                                      
+                len(set(concurrent_match_limit[time%period_duration])) < input_spec.match_proc_limit                                                                                      
                 
                 same_con_match_limit_cond = \
-                time in concurrent_match_limit[time%Procs]
+                time in concurrent_match_limit[time%period_duration]
                 
                 wild_card = np.random.choice(rf_m) > 0
                 
@@ -272,11 +272,11 @@ def index_dag_sieve(input_spec, dag, index, bound):
                     dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    match_limit[time%Procs] += \
+                    match_limit[time%period_duration] += \
                     math.ceil((1.0 * dag.node[curr_node]['key_width']) / input_spec.match_unit_size)
                     
                     # update different packet matches at that cycle
-                    concurrent_match_limit[time%Procs].append(time)
+                    concurrent_match_limit[time%period_duration].append(time)
                     
                     # add to final schedule
                     schedule.append((curr_node, time))
@@ -308,16 +308,16 @@ def index_dag_sieve(input_spec, dag, index, bound):
              # loop until success
              while flag:
                                                                       
-                # check resources availability at time%Procs
+                # check resources availability at time%period_duration
                                                                       
-                action_limit_cond = action_limit[time%Procs] + \
+                action_limit_cond = action_limit[time%period_duration] + \
                 dag.node[curr_node]['num_fields'] <= input_spec.action_fields_limit
   
                 con_action_limit_cond = \
-                len(set(concurrent_action_limit[time%Procs])) < input_spec.action_proc_limit
+                len(set(concurrent_action_limit[time%period_duration])) < input_spec.action_proc_limit
                 
                 same_con_action_limit_cond = \
-                time in concurrent_action_limit[time%Procs]
+                time in concurrent_action_limit[time%period_duration]
                 
                 wild_card = np.random.choice(rf_a) > 0
                                           
@@ -328,10 +328,10 @@ def index_dag_sieve(input_spec, dag, index, bound):
                     dag.node[curr_node]['time'] = time
                     
                     # update resource usage
-                    action_limit[time%Procs] += dag.node[curr_node]['num_fields']
+                    action_limit[time%period_duration] += dag.node[curr_node]['num_fields']
                     
                     # update different packet actions at that cycle
-                    concurrent_action_limit[time%Procs].append(time) 
+                    concurrent_action_limit[time%period_duration].append(time) 
                                               
                     # add to final schedule
                     schedule.append((curr_node, time))
@@ -357,7 +357,7 @@ def index_dag_sieve(input_spec, dag, index, bound):
   return schedule
     
     
-def greedy_find_initial_solution(input_spec, dag, time_limit):
+def greedy_find_initial_solution(input_spec, dag, time_limit, period_duration):
   star_time = tm.time()
   curr_time = tm.time()
   greedy_initial = {}
@@ -368,13 +368,9 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
 
   nodes = dag.number_of_nodes() 
   print ('Looking for greedy feasible solution for %d seconds' % time_limit)
-  second_counter = 0            
-  
+ 
   while curr_time - star_time < time_limit:
-      if second_counter < curr_time - star_time:
-          print (second_counter,)
-          second_counter += 1
-      schedule = index_dag_sieve(input_spec, dag, index%nodes, 2*delay)
+      schedule = index_dag_sieve(input_spec, dag, index%nodes, 2*delay, period_duration)
       index += 1
       if schedule != None:
           max_val = max([k[1] for k in schedule])
@@ -382,9 +378,7 @@ def greedy_find_initial_solution(input_spec, dag, time_limit):
           if max_val - min_val < best:
               best = max_val - min_val
               best_schedule = schedule
-              print ('\n')
               print ('Found Feasible Solution With Latency', best)
-              print ('\n')
               
       curr_time = tm.time()
   if (best_schedule == None):

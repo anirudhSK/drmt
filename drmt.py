@@ -6,14 +6,14 @@ import math
 from schedule_dag import ScheduleDAG
 from printers import *
 from solution import Solution
-from prmt import PrmtFineSolver
-from sieve_rotator import *
+from randomized_sieve import *
+RND_SIEVE_TIME = 15
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec, seed_prmt_fine, period_duration, minute_limit):
+    def __init__(self, dag, input_spec, seed_rnd_sieve, period_duration, minute_limit):
         self.G = dag
         self.input_spec = input_spec
-        self.seed_prmt_fine = seed_prmt_fine
+        self.seed_rnd_sieve = seed_rnd_sieve
         self.period_duration = period_duration
         self.minute_limit    = minute_limit
 
@@ -29,13 +29,12 @@ class DrmtScheduleSolver:
         length : int
             Maximum latency of optimal schedule
         """
-        if (self.seed_prmt_fine):
-          print ('{:*^80}'.format(' Running PRMT fine ILP solver '))
-          psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
-          solution = psolver.solve(solve_coarse = False)
-          init_drmt_schedule = sieve_rotator(solution.ops_at_time, self.period_duration,\
-                                             input_spec.dM, input_spec.dA)
-          assert(init_drmt_schedule)
+        init_drmt_schedule = None
+        if (self.seed_rnd_sieve):
+          print ('{:*^80}'.format(' Running randomized sieve '))
+          init_drmt_schedule = greedy_find_initial_solution(self.input_spec, self.G, RND_SIEVE_TIME, self.period_duration)
+
+        if (init_drmt_schedule):
           Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / self.period_duration))
         else:
           # Set Q_MAX based on critical path
@@ -130,7 +129,7 @@ class DrmtScheduleSolver:
                       for r in range(T)), "constr_action_proc")
 
         # Seed initial values
-        if self.seed_prmt_fine:
+        if init_drmt_schedule:
           for i in nodes:
             t[i].start = init_drmt_schedule[i]
 
@@ -259,7 +258,7 @@ if __name__ == "__main__":
     period = int(math.ceil((low + high)/2.0))
     print ('\nperiod =', period, ' cycles')
     print ('{:*^80}'.format(' Scheduling DRMT '))
-    solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine = False, period_duration = period, minute_limit = minute_limit)
+    solver = DrmtScheduleSolver(G, input_spec, seed_rnd_sieve = True, period_duration = period, minute_limit = minute_limit)
     solution = solver.solve()
     if (solution):
       last_good_period   = period
