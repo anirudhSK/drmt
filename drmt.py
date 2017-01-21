@@ -139,12 +139,20 @@ class DrmtScheduleSolver:
         m.optimize()
         ret = m.Status
 
-        print ('Return code is ', ret)
         if (ret == GRB.INFEASIBLE):
+          print ('Infeasible')
           return None
         elif ((ret == GRB.TIME_LIMIT) or (ret == GRB.INTERRUPTED)):
           if (m.SolCount == 0):
+            print ('Hit time limit or interrupted, no solution found yet')
             return None
+          else:
+            print ('Hit time limit or interrupted, suboptimal solution found with gap ', m.MIPGap)
+        elif (ret == GRB.OPTIMAL):
+          print ('Optimal solution found with gap ', m.MIPGap)
+        else:
+          print ('Return code is ', ret)
+          assert(False)
 
         # Construct and return schedule
         self.time_of_op = {}
@@ -249,7 +257,7 @@ if __name__ == "__main__":
     assert(low > 0)
     assert(high > 0)
     period = int(math.ceil((low + high)/2.0))
-    print ('period =', period, ' cycles')
+    print ('\nperiod =', period, ' cycles')
     print ('{:*^80}'.format(' Scheduling DRMT '))
     solver = DrmtScheduleSolver(G, input_spec, seed_prmt_fine = False, period_duration = period, minute_limit = minute_limit)
     solution = solver.solve()
@@ -259,11 +267,12 @@ if __name__ == "__main__":
       high = period - 1
     else:
       low  = period + 1
+
   if (last_good_solution == None):
     print ("Best throughput so far is below ", tpt_lower_bound, " packets/cycle.")
     exit(1)
 
-  print ('Best achieved throughput = %f packets / cycle' % (num_procs / last_good_period))
+  print ('\nBest achieved throughput = %f packets / cycle' % (num_procs / last_good_period))
   print ('Schedule length (thread count) = %d cycles' % last_good_solution.length)
   print ('Critical path length = %d cycles' % cplat)
 
