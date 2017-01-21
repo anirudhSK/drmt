@@ -73,9 +73,9 @@ def timeline_str(objs_at_time, white_space=2, timeslots_per_row=8):
 
   return timeline
 
-def print_problem(dag, input_spec, match_selector = 'match', action_selector = 'action'):
+def print_problem(dag, input_spec, num_procs, match_selector = 'match', action_selector = 'action'):
   cpath, cplat = dag.critical_path()
-  print ('# of processors = ', input_spec.num_procs)
+  print ('# of processors = ', num_procs)
   print ('# of nodes = ', dag.number_of_nodes())
   print ('# of edges = ', dag.number_of_edges())
   print ('# of matches = ', len(dag.nodes(select='match')))
@@ -85,12 +85,12 @@ def print_problem(dag, input_spec, match_selector = 'match', action_selector = '
   match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * dag.node[node]['key_width']) / input_spec.match_unit_size),\
                        dag.nodes(select=match_selector), 0)
   print ('# of match units = ', match_units)
-  print ('aggregate match_unit_limit = ', input_spec.num_procs * input_spec.match_unit_limit)
+  print ('aggregate match_unit_limit = ', num_procs * input_spec.match_unit_limit)
 
   action_fields = reduce(lambda acc, node: acc + dag.node[node]['num_fields'],\
                        dag.nodes(select=action_selector), 0)
   print ('# of action fields = ', action_fields)
-  print ('aggregate action_fields_limit = ', input_spec.num_procs * input_spec.action_fields_limit)
+  print ('aggregate action_fields_limit = ', num_procs * input_spec.action_fields_limit)
 
   print ('match_proc_limit =',  input_spec.match_proc_limit)
   print ('action_proc_limit =', input_spec.action_proc_limit)
@@ -98,14 +98,10 @@ def print_problem(dag, input_spec, match_selector = 'match', action_selector = '
   print ('Critical path: ', cpath)
   print ('Critical path length = %d cycles' % cplat)
 
-  print ('Required throughput: %d packets / cycle '%(input_spec.throughput))
   throughput_upper_bound = \
-        min((1.0 * input_spec.action_fields_limit * input_spec.num_procs) / action_fields,\
-            (1.0 * input_spec.match_unit_limit    * input_spec.num_procs) / match_units)
+        min((1.0 * input_spec.action_fields_limit * num_procs) / action_fields,\
+            (1.0 * input_spec.match_unit_limit    * num_procs) / match_units)
   print ('Upper bound on throughput = ', throughput_upper_bound)
-  if (input_spec.throughput > throughput_upper_bound) :
-    print ('Throughput cannot be supported with the current resources')
-    exit(1)
   return throughput_upper_bound
 
 def print_resource_usage(input_spec, solution):

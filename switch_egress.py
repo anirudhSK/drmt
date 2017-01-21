@@ -399,9 +399,3 @@ edges = \
  ('vlan_decap_ACTION', 'tunnel_encap_process_outer_ACTION'): {'delay': dA},
  ('vlan_decap_ACTION', 'tunnel_rewrite_ACTION'): {'delay': dA},
  ('vlan_decap_MATCH', 'vlan_decap_ACTION'): {'delay': dM}}
-
-# Number of processors in system
-num_procs = 12
-
-# Throughput required
-throughput = 1.0

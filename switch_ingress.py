@@ -1158,9 +1158,3 @@ edges = \
  ('validate_packet_ACTION', 'ingress_bd_stats_ACTION'): {'delay': dA},
  ('validate_packet_ACTION', 'system_acl_MATCH'): {'delay': dA},
  ('validate_packet_MATCH', 'validate_packet_ACTION'): {'delay': dM}}
-
-# Number of processors in system
-num_procs = 24
-
-# Throughput required
-throughput = 1.0

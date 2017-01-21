@@ -238,7 +238,7 @@ if __name__ == "__main__":
   cpath, cplat = G.critical_path()
 
   print ('{:*^80}'.format(' Input DAG '))
-  tpt_upper_bound = print_problem(G, input_spec)
+  tpt_upper_bound = print_problem(G, input_spec, num_procs)
   tpt_lower_bound = 0.1 # Just for kicks
   print ('\n\n')
 
