@@ -357,7 +357,7 @@ def index_dag_sieve(input_spec, dag, index, bound, period_duration):
   return schedule
     
     
-def greedy_find_initial_solution(input_spec, dag, time_limit, period_duration):
+def rnd_sieve(input_spec, dag, time_limit, period_duration):
   star_time = tm.time()
   curr_time = tm.time()
   greedy_initial = {}

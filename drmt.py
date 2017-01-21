@@ -31,8 +31,25 @@ class DrmtScheduleSolver:
         """
         init_drmt_schedule = None
         if (self.seed_rnd_sieve):
-          print ('{:*^80}'.format(' Running randomized sieve '))
-          init_drmt_schedule = greedy_find_initial_solution(self.input_spec, self.G, RND_SIEVE_TIME, self.period_duration)
+          print ('{:*^80}'.format(' Running rnd sieve '))
+          rnd_sch = rnd_sieve(self.input_spec, self.G, RND_SIEVE_TIME, self.period_duration)
+
+          print ('{:*^80}'.format(' Running PRMT + rotator '))
+          psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
+          solution = psolver.solve(solve_coarse = False)
+          prmt_sch = sieve_rotator(solution.ops_at_time, self.period_duration, input_spec.dM, input_spec.dA)
+
+          if ((rnd_sch == None) and (prmt_sch == None)):
+            print ("Both heuristics returned nothing")
+            init_drmt_schedule = None
+          elif ((rnd_sch == None)):
+            print ("Picking output from PRMT")
+            init_drmt_schedule = prmt_sch
+          elif ((prmt_sch == None)):
+            print ("Picking output from RND sieve")
+            init_drmt_schedule = rnd_sch
+          else:
+            init_drmt_schedule = prmt_sch if (max(prmt_sch.values()) < max(rnd_sch.values())) else rnd_sch
 
         if (init_drmt_schedule):
           Q_MAX = int(math.ceil((1.0 * (max(init_drmt_schedule.values()) + 1)) / self.period_duration))
