@@ -58,6 +58,7 @@ class PrmtFineSolver:
           T_MAX = 3 * cplen
 
         m = Model()
+        m.setParam("LogToConsole", 0)
 
         # Create variables
         # t is the start substage (one match and one action substage make an RMT stage) for each DAG node

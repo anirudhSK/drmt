@@ -50,6 +50,7 @@ class DrmtScheduleSolver:
         edges = self.G.edges()
 
         m = Model()
+        m.setParam("LogToConsole", 0)
 
         # Create variables
         # t is the start time for each DAG node in the first scheduling period
