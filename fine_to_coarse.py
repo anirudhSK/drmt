@@ -12,10 +12,10 @@ def contract_dag(input_spec):
   
   tables = []
   found_table = dict()
-  
+    
   for m in match_nodes:
     for a in action_nodes:
-      if (a.startswith("_condition")):
+      if (a.startswith("egress__condition") or a.startswith("ingress__condition")):
         continue
       assert(m.endswith('MATCH'))
       assert(a.endswith('ACTION'))

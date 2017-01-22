@@ -42,7 +42,7 @@ class PrmtFineSolver:
               fine_grained_schedule[v.strip('TABLE') + 'MATCH'] = gschedule[v] * 2;
               fine_grained_schedule[v.strip('TABLE') + 'ACTION'] = gschedule[v] * 2 + 1;
             else:
-              assert(v.startswith('_condition') or v.endswith('ACTION')) # No match
+              assert(v.startswith('ingress__condition') or v.startswith('egress__condition') or v.endswith('ACTION')) # No match
               fine_grained_schedule[v] = gschedule[v] * 2 + 1;    
 
         print '{:*^80}'.format(' Running ILP solver ') 
