@@ -47,7 +47,10 @@ class DrmtScheduleSolver:
         nodes = self.G.nodes()
         match_nodes = self.G.nodes(select='match')
         action_nodes = self.G.nodes(select='action')
+        egress_nodes = self.G.nodes(select='egress')
+        ingress_nodes = self.G.nodes(select='ingress')
         edges = self.G.edges()
+        
 
         m = Model()
 
@@ -67,15 +70,17 @@ class DrmtScheduleSolver:
         any_action = m.addVars(list(itertools.product(range(Q_MAX), range(T))), vtype=GRB.BINARY, name = "any_action")
 
         # The length of the schedule
-        length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
+        length_ingress = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length_ingress")
+        length_egress = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length_egress")
 
         # Set objective: minimize length of schedule
-        m.setObjective(length, GRB.MINIMIZE)
+        m.setObjective(length_ingress+length_egress, GRB.MINIMIZE)
 
         # Set constraints
 
         # The length is the maximum of all t's
-        m.addConstrs((t[v]  <= length for v in nodes), "constr_length_is_max")
+        m.addConstrs((t[v]  <= length_ingress for v in ingress_nodes), "constr_length_is_max_ingress")
+        m.addConstrs((t[v]  <= length_egress for v in egress_nodes), "constr_length_is_max_egress")
 
         # Given v, qr[v, q, r] is 1 for exactly one q, r, i.e., there's a unique quotient and remainder
         m.addConstrs((sum(qr[v, q, r] for q in range(Q_MAX) for r in range(T)) == 1 for v in nodes),\
@@ -139,8 +144,8 @@ class DrmtScheduleSolver:
         # Construct and return schedule
         self.time_of_op = {}
         self.ops_at_time = collections.defaultdict(list)
-        self.length = int(length.x + 1)
-        assert(self.length == length.x + 1)
+        self.length = int(max(length_ingress.x, length_egress.x) + 1)
+        assert(self.length == max(length_ingress.x, length_egress.x) + 1)
         for v in nodes:
             tv = int(t[v].x)
             self.time_of_op[v] = tv

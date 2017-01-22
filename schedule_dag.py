@@ -36,6 +36,7 @@ class ScheduleDAG(nx.DiGraph):
 
         # Annotate nodes
         for u in self.nodes():
+            self.node[u]['traffic'] = nodes[u]['traffic']
             self.node[u]['type'] = nodes[u]['type']
             if self.node[u]['type'] == 'match':
                 self.node[u]['key_width'] = nodes[u]['key_width']
@@ -101,7 +102,7 @@ class ScheduleDAG(nx.DiGraph):
         """
         nodelist = []
         for (u, d) in nx.DiGraph.nodes(self, data=True):
-            if (select == '*') or (d['type'] == select):
+            if (select == '*') or (d['type'] == select) or (d['traffic'] == select):
                 if data is False:
                     nodelist.append(u)
                 else:
