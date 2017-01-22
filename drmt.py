@@ -298,7 +298,7 @@ if __name__ == "__main__":
     print ("Best throughput so far is below ", tpt_lower_bound, " packets/cycle.")
     exit(1)
 
-  print ('\nBest achieved throughput = %f packets / cycle' % (1.0 / last_good_period))
+  print ('\nBest achieved throughput = 1 packet every %d cycles' % (last_good_period))
   print ('Schedule length (thread count) = %d cycles' % last_good_solution.length)
   print ('Critical path length = %d cycles' % cplat)
 
