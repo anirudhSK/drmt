@@ -242,14 +242,13 @@ class DrmtScheduleSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 5):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <# processors> <time limit in mins>")
+  if (len(sys.argv) != 4):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <time limit in mins>")
     exit(1)
-  elif (len(sys.argv) == 5):
+  elif (len(sys.argv) == 4):
     input_file = sys.argv[1]
     hw_file = sys.argv[2]
-    num_procs = int(sys.argv[3])
-    minute_limit = int(sys.argv[4])
+    minute_limit = int(sys.argv[3])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
@@ -266,14 +265,14 @@ if __name__ == "__main__":
   cpath, cplat = G.critical_path()
 
   print ('{:*^80}'.format(' Input DAG '))
-  tpt_upper_bound = print_problem(G, input_spec, num_procs)
-  tpt_lower_bound = 0.1 # Just for kicks
+  tpt_upper_bound = print_problem(G, input_spec)
+  tpt_lower_bound = 0.01 # Just for kicks
   print ('\n\n')
 
   # Try to max. throughput
   # We do this by min. the period
-  period_lower_bound = int(math.ceil((1.0 * num_procs) / tpt_upper_bound))
-  period_upper_bound = int(math.ceil((1.0 * num_procs) / tpt_lower_bound))
+  period_lower_bound = int(math.ceil((1.0) / tpt_upper_bound))
+  period_upper_bound = int(math.ceil((1.0) / tpt_lower_bound))
   period = period_upper_bound
   last_good_solution = None
   last_good_period   = None
@@ -299,7 +298,7 @@ if __name__ == "__main__":
     print ("Best throughput so far is below ", tpt_lower_bound, " packets/cycle.")
     exit(1)
 
-  print ('\nBest achieved throughput = %f packets / cycle' % (num_procs / last_good_period))
+  print ('\nBest achieved throughput = %f packets / cycle' % (1.0 / last_good_period))
   print ('Schedule length (thread count) = %d cycles' % last_good_solution.length)
   print ('Critical path length = %d cycles' % cplat)
 
