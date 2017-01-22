@@ -165,17 +165,23 @@ class PrmtFineSolver:
 if __name__ == "__main__":
   # Cmd line args
   if (len(sys.argv) != 4):
-    print ("Usage: ", sys.argv[0], " <scheduling input file without .py suffix> <yes to seed with greedy> <coarse/fine>")
+    print ("Usage: ", sys.argv[0], " <DAG> <HW file> <coarse/fine>")
     exit(1)
   elif (len(sys.argv) == 4):
     input_file = sys.argv[1]
-    assert((sys.argv[2] == "yes") or (sys.argv[2] == "no"))
-    seed_greedy = bool(sys.argv[2] == "yes")
+    hw_file = sys.argv[2]
     assert((sys.argv[3] == "coarse") or (sys.argv[3] == "fine"))
     solve_coarse = bool(sys.argv[3] == "coarse")
 
   # Input example
   input_spec = importlib.import_module(input_file, "*")
+  hw_spec    = importlib.import_module(hw_file, "*")
+  input_spec.action_fields_limit = hw_spec.action_fields_limit
+  input_spec.match_unit_limit    = hw_spec.match_unit_limit
+  input_spec.match_unit_size     = hw_spec.match_unit_size
+  input_spec.action_proc_limit   = hw_spec.action_proc_limit
+  input_spec.match_proc_limit    = hw_spec.match_proc_limit
+
   G = ScheduleDAG()
   G.create_dag(input_spec.nodes, input_spec.edges)
   
@@ -183,11 +189,8 @@ if __name__ == "__main__":
   print_problem(G, input_spec)
   
   print ('{:*^80}'.format(' Scheduling PRMT fine '))
-  solver = PrmtFineSolver(G, input_spec, seed_greedy)
+  solver = PrmtFineSolver(G, input_spec, seed_greedy = True)
   solution = solver.solve(solve_coarse)
-  if (solution.length > 2 * input_spec.num_procs):
-    print ("Exceeded num_procs, rejected!!!")
-    exit(1)
   print ('Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0)))
   print ('{:*^80}'.format(' Schedule'))
   print (timeline_str(solution.ops_at_time, white_space=0, timeslots_per_row=4), '\n\n')
