@@ -1,0 +1,740 @@
+********************************** Input DAG ***********************************
+# of processors =  24
+# of nodes =  328
+# of edges =  1221
+# of matches =  124
+# of actions =  204
+Match unit size =  80
+# of match units =  166.0
+aggregate match_unit_limit =  192
+# of action fields =  584
+aggregate action_fields_limit =  768
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['ingress_ingress_port_mapping_MATCH', 'ingress_ingress_port_mapping_ACTION', 'ingress_port_vlan_mapping_MATCH', 'ingress_port_vlan_mapping_ACTION', 'ingress_ipsg_MATCH', 'ingress_ipsg_ACTION', 'ingress_native_packet_over_fabric_ACTION', 'ingress_mpls_ACTION', 'ingress_tunnel_MATCH', 'ingress_tunnel_lookup_miss_ACTION', 'ingress_ingress_l4_src_port_MATCH', 'ingress_ingress_l4_src_port_ACTION', 'ingress_ipv6_acl_MATCH', 'ingress_ipv6_acl_ACTION', 'ingress_ipv6_racl_ACTION', 'ingress_fwd_result_MATCH', 'ingress_fwd_result_ACTION', 'ingress_nexthop_MATCH', 'ingress_nexthop_ACTION', 'ingress_lag_group_MATCH', 'ingress_lag_group_ACTION', 'ingress_fabric_lag_MATCH', 'ingress_fabric_lag_ACTION']
+Critical path length = 102 cycles
+Required throughput: 1 packets / cycle 
+Upper bound on throughput =  1.15662650602
+
+
+
+******************************* Scheduling DRMT ********************************
+************************* Running PRMT fine ILP solver *************************
+*************************** Running greedy heuristic ***************************
+Unpaired action or condition:  ingress_ingress_bd_stats_ACTION
+Unpaired action or condition:  ingress__condition_19
+Unpaired action or condition:  ingress__condition_46
+Unpaired action or condition:  egress__condition_59
+Unpaired action or condition:  egress__condition_56
+Unpaired action or condition:  egress__condition_57
+Unpaired action or condition:  egress__condition_55
+Unpaired action or condition:  ingress__condition_17
+Unpaired action or condition:  ingress__condition_16
+Unpaired action or condition:  ingress__condition_15
+Unpaired action or condition:  ingress__condition_14
+Unpaired action or condition:  ingress__condition_0
+Unpaired action or condition:  ingress__condition_32
+Unpaired action or condition:  ingress__condition_18
+Unpaired action or condition:  egress__condition_58
+Unpaired action or condition:  ingress_drop_stats_ACTION
+Unpaired action or condition:  ingress__condition_13
+Unpaired action or condition:  ingress__condition_25
+Unpaired action or condition:  ingress__condition_53
+Unpaired action or condition:  ingress__condition_10
+Unpaired action or condition:  ingress__condition_29
+Unpaired action or condition:  ingress__condition_8
+Unpaired action or condition:  egress_egress_filter_drop_ACTION
+Unpaired action or condition:  ingress__condition_39
+Unpaired action or condition:  egress__condition_62
+Unpaired action or condition:  ingress__condition_2
+Unpaired action or condition:  ingress__condition_24
+Unpaired action or condition:  egress__condition_65
+Unpaired action or condition:  ingress__condition_11
+Unpaired action or condition:  ingress_acl_stats_ACTION
+Unpaired action or condition:  ingress__condition_40
+Unpaired action or condition:  ingress__condition_22
+Unpaired action or condition:  ingress__condition_52
+Unpaired action or condition:  ingress__condition_5
+Unpaired action or condition:  ingress__condition_12
+Unpaired action or condition:  ingress__condition_54
+Unpaired action or condition:  ingress__condition_51
+Unpaired action or condition:  ingress__condition_50
+Unpaired action or condition:  ingress__condition_6
+Unpaired action or condition:  ingress__condition_1
+Unpaired action or condition:  egress__condition_70
+Unpaired action or condition:  egress__condition_71
+Unpaired action or condition:  egress__condition_72
+Unpaired action or condition:  egress__condition_73
+Unpaired action or condition:  egress__condition_74
+Unpaired action or condition:  ingress__condition_38
+Unpaired action or condition:  ingress__condition_35
+Unpaired action or condition:  ingress__condition_34
+Unpaired action or condition:  ingress__condition_37
+Unpaired action or condition:  ingress__condition_30
+Unpaired action or condition:  ingress__condition_33
+Unpaired action or condition:  ingress__condition_49
+Unpaired action or condition:  ingress__condition_36
+Unpaired action or condition:  ingress__condition_41
+Unpaired action or condition:  ingress__condition_31
+Unpaired action or condition:  ingress__condition_44
+Unpaired action or condition:  ingress__condition_45
+Unpaired action or condition:  ingress__condition_47
+Unpaired action or condition:  ingress__condition_48
+Unpaired action or condition:  egress__condition_63
+Unpaired action or condition:  egress__condition_61
+Unpaired action or condition:  egress__condition_60
+Unpaired action or condition:  egress__condition_67
+Unpaired action or condition:  egress__condition_66
+Unpaired action or condition:  ingress__condition_28
+Unpaired action or condition:  egress__condition_64
+Unpaired action or condition:  ingress__condition_26
+Unpaired action or condition:  ingress__condition_27
+Unpaired action or condition:  egress__condition_69
+Unpaired action or condition:  egress__condition_68
+Unpaired action or condition:  ingress__condition_20
+Unpaired action or condition:  ingress__condition_21
+Unpaired action or condition:  ingress__condition_43
+Unpaired action or condition:  ingress__condition_23
+Unpaired action or condition:  egress_egress_filter_ACTION
+Unpaired action or condition:  ingress__condition_9
+Unpaired action or condition:  ingress__condition_7
+Unpaired action or condition:  ingress__condition_4
+Unpaired action or condition:  ingress__condition_3
+Unpaired action or condition:  ingress__condition_42
+****************************** Running ILP solver ******************************
+Optimize a model with 2665 rows, 22305 columns and 68236 nonzeros
+Variable types: 0 continuous, 22305 integer (21648 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 7e+01]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 330 rows and 8088 columns
+Presolve time: 0.39s
+Presolved: 2335 rows, 14217 columns, 44413 nonzeros
+
+Loaded MIP start with objective 65
+
+Variable types: 0 continuous, 14217 integer (13888 binary)
+
+Root relaxation: objective 2.500000e+01, 2618 iterations, 0.18 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   25.00000    0  380   65.00000   25.00000  61.5%     -    1s
+     0     0   25.36272    0  629   65.00000   25.36272  61.0%     -    3s
+     0     0   30.24096    0  884   65.00000   30.24096  53.5%     -    5s
+     0     0   31.00000    0  588   65.00000   31.00000  52.3%     -    7s
+     0     0   31.00000    0  649   65.00000   31.00000  52.3%     -    7s
+     0     0   31.26592    0 1236   65.00000   31.26592  51.9%     -   19s
+     0     0   31.39369    0 1326   65.00000   31.39369  51.7%     -   21s
+     0     0   31.93728    0 1405   65.00000   31.93728  50.9%     -   24s
+     0     0   31.94770    0 1402   65.00000   31.94770  50.8%     -   25s
+     0     0   32.12790    0 1462   65.00000   32.12790  50.6%     -   29s
+     0     0   32.16184    0 1526   65.00000   32.16184  50.5%     -   32s
+     0     0   32.20320    0 1527   65.00000   32.20320  50.5%     -   39s
+     0     0   32.20397    0 1533   65.00000   32.20397  50.5%     -   40s
+     0     0   32.23870    0 1573   65.00000   32.23870  50.4%     -   46s
+     0     0   33.00000    0  622   65.00000   33.00000  49.2%     -   48s
+     0     0   33.00000    0  509   65.00000   33.00000  49.2%     -   49s
+     0     2   33.00000    0  509   65.00000   33.00000  49.2%     -   51s
+   253   250   33.00000   68  675   65.00000   33.00000  49.2%  59.7   55s
+* 1436   217             376      61.0000000   33.00000  45.9%  22.0   58s
+H 1656   310                      59.0000000   33.00000  44.1%  25.4   59s
+H 1694   319                      57.0000000   33.00000  42.1%  26.1   59s
+  1725   338   33.00000  252  738   57.00000   33.00000  42.1%  26.1   60s
+H 1755   341                      55.0000000   33.00000  40.0%  26.6   60s
+H 1803   264                      53.0000000   33.00000  37.7%  27.8   60s
+H 1877   246                      51.0000000   33.00000  35.3%  28.3   61s
+  1880   243   41.00000  106  399   51.00000   33.00000  35.3%  28.3   66s
+  1882   245   36.00000   75 1150   51.00000   34.00000  33.3%  28.2   70s
+  1885   247   49.00000  154 1378   51.00000   35.00000  31.4%  28.2   76s
+  1887   248   39.00000   42 1556   51.00000   35.28345  30.8%  28.2   86s
+  1889   249   43.00000   70 1524   51.00000   36.12740  29.2%  28.1   91s
+  1891   251   41.00000  130 1543   51.00000   37.00000  27.5%  28.1   97s
+  1893   252   41.00000   37 1438   51.00000   37.00000  27.5%  28.1  101s
+  1894   253   49.00000  206 1402   51.00000   37.00000  27.5%  28.0  105s
+  1895   253   47.00000   49 1700   51.00000   37.12814  27.2%  28.0  113s
+  1896   254   47.00000  140 1734   51.00000   37.20939  27.0%  28.0  117s
+  1897   255   49.00000  147 1643   51.00000   38.00000  25.5%  28.0  120s
+  1899   256   47.00000  173 1449   51.00000   38.00000  25.5%  28.0  125s
+H 1900   243                      49.0000000   38.00000  22.4%  28.0  137s
+H 1900   231                      47.0000000   38.00000  19.1%  28.0  137s
+  1902   232   38.27073   75 1508   47.00000   38.27073  18.6%  27.9  140s
+H 1902   220                      45.0000000   38.27073  15.0%  27.9  142s
+  1905   222   45.00000  154 1531   45.00000   39.00000  13.3%  27.9  146s
+H 1906   211                      43.0000000   39.00000  9.30%  27.9  153s
+H 1906   200                      41.0000000   39.00000  4.88%  27.9  153s
+
+Cutting planes:
+  Gomory: 3
+  Cover: 27
+  Implied bound: 1
+  Clique: 120
+  MIR: 268
+  Flow cover: 261
+  GUB cover: 677
+  Zero half: 42
+
+Explored 1907 nodes (229515 simplex iterations) in 153.40 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 10: 41 43 45 ... 59
+Pool objective bound 41
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.100000000000e+01, best bound 4.100000000000e+01, gap 0.0000%
+Incurred one match no-op
+*************************** Running DRMT ILP solver ****************************
+Optimize a model with 2733 rows, 71610 columns and 285842 nonzeros
+Variable types: 0 continuous, 71610 integer (71280 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 2e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 57 rows and 25042 columns
+Presolve time: 0.68s
+Presolved: 2676 rows, 46568 columns, 186120 nonzeros
+
+Loaded MIP start with objective 420
+
+Variable types: 0 continuous, 46568 integer (46238 binary)
+
+Root relaxation: objective 1.830000e+02, 3029 iterations, 0.25 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0  183.00000    0  182  420.00000  183.00000  56.4%     -    5s
+     0     0  184.00000    0  772  420.00000  184.00000  56.2%     -    7s
+     0     0  184.02439    0  938  420.00000  184.02439  56.2%     -   12s
+     0     0  185.00000    0 1334  420.00000  185.00000  56.0%     -   16s
+     0     0  185.00000    0 1442  420.00000  185.00000  56.0%     -   22s
+     0     0  185.00000    0 1473  420.00000  185.00000  56.0%     -   29s
+     0     0  185.00000    0 1489  420.00000  185.00000  56.0%     -   37s
+     0     2  185.00000    0  604  420.00000  185.00000  56.0%     -   44s
+     1     4  189.00000    1  633  420.00000  185.00000  56.0%  6861   45s
+    31    29  189.00000    9  848  420.00000  187.00000  55.5%   489   51s
+    56    53  189.00000   12  841  420.00000  187.00000  55.5%   282   82s
+    80    78  189.00000   18  839  420.00000  187.00000  55.5%   198   87s
+   280   274  189.00000   47  739  420.00000  187.00000  55.5%  71.3   91s
+   684   664  189.00000   82  735  420.00000  187.00000  55.5%  43.0   95s
+  1535  1504  189.00000  366  784  420.00000  187.00000  55.5%  30.0  101s
+  1948  1907  189.00000  502  786  420.00000  187.00000  55.5%  32.2  105s
+  2515  2458  189.00000  676  785  420.00000  187.00000  55.5%  32.6  110s
+  3523  3453  189.00000  936  708  420.00000  187.00000  55.5%  28.5  117s
+  4157  4056  189.00000 1166  705  420.00000  187.00000  55.5%  27.5  121s
+  4809  4649  189.00000 1422  703  420.00000  187.00000  55.5%  27.7  125s
+  5730  5550  189.00000 1727  687  420.00000  187.00000  55.5%  25.8  130s
+  6853  6661  189.00000 2003  659  420.00000  187.00000  55.5%  23.8  135s
+  7976  7771  189.00000 2366  652  420.00000  187.00000  55.5%  22.6  141s
+  9342  9129  189.00000 2748  667  420.00000  187.00000  55.5%  20.7  147s
+ 10084  9857  189.00000 2898  644  420.00000  187.00000  55.5%  19.8  150s
+ 11427 11167  189.00000 3273  628  420.00000  187.00000  55.5%  18.8  157s
+ 12207 11937  189.00000 3436  629  420.00000  187.00000  55.5%  18.2  160s
+ 13403 13049  189.00000 3780  620  420.00000  187.00000  55.5%  17.8  172s
+ 13421 13069  189.00000 3785  614  420.00000  187.00000  55.5%  17.9  176s
+ 14027 13640  293.00000  238 1489  420.00000  187.00000  55.5%  17.7  194s
+ 14029 13641  188.00000  647  676  420.00000  187.00000  55.5%  17.7  209s
+ 14030 13642  188.00000 2690  329  420.00000  187.00000  55.5%  17.7  225s
+ 14031 13643  188.00000 1421 1291  420.00000  187.00000  55.5%  17.7  232s
+ 14032 13643  417.00000  157  985  420.00000  187.00000  55.5%  17.7  260s
+ 14033 13644  189.00000 2322 1239  420.00000  187.00000  55.5%  17.7  270s
+ 14034 13645  202.00000 3355  841  420.00000  187.00000  55.5%  17.7  289s
+ 14035 13645  410.00000 1786 1333  420.00000  187.00000  55.5%  17.7  295s
+ 14036 13646  189.00000 3446  770  420.00000  187.00000  55.5%  17.7  312s
+ 14037 13647  189.00000 2198 1282  420.00000  187.00000  55.5%  17.7  317s
+H14037 12964                     200.0000000  187.00000  6.50%  17.7  332s
+ 14039 12965  188.00000 3169 1182  200.00000  187.00000  6.50%  17.7  336s
+ 14040 12966  200.00000  376  758  200.00000  187.00000  6.50%  17.7  340s
+ 14044 12969  200.00000  160  811  200.00000  187.00000  6.50%  25.4  346s
+ 14046 12971  200.00000  281 1218  200.00000  187.00000  6.50%  25.4  350s
+ 14047 12971  200.00000  238  861  200.00000  187.00000  6.50%  25.4  355s
+ 14049 12973  188.00000  647  903  200.00000  187.00000  6.50%  25.4  362s
+ 14050 12973  188.00000 2690 1223  200.00000  187.00000  6.50%  25.4  365s
+ 14051 12974  188.00000 1421  837  200.00000  187.00000  6.50%  25.4  373s
+ 14052 12975  200.00000  157 1222  200.00000  187.00000  6.50%  25.4  376s
+ 14053 12975  189.00000 2322  740  200.00000  187.00000  6.50%  25.4  383s
+ 14054 12976  200.00000 3355 1198  200.00000  187.00000  6.50%  25.4  387s
+ 14055 12977  200.00000 1786  905  200.00000  187.00000  6.50%  25.4  403s
+ 14056 12977  189.00000 3446  736  200.00000  187.00000  6.50%  25.4  406s
+ 14058 12981  187.00000   21  709  200.00000  187.00000  6.50%  32.5  422s
+ 14060 12981  187.00000   22  763  200.00000  187.00000  6.50%  32.7  429s
+ 14063 12981  187.00000   23  765  200.00000  187.00000  6.50%  32.9  436s
+ 14071 12980  195.00000   24  879  200.00000  187.00000  6.50%  33.4  443s
+ 14075 12980  187.00000   25  787  200.00000  187.00000  6.50%  33.5  445s
+ 14084 12977  187.00000   26  729  200.00000  187.00000  6.50%  33.8  450s
+ 14089 12976  189.00000   26  884  200.00000  187.00000  6.50%  34.0  455s
+ 14098 12978  187.00000   28  877  200.00000  187.00000  6.50%  34.3  464s
+ 14106 12978  187.00000   29  775  200.00000  187.00000  6.50%  34.6  467s
+ 14125 12979  187.58824   30  794  200.00000  187.00000  6.50%  35.0  474s
+ 14135 12981  187.00000   30  738  200.00000  187.00000  6.50%  35.1  477s
+ 14162 12992  189.00000   33 1003  200.00000  187.00000  6.50%  35.4  482s
+ 14176 12991  188.00000   34  776  200.00000  187.00000  6.50%  35.5  486s
+ 14203 13004  187.00000   36  669  200.00000  187.00000  6.50%  36.0  494s
+ 14220 13009  187.00000   37  669  200.00000  187.00000  6.50%  36.4  499s
+ 14244 13015     cutoff   38       200.00000  187.00000  6.50%  36.7  506s
+ 14258 13016     cutoff   39       200.00000  187.00000  6.50%  37.6  512s
+ 14280 13026  187.00685   41 1160  200.00000  187.00000  6.50%  38.2  524s
+ 14295 13031  187.00685   41 1131  200.00000  187.00000  6.50%  38.9  531s
+ 14310 13034  187.59006   42  865  200.00000  187.00000  6.50%  39.7  539s
+ 14327 13038  187.00686   42 1066  200.00000  187.00000  6.50%  40.0  547s
+ 14347 13032  187.39216   43  904  200.00000  187.00000  6.50%  40.3  551s
+ 14365 13044  188.00000   43  915  200.00000  187.00000  6.50%  40.7  556s
+ 14427 13042  188.00000   45  860  200.00000  187.00000  6.50%  41.6  563s
+ 14439 13043  188.12018   47  890  200.00000  187.00000  6.50%  42.2  568s
+ 14446 13042  190.00000   47  695  200.00000  187.00000  6.50%  42.5  571s
+ 14488 13055  194.00000   49  603  200.00000  187.00000  6.50%  43.2  577s
+ 14506 13062  197.00000   54  440  200.00000  187.00000  6.50%  44.0  583s
+ 14668 13127  197.00000   79  207  200.00000  187.00000  6.50%  44.7  587s
+ 14770 13133  197.00000   95  171  200.00000  187.00000  6.50%  44.8  592s
+H14807 12181                     195.0000000  187.00000  4.10%  44.8  592s
+ 14818 12172     cutoff  110       195.00000  187.00000  4.10%  45.2  601s
+ 14831 12174  187.30769   33 1227  195.00000  187.00000  4.10%  46.4  607s
+H14842 11536                     191.0000000  187.00000  2.09%  46.8  607s
+ 14847 11527     cutoff   35       191.00000  187.00809  2.09%  47.1  614s
+ 14854 11528  188.75000   37  865  191.00000  187.00809  2.09%  48.2  624s
+ 14863 11528  188.75000   38  866  191.00000  187.00809  2.09%  48.9  631s
+ 14874 11525  190.00000   42  483  191.00000  187.00809  2.09%  50.2  635s
+H14994 10889                     189.0000000  187.00809  1.05%  51.5  639s
+ 15011 10858     cutoff  106       189.00000  187.02554  1.04%  51.7  643s
+ 15032 10810     cutoff   32       189.00000  187.45455  0.82%  53.0  648s
+ 15073 10787 infeasible   86       189.00000  188.00000  0.53%  54.7  650s
+
+Cutting planes:
+  Gomory: 30
+  Cover: 243
+  Implied bound: 7
+  Clique: 329
+  MIR: 267
+  Flow cover: 141
+  GUB cover: 460
+  Zero half: 90
+
+Explored 15082 nodes (855135 simplex iterations) in 650.05 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 5: 189 191 195 ... 420
+Pool objective bound 189
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.890000000000e+02, best bound 1.890000000000e+02, gap 0.0000%
+Optimal schedule length = 107 cycles
+Critical path length = 102 cycles
+
+
+
+******************* First scheduling period on one processor********************
+|                    t=0                    |                    t=1                    |                    t=2                    |                    t=3                    |
+|  egress_tunnel_decap_process_outer_MATCH  |                                           |                                           |                                           |
+|    ingress_ingress_port_mapping_MATCH     |                                           |                                           |                                           |
+|     egress_egress_port_mapping_MATCH      |                                           |                                           |                                           |
+|             egress_rid_MATCH              |                                           |                                           |                                           |
+|   ingress_validate_outer_ethernet_MATCH   |                                           |                                           |                                           |
+|          egress_vlan_decap_MATCH          |                                           |                                           |                                           |
+|            egress_mirror_MATCH            |                                           |                                           |                                           |
+
+|                    t=4                    |                    t=5                    |                    t=6                    |                    t=7                    |
+|                                           |                                           |                                           |        egress_int_inst_0407_MATCH         |
+|                                           |                                           |                                           |          egress_int_insert_MATCH          |
+|                                           |                                           |                                           |    ingress_switch_config_params_MATCH     |
+|                                           |                                           |                                           | ingress_validate_outer_ipv4_packet_MATCH  |
+|                                           |                                           |                                           |        egress_int_inst_1215_MATCH         |
+|                                           |                                           |                                           |        egress_int_inst_0003_MATCH         |
+|                                           |                                           |                                           |  egress_tunnel_decap_process_inner_MATCH  |
+|                                           |                                           |                                           |          egress_egress_nat_MATCH          |
+
+|                    t=8                    |                    t=9                    |                   t=10                    |                   t=11                    |
+|                                           |           ingress__condition_46           |         egress_replica_type_MATCH         | ingress_validate_outer_ipv6_packet_MATCH  |
+|                                           |           egress__condition_59            |    ingress_validate_mpls_packet_MATCH     |  ingress_native_packet_over_fabric_MATCH  |
+|                                           |           egress__condition_56            |      ingress_port_vlan_mapping_MATCH      |        ingress_int_terminate_MATCH        |
+|                                           |           egress__condition_57            |   ingress_fabric_ingress_dst_lkp_MATCH    |         ingress_int_source_MATCH          |
+|                                           |           egress__condition_55            |           egress_int_bos_MATCH            |        ingress_storm_control_MATCH        |
+|                                           |           ingress__condition_0            |        ingress_sflow_ingress_MATCH        |   ingress_ingress_port_properties_MATCH   |
+|                                           |           egress_mirror_ACTION            |      ingress_adjust_lkp_fields_MATCH      |           egress_rewrite_MATCH            |
+|                                           |    ingress_ingress_port_mapping_ACTION    |                                           |                                           |
+|                                           |           egress__condition_58            |                                           |                                           |
+|                                           |           ingress__condition_8            |                                           |                                           |
+|                                           |           ingress__condition_2            |                                           |                                           |
+|                                           |         egress_vlan_decap_ACTION          |                                           |                                           |
+|                                           |  ingress_validate_outer_ethernet_ACTION   |                                           |                                           |
+|                                           |           ingress__condition_1            |                                           |                                           |
+|                                           |             egress_rid_ACTION             |                                           |                                           |
+|                                           |           ingress__condition_4            |                                           |                                           |
+
+|                   t=12                    |                   t=13                    |                   t=14                    |                   t=15                    |
+|           ingress__condition_10           |                                           |                                           |                                           |
+| egress_tunnel_decap_process_outer_ACTION  |                                           |                                           |                                           |
+|     egress_egress_port_mapping_ACTION     |                                           |                                           |                                           |
+|           egress__condition_60            |                                           |                                           |                                           |
+|           ingress__condition_9            |                                           |                                           |                                           |
+
+|                   t=16                    |                   t=17                    |                   t=18                    |                   t=19                    |
+| egress_tunnel_decap_process_inner_ACTION  |          egress_l3_rewrite_MATCH          |                                           |           ingress__condition_52           |
+|         egress_int_insert_ACTION          |  egress_tunnel_encap_process_inner_MATCH  |                                           |     ingress_port_vlan_mapping_ACTION      |
+|    ingress_switch_config_params_ACTION    |        egress_egress_qos_map_MATCH        |                                           |        egress_replica_type_ACTION         |
+|           ingress__condition_47           |    egress_int_meta_header_update_MATCH    |                                           |                                           |
+|                                           |      egress_rewrite_multicast_MATCH       |                                           |                                           |
+|                                           |     ingress_ipsg_permit_special_MATCH     |                                           |                                           |
+
+|                   t=20                    |                   t=21                    |                   t=22                    |                   t=23                    |
+|     egress_egress_l4port_fields_MATCH     |    ingress_sflow_ing_take_sample_MATCH    |             egress_mtu_MATCH              |                                           |
+|           ingress__condition_53           |        egress_egress_bd_map_MATCH         |       ingress_ipv4_dest_vtep_MATCH        |                                           |
+|    ingress_validate_mpls_packet_ACTION    |            ingress_mpls_MATCH             |    ingress_outer_ipv6_multicast_MATCH     |                                           |
+| ingress_outer_ipv4_multicast_star_g_MATCH |        ingress_ipv4_src_vtep_MATCH        | ingress_outer_ipv6_multicast_star_g_MATCH |                                           |
+|         ingress_outer_rmac_MATCH          |        ingress_ipv6_src_vtep_MATCH        |                                           |                                           |
+|           egress__condition_62            |       ingress_ipv6_dest_vtep_MATCH        |                                           |                                           |
+|       ingress_sflow_ingress_ACTION        |           egress__condition_70            |                                           |                                           |
+|           egress_rewrite_ACTION           |       ingress_int_terminate_ACTION        |                                           |                                           |
+|        egress_int_inst_0811_MATCH         |                                           |                                           |                                           |
+|    ingress_outer_ipv4_multicast_MATCH     |                                           |                                           |                                           |
+|            ingress_ipsg_MATCH             |                                           |                                           |                                           |
+|           ingress__condition_51           |                                           |                                           |                                           |
+|           egress__condition_71            |                                           |                                           |                                           |
+|   ingress_fabric_ingress_dst_lkp_ACTION   |                                           |                                           |                                           |
+|           egress__condition_61            |                                           |                                           |                                           |
+|           ingress__condition_7            |                                           |                                           |                                           |
+|           ingress__condition_3            |                                           |                                           |                                           |
+
+|                   t=24                    |                   t=25                    |                   t=26                    |                   t=27                    |
+|                                           |                                           |    ingress_ipsg_permit_special_ACTION     |                                           |
+|                                           |                                           |  ingress_ingress_port_properties_ACTION   |                                           |
+
+|                   t=28                    |                   t=29                    |                   t=30                    |                   t=31                    |
+|                                           |ingress_outer_ipv4_multicast_star_g_ACTION |        egress_egress_bd_map_ACTION        |ingress_outer_ipv6_multicast_star_g_ACTION |
+|                                           |           ingress__condition_17           |           ingress__condition_18           |       ingress_ipv4_dest_vtep_ACTION       |
+|                                           |           ingress__condition_16           |           ingress__condition_13           |         egress_l3_rewrite_ACTION          |
+|                                           |           ingress__condition_15           |      egress_rewrite_multicast_ACTION      |           egress__condition_65            |
+|                                           |           ingress__condition_14           |         ingress_int_source_ACTION         |            ingress_mpls_ACTION            |
+|                                           |            ingress_ipsg_ACTION            |        egress_int_inst_1215_ACTION        |         egress_egress_nat_ACTION          |
+|                                           |        egress_int_inst_0407_ACTION        |   ingress_sflow_ing_take_sample_ACTION    |    ingress_outer_ipv6_multicast_ACTION    |
+|                                           |        egress_int_inst_0811_ACTION        |       egress_egress_qos_map_ACTION        |                                           |
+|                                           |           ingress__condition_12           |         ingress_outer_rmac_ACTION         |                                           |
+|                                           | ingress_validate_outer_ipv6_packet_ACTION |    ingress_outer_ipv4_multicast_ACTION    |                                           |
+|                                           |           egress__condition_64            |           egress__condition_63            |                                           |
+|                                           | ingress_validate_outer_ipv4_packet_ACTION |           egress__condition_66            |                                           |
+|                                           |                                           |       ingress_ipv6_dest_vtep_ACTION       |                                           |
+|                                           |                                           | ingress_native_packet_over_fabric_ACTION  |                                           |
+
+|                   t=32                    |                   t=33                    |                   t=34                    |                   t=35                    |
+|           ingress__condition_19           |      egress_egress_l4_dst_port_MATCH      |                                           |                                           |
+|             egress_mtu_ACTION             |      egress_egress_l4_src_port_MATCH      |                                           |                                           |
+| egress_tunnel_encap_process_inner_ACTION  |   ingress_fabric_ingress_src_lkp_MATCH    |                                           |                                           |
+|        ingress_spanning_tree_MATCH        |      egress_egress_vlan_xlate_MATCH       |                                           |                                           |
+|           ingress__condition_25           |  egress_tunnel_encap_process_outer_MATCH  |                                           |                                           |
+|          egress_egress_vni_MATCH          |       egress_egress_bd_stats_MATCH        |                                           |                                           |
+|     ingress_ingress_qos_map_pcp_MATCH     |                                           |                                           |                                           |
+|         egress_smac_rewrite_MATCH         |                                           |                                           |                                           |
+|           ingress__condition_24           |                                           |                                           |                                           |
+|           ingress__condition_11           |                                           |                                           |                                           |
+|           ingress__condition_22           |                                           |                                           |                                           |
+|           ingress__condition_5            |                                           |                                           |                                           |
+|    ingress_ingress_qos_map_dscp_MATCH     |                                           |                                           |                                           |
+|    egress_egress_l4port_fields_ACTION     |                                           |                                           |                                           |
+|           ingress__condition_6            |                                           |                                           |                                           |
+|    ingress_int_sink_update_outer_MATCH    |                                           |                                           |                                           |
+|           ingress_tunnel_MATCH            |                                           |                                           |                                           |
+|     ingress_tunnel_lookup_miss_MATCH      |                                           |                                           |                                           |
+|           egress__condition_67            |                                           |                                           |                                           |
+|     ingress_adjust_lkp_fields_ACTION      |                                           |                                           |                                           |
+|           ingress__condition_20           |                                           |                                           |                                           |
+|           ingress__condition_21           |                                           |                                           |                                           |
+|           ingress__condition_23           |                                           |                                           |                                           |
+
+|                   t=40                    |                   t=41                    |                   t=42                    |                   t=43                    |
+|                                           |           ingress_tunnel_ACTION           |     ingress_ingress_l4_src_port_MATCH     |        egress_tunnel_rewrite_MATCH        |
+|                                           |        egress_smac_rewrite_ACTION         |       ingress_validate_packet_MATCH       | ingress_ipv4_multicast_route_star_g_MATCH |
+|                                           |       ingress_spanning_tree_ACTION        |            ingress_rmac_MATCH             |    ingress_ipv4_multicast_route_MATCH     |
+|                                           |    ingress_ingress_qos_map_pcp_ACTION     |           ingress__condition_29           |          ingress_ipv4_fib_MATCH           |
+|                                           |         egress_egress_vni_ACTION          | egress_tunnel_encap_process_outer_ACTION  |           ingress_nat_dst_MATCH           |
+|                                           |     ingress_tunnel_lookup_miss_ACTION     |     egress_egress_l4_src_port_ACTION      |ingress_ipv6_multicast_bridge_star_g_MATCH |
+|                                           |       ingress_ipv6_src_vtep_ACTION        |        ingress_ipv4_fib_lpm_MATCH         |            ingress_dmac_MATCH             |
+|                                           |       ingress_ipv4_src_vtep_ACTION        |     egress_egress_l4_dst_port_ACTION      |                                           |
+|                                           |    ingress_ingress_qos_map_dscp_ACTION    |       egress_egress_bd_stats_ACTION       |                                           |
+|                                           |                                           |     ingress_ingress_l4_dst_port_MATCH     |                                           |
+|                                           |                                           |           ingress__condition_28           |                                           |
+|                                           |                                           |           ingress__condition_26           |                                           |
+|                                           |                                           |       ingress_storm_control_ACTION        |                                           |
+|                                           |                                           |          ingress_ipv6_fib_MATCH           |                                           |
+
+|                   t=48                    |                   t=49                    |                   t=50                    |                   t=51                    |
+|                                           | ingress_ipv6_multicast_route_star_g_MATCH |                                           |            ingress_rmac_ACTION            |
+|                                           |    ingress_ipv6_multicast_route_MATCH     |                                           |          ingress_ipv6_fib_ACTION          |
+|                                           |          ingress_nat_twice_MATCH          |                                           |           ingress__condition_32           |
+|                                           |                                           |                                           |    ingress_ipv4_multicast_bridge_MATCH    |
+|                                           |                                           |                                           |           ingress_mac_acl_MATCH           |
+|                                           |                                           |                                           |      ingress_validate_packet_ACTION       |
+|                                           |                                           |                                           |           ingress__condition_39           |
+|                                           |                                           |                                           |        ingress_ipv6_fib_lpm_MATCH         |
+|                                           |                                           |                                           |    ingress_ingress_l4_src_port_ACTION     |
+|                                           |                                           |                                           |           ingress__condition_40           |
+|                                           |                                           |                                           |    ingress_ingress_l4_dst_port_ACTION     |
+|                                           |                                           |                                           |          ingress_nat_flow_MATCH           |
+|                                           |                                           |                                           |           ingress__condition_38           |
+|                                           |                                           |                                           |           ingress__condition_35           |
+|                                           |                                           |                                           |           ingress__condition_34           |
+|                                           |                                           |                                           |           ingress__condition_37           |
+|                                           |                                           |                                           |           ingress__condition_30           |
+|                                           |                                           |                                           |           ingress__condition_36           |
+|                                           |                                           |                                           |           ingress__condition_41           |
+|                                           |                                           |                                           |           ingress__condition_31           |
+|                                           |                                           |                                           |           ingress__condition_44           |
+|                                           |                                           |                                           |           ingress__condition_45           |
+|                                           |                                           |                                           |           ingress_nat_src_MATCH           |
+|                                           |                                           |                                           |           ingress__condition_27           |
+|                                           |                                           |                                           |           egress__condition_68            |
+
+|                   t=52                    |                   t=53                    |                   t=54                    |                   t=55                    |
+|           ingress_ip_acl_MATCH            |     egress_tunnel_smac_rewrite_MATCH      |          ingress_ipv6_racl_MATCH          |                                           |
+|       egress_tunnel_rewrite_ACTION        |      egress_tunnel_dst_rewrite_MATCH      |ingress_ipv4_multicast_bridge_star_g_MATCH |                                           |
+|ingress_ipv4_multicast_route_star_g_ACTION |    ingress_ipv6_multicast_bridge_MATCH    |      egress_tunnel_src_rewrite_MATCH      |                                           |
+|          ingress_ipv6_acl_MATCH           |     ingress_compute_ipv6_hashes_MATCH     |          ingress_ipv4_racl_MATCH          |                                           |
+|            ingress_dmac_ACTION            |     egress_tunnel_dmac_rewrite_MATCH      |                                           |                                           |
+|           ingress__condition_33           |                                           |                                           |                                           |
+|     ingress_compute_ipv4_hashes_MATCH     |                                           |                                           |                                           |
+|    ingress_ipv4_multicast_route_ACTION    |                                           |                                           |                                           |
+
+|                   t=60                    |                   t=61                    |                   t=62                    |                   t=63                    |
+|                                           |          ingress_ipv6_acl_ACTION          |    ingress_compute_non_ip_hashes_MATCH    |ingress_ipv4_multicast_bridge_star_g_ACTION|
+|                                           |            ingress_smac_MATCH             |          ingress_mac_acl_ACTION           |         ingress_meter_index_MATCH         |
+|                                           |        ingress_ipv4_urpf_lpm_MATCH        |        ingress_ipv6_fib_lpm_ACTION        |    ingress_compute_ipv6_hashes_ACTION     |
+|                                           |          egress_tunnel_mtu_MATCH          |          ingress_nat_flow_ACTION          |        egress_egress_mac_acl_MATCH        |
+|                                           |         ingress_nat_twice_ACTION          |          ingress_bd_flood_MATCH           |         ingress_ipv6_racl_ACTION          |
+|                                           |           ingress_ip_acl_ACTION           |    ingress_compute_ipv4_hashes_ACTION     |   ingress_ipv6_multicast_bridge_ACTION    |
+|                                           |          ingress_ipv6_urpf_MATCH          |     egress_tunnel_dmac_rewrite_ACTION     |     egress_tunnel_src_rewrite_ACTION      |
+|                                           |ingress_ipv6_multicast_route_star_g_ACTION |   ingress_ipv4_multicast_bridge_ACTION    |          ingress_nat_dst_ACTION           |
+|                                           |        ingress_ipv4_fib_lpm_ACTION        |     egress_tunnel_smac_rewrite_ACTION     |          ingress_ipv4_fib_ACTION          |
+|                                           |          ingress_nat_src_ACTION           |   ingress_fabric_ingress_src_lkp_ACTION   |     egress_tunnel_dst_rewrite_ACTION      |
+|                                           |                                           |        ingress_ipv6_urpf_lpm_MATCH        |         ingress_ipv4_racl_ACTION          |
+|                                           |                                           |          ingress_ipv4_urpf_MATCH          |                                           |
+|                                           |                                           |    ingress_ipv6_multicast_route_ACTION    |                                           |
+|                                           |                                           |       egress_int_outer_encap_MATCH        |                                           |
+|                                           |                                           |ingress_ipv6_multicast_bridge_star_g_ACTION|                                           |
+
+|                   t=64                    |                   t=65                    |                   t=66                    |                   t=67                    |
+|       egress_egress_ipv6_acl_MATCH        |                                           |                                           |                                           |
+|         ingress_fwd_result_MATCH          |                                           |                                           |                                           |
+|    ingress_compute_other_hashes_MATCH     |                                           |                                           |                                           |
+|        egress_egress_ip_acl_MATCH         |                                           |                                           |                                           |
+
+|                   t=68                    |                   t=69                    |                   t=70                    |                   t=71                    |
+|                                           |                                           |                                           |       ingress_ipv6_urpf_lpm_ACTION        |
+|                                           |                                           |                                           |        egress_int_inst_0003_ACTION        |
+|                                           |                                           |                                           |         ingress_ipv4_urpf_ACTION          |
+|                                           |                                           |                                           |         ingress_ipv6_urpf_ACTION          |
+|                                           |                                           |                                           |       ingress_ipv4_urpf_lpm_ACTION        |
+|                                           |                                           |                                           |   ingress_int_sink_update_outer_ACTION    |
+|                                           |                                           |                                           |           egress__condition_72            |
+
+|                   t=72                    |                   t=73                    |                   t=74                    |                   t=75                    |
+|            ingress_smac_ACTION            |       egress_egress_mac_acl_ACTION        |     ingress_storm_control_stats_MATCH     |                                           |
+|        ingress_meter_index_ACTION         |         egress_tunnel_mtu_ACTION          |        ingress_learn_notify_MATCH         |                                           |
+|         ingress_acl_stats_ACTION          |         ingress_fwd_result_ACTION         |           ingress_nexthop_MATCH           |                                           |
+|           egress__condition_74            |    ingress_compute_other_hashes_ACTION    |      egress_egress_system_acl_MATCH       |                                           |
+|   ingress_compute_non_ip_hashes_ACTION    |           ingress__condition_48           |         ingress_ecmp_group_MATCH          |                                           |
+|           ingress__condition_43           |           egress__condition_69            |           ingress_urpf_bd_MATCH           |                                           |
+|           ingress__condition_42           |        egress_egress_ip_acl_ACTION        |                                           |                                           |
+|                                           |        egress_egress_filter_ACTION        |                                           |                                           |
+|                                           |       egress_egress_ipv6_acl_ACTION       |                                           |                                           |
+
+|                   t=80                    |                   t=81                    |                   t=82                    |                   t=83                    |
+|                                           |                                           |                                           |        ingress_learn_notify_ACTION        |
+|                                           |                                           |                                           |      egress_egress_system_acl_ACTION      |
+|                                           |                                           |                                           |         ingress_ecmp_group_ACTION         |
+|                                           |                                           |                                           |     egress_egress_filter_drop_ACTION      |
+|                                           |                                           |                                           |   egress_int_meta_header_update_ACTION    |
+|                                           |                                           |                                           |           egress_int_bos_ACTION           |
+|                                           |                                           |                                           |      egress_egress_vlan_xlate_ACTION      |
+|                                           |                                           |                                           |          ingress_nexthop_ACTION           |
+|                                           |                                           |                                           |           egress__condition_73            |
+|                                           |                                           |                                           |           ingress__condition_49           |
+|                                           |                                           |                                           |       egress_int_outer_encap_ACTION       |
+
+|                   t=84                    |                   t=85                    |                   t=86                    |                   t=87                    |
+|        ingress_traffic_class_MATCH        |                                           |                                           |                                           |
+|        ingress_meter_action_MATCH         |                                           |                                           |                                           |
+|          ingress_lag_group_MATCH          |                                           |                                           |                                           |
+
+|                   t=92                    |                   t=93                    |                   t=94                    |                   t=95                    |
+|                                           |                                           |          ingress_bd_flood_ACTION          |         ingress_fabric_lag_MATCH          |
+|                                           |                                           |          ingress_urpf_bd_ACTION           |         ingress_system_acl_MATCH          |
+|                                           |                                           |       ingress_traffic_class_ACTION        |                                           |
+|                                           |                                           |         ingress_lag_group_ACTION          |                                           |
+|                                           |                                           |           ingress__condition_54           |                                           |
+|                                           |                                           |           ingress__condition_50           |                                           |
+
+|                   t=104                   |                   t=105                   |                   t=106                   |
+|                                           |                                           |      ingress_ingress_bd_stats_ACTION      |
+|                                           |                                           |         ingress_drop_stats_ACTION         |
+|                                           |                                           |         ingress_system_acl_ACTION         |
+|                                           |                                           |         ingress_fabric_lag_ACTION         |
+|                                           |                                           |    ingress_storm_control_stats_ACTION     |
+|                                           |                                           |        ingress_meter_action_ACTION        |
+
+
+
+
+************************* Steady state on one processor*************************
+******************p[u] is packet from u scheduling periods ago******************
+|                      t=0                       |                      t=1                       |                      t=2                       |                      t=3                       |
+|            p[3].ingress_smac_ACTION            | p[2].ingress_ipv6_multicast_route_star_g_MATCH |     p[3].ingress_storm_control_stats_MATCH     |            p[2].ingress_rmac_ACTION            |
+|  p[0].egress_tunnel_decap_process_outer_MATCH  |       p[3].egress_egress_mac_acl_ACTION        |        p[3].ingress_learn_notify_MATCH         |          p[2].ingress_ipv6_fib_ACTION          |
+|        p[3].ingress_meter_index_ACTION         |         p[3].egress_tunnel_mtu_ACTION          |           p[3].ingress_nexthop_MATCH           |           p[2].ingress__condition_32           |
+|    p[0].ingress_ingress_port_mapping_MATCH     |         p[3].ingress_fwd_result_ACTION         |      p[3].egress_egress_system_acl_MATCH       |    p[2].ingress_ipv4_multicast_bridge_MATCH    |
+|         p[3].ingress_acl_stats_ACTION          |    p[2].ingress_ipv6_multicast_route_MATCH     |         p[3].ingress_ecmp_group_MATCH          |           p[2].ingress_mac_acl_MATCH           |
+|     p[0].egress_egress_port_mapping_MATCH      |    p[3].ingress_compute_other_hashes_ACTION    |           p[3].ingress_urpf_bd_MATCH           |      p[2].ingress_validate_packet_ACTION       |
+|             p[0].egress_rid_MATCH              |           p[3].ingress__condition_48           |    p[1].ingress_ipsg_permit_special_ACTION     |           p[2].ingress__condition_39           |
+|   p[0].ingress_validate_outer_ethernet_MATCH   |           p[3].egress__condition_69            |  p[1].ingress_ingress_port_properties_ACTION   |        p[2].ingress_ipv6_fib_lpm_MATCH         |
+|          p[0].egress_vlan_decap_MATCH          |          p[2].ingress_nat_twice_MATCH          |                                                |    p[2].ingress_ingress_l4_src_port_ACTION     |
+|           p[3].egress__condition_74            |        p[3].egress_egress_ip_acl_ACTION        |                                                |           p[2].ingress__condition_40           |
+|            p[0].egress_mirror_MATCH            |        p[3].egress_egress_filter_ACTION        |                                                |    p[2].ingress_ingress_l4_dst_port_ACTION     |
+|   p[3].ingress_compute_non_ip_hashes_ACTION    |       p[3].egress_egress_ipv6_acl_ACTION       |                                                |          p[2].ingress_nat_flow_MATCH           |
+|           p[3].ingress__condition_43           |                                                |                                                |           p[2].ingress__condition_38           |
+|           p[3].ingress__condition_42           |                                                |                                                |           p[2].ingress__condition_35           |
+|                                                |                                                |                                                |           p[2].ingress__condition_34           |
+|                                                |                                                |                                                |           p[2].ingress__condition_37           |
+|                                                |                                                |                                                |           p[2].ingress__condition_30           |
+|                                                |                                                |                                                |           p[2].ingress__condition_36           |
+|                                                |                                                |                                                |           p[2].ingress__condition_41           |
+|                                                |                                                |                                                |           p[2].ingress__condition_31           |
+|                                                |                                                |                                                |           p[2].ingress__condition_44           |
+|                                                |                                                |                                                |           p[2].ingress__condition_45           |
+|                                                |                                                |                                                |           p[2].ingress_nat_src_MATCH           |
+|                                                |                                                |                                                |           p[2].ingress__condition_27           |
+|                                                |                                                |                                                |           p[2].egress__condition_68            |
+
+|                      t=4                       |                      t=5                       |                      t=6                       |                      t=7                       |
+|           p[2].ingress_ip_acl_MATCH            |p[1].ingress_outer_ipv4_multicast_star_g_ACTION |        p[1].egress_egress_bd_map_ACTION        |p[1].ingress_outer_ipv6_multicast_star_g_ACTION |
+|       p[2].egress_tunnel_rewrite_ACTION        |           p[1].ingress__condition_17           |          p[2].ingress_ipv6_racl_MATCH          |       p[1].ingress_ipv4_dest_vtep_ACTION       |
+|p[2].ingress_ipv4_multicast_route_star_g_ACTION |           p[1].ingress__condition_16           |p[2].ingress_ipv4_multicast_bridge_star_g_MATCH |        p[0].egress_int_inst_0407_MATCH         |
+|          p[2].ingress_ipv6_acl_MATCH           |           p[1].ingress__condition_15           |           p[1].ingress__condition_18           |          p[0].egress_int_insert_MATCH          |
+|            p[2].ingress_dmac_ACTION            |           p[1].ingress__condition_14           |           p[1].ingress__condition_13           |         p[1].egress_l3_rewrite_ACTION          |
+|           p[2].ingress__condition_33           |            p[1].ingress_ipsg_ACTION            |      p[2].egress_tunnel_src_rewrite_MATCH      |           p[1].egress__condition_65            |
+|     p[2].ingress_compute_ipv4_hashes_MATCH     |     p[2].egress_tunnel_smac_rewrite_MATCH      |          p[2].ingress_ipv4_racl_MATCH          |    p[0].ingress_switch_config_params_MATCH     |
+|    p[2].ingress_ipv4_multicast_route_ACTION    |      p[2].egress_tunnel_dst_rewrite_MATCH      |      p[1].egress_rewrite_multicast_ACTION      | p[0].ingress_validate_outer_ipv4_packet_MATCH  |
+|                                                |        p[1].egress_int_inst_0407_ACTION        |         p[1].ingress_int_source_ACTION         |        p[0].egress_int_inst_1215_MATCH         |
+|                                                |        p[1].egress_int_inst_0811_ACTION        |        p[1].egress_int_inst_1215_ACTION        |            p[1].ingress_mpls_ACTION            |
+|                                                |           p[1].ingress__condition_12           |   p[1].ingress_sflow_ing_take_sample_ACTION    |         p[1].egress_egress_nat_ACTION          |
+|                                                |    p[2].ingress_ipv6_multicast_bridge_MATCH    |       p[1].egress_egress_qos_map_ACTION        |    p[1].ingress_outer_ipv6_multicast_ACTION    |
+|                                                |     p[2].ingress_compute_ipv6_hashes_MATCH     |         p[1].ingress_outer_rmac_ACTION         |        p[0].egress_int_inst_0003_MATCH         |
+|                                                | p[1].ingress_validate_outer_ipv6_packet_ACTION |    p[1].ingress_outer_ipv4_multicast_ACTION    |  p[0].egress_tunnel_decap_process_inner_MATCH  |
+|                                                |     p[2].egress_tunnel_dmac_rewrite_MATCH      |           p[1].egress__condition_63            |          p[0].egress_egress_nat_MATCH          |
+|                                                |           p[1].egress__condition_64            |           p[1].egress__condition_66            |                                                |
+|                                                | p[1].ingress_validate_outer_ipv4_packet_ACTION |       p[1].ingress_ipv6_dest_vtep_ACTION       |                                                |
+|                                                |                                                | p[1].ingress_native_packet_over_fabric_ACTION  |                                                |
+
+|                      t=8                       |                      t=9                       |                      t=10                      |                      t=11                      |
+|           p[1].ingress__condition_19           |           p[0].ingress__condition_46           |      p[4].ingress_ingress_bd_stats_ACTION      |        p[3].ingress_learn_notify_ACTION        |
+|             p[1].egress_mtu_ACTION             |           p[0].egress__condition_59            |         p[4].ingress_drop_stats_ACTION         |      p[3].egress_egress_system_acl_ACTION      |
+| p[1].egress_tunnel_encap_process_inner_ACTION  |           p[0].egress__condition_56            |         p[0].egress_replica_type_MATCH         | p[0].ingress_validate_outer_ipv6_packet_MATCH  |
+|        p[1].ingress_spanning_tree_MATCH        |           p[0].egress__condition_57            |         p[4].ingress_system_acl_ACTION         |         p[3].ingress_ecmp_group_ACTION         |
+|           p[1].ingress__condition_25           |           p[0].egress__condition_55            |    p[0].ingress_validate_mpls_packet_MATCH     |  p[0].ingress_native_packet_over_fabric_MATCH  |
+|          p[1].egress_egress_vni_MATCH          |           p[0].ingress__condition_0            |         p[4].ingress_fabric_lag_ACTION         |     p[3].egress_egress_filter_drop_ACTION      |
+|     p[1].ingress_ingress_qos_map_pcp_MATCH     |           p[0].egress_mirror_ACTION            |      p[0].ingress_port_vlan_mapping_MATCH      |   p[3].egress_int_meta_header_update_ACTION    |
+|         p[1].egress_smac_rewrite_MATCH         |    p[0].ingress_ingress_port_mapping_ACTION    |    p[4].ingress_storm_control_stats_ACTION     |           p[3].egress_int_bos_ACTION           |
+|           p[1].ingress__condition_24           |           p[0].egress__condition_58            |   p[0].ingress_fabric_ingress_dst_lkp_MATCH    |        p[0].ingress_int_terminate_MATCH        |
+|           p[1].ingress__condition_11           |           p[0].ingress__condition_8            |           p[0].egress_int_bos_MATCH            |         p[0].ingress_int_source_MATCH          |
+|           p[1].ingress__condition_22           |      p[1].egress_egress_l4_dst_port_MATCH      |        p[0].ingress_sflow_ingress_MATCH        |        p[0].ingress_storm_control_MATCH        |
+|           p[1].ingress__condition_5            |      p[1].egress_egress_l4_src_port_MATCH      |      p[0].ingress_adjust_lkp_fields_MATCH      |      p[3].egress_egress_vlan_xlate_ACTION      |
+|    p[1].ingress_ingress_qos_map_dscp_MATCH     |           p[0].ingress__condition_2            |        p[4].ingress_meter_action_ACTION        |   p[0].ingress_ingress_port_properties_MATCH   |
+|    p[1].egress_egress_l4port_fields_ACTION     |         p[0].egress_vlan_decap_ACTION          |                                                |           p[0].egress_rewrite_MATCH            |
+|           p[1].ingress__condition_6            |  p[0].ingress_validate_outer_ethernet_ACTION   |                                                |          p[3].ingress_nexthop_ACTION           |
+|    p[1].ingress_int_sink_update_outer_MATCH    |   p[1].ingress_fabric_ingress_src_lkp_MATCH    |                                                |           p[3].egress__condition_73            |
+|           p[1].ingress_tunnel_MATCH            |      p[1].egress_egress_vlan_xlate_MATCH       |                                                |           p[3].ingress__condition_49           |
+|     p[1].ingress_tunnel_lookup_miss_MATCH      |  p[1].egress_tunnel_encap_process_outer_MATCH  |                                                |       p[3].egress_int_outer_encap_ACTION       |
+|           p[1].egress__condition_67            |           p[0].ingress__condition_1            |                                                |                                                |
+|     p[1].ingress_adjust_lkp_fields_ACTION      |             p[0].egress_rid_ACTION             |                                                |                                                |
+|           p[1].ingress__condition_20           |       p[1].egress_egress_bd_stats_MATCH        |                                                |                                                |
+|           p[1].ingress__condition_21           |           p[0].ingress__condition_4            |                                                |                                                |
+|           p[1].ingress__condition_23           |                                                |                                                |                                                |
+
+|                      t=12                      |                      t=13                      |                      t=14                      |                      t=15                      |
+|           p[0].ingress__condition_10           |          p[2].ingress_ipv6_acl_ACTION          |    p[2].ingress_compute_non_ip_hashes_MATCH    |p[2].ingress_ipv4_multicast_bridge_star_g_ACTION|
+| p[0].egress_tunnel_decap_process_outer_ACTION  |            p[2].ingress_smac_MATCH             |          p[2].ingress_mac_acl_ACTION           |         p[2].ingress_meter_index_MATCH         |
+|        p[3].ingress_traffic_class_MATCH        |        p[2].ingress_ipv4_urpf_lpm_MATCH        |        p[2].ingress_ipv6_fib_lpm_ACTION        |    p[2].ingress_compute_ipv6_hashes_ACTION     |
+|        p[3].ingress_meter_action_MATCH         |          p[2].egress_tunnel_mtu_MATCH          |          p[2].ingress_nat_flow_ACTION          |        p[2].egress_egress_mac_acl_MATCH        |
+|     p[0].egress_egress_port_mapping_ACTION     |         p[2].ingress_nat_twice_ACTION          |          p[2].ingress_bd_flood_MATCH           |         p[2].ingress_ipv6_racl_ACTION          |
+|          p[3].ingress_lag_group_MATCH          |           p[2].ingress_ip_acl_ACTION           |    p[2].ingress_compute_ipv4_hashes_ACTION     |   p[2].ingress_ipv6_multicast_bridge_ACTION    |
+|           p[0].egress__condition_60            |          p[2].ingress_ipv6_urpf_MATCH          |     p[2].egress_tunnel_dmac_rewrite_ACTION     |     p[2].egress_tunnel_src_rewrite_ACTION      |
+|           p[0].ingress__condition_9            |p[2].ingress_ipv6_multicast_route_star_g_ACTION |   p[2].ingress_ipv4_multicast_bridge_ACTION    |          p[2].ingress_nat_dst_ACTION           |
+|                                                |        p[2].ingress_ipv4_fib_lpm_ACTION        |     p[2].egress_tunnel_smac_rewrite_ACTION     |          p[2].ingress_ipv4_fib_ACTION          |
+|                                                |          p[2].ingress_nat_src_ACTION           |   p[2].ingress_fabric_ingress_src_lkp_ACTION   |     p[2].egress_tunnel_dst_rewrite_ACTION      |
+|                                                |                                                |        p[2].ingress_ipv6_urpf_lpm_MATCH        |         p[2].ingress_ipv4_racl_ACTION          |
+|                                                |                                                |          p[2].ingress_ipv4_urpf_MATCH          |                                                |
+|                                                |                                                |    p[2].ingress_ipv6_multicast_route_ACTION    |                                                |
+|                                                |                                                |       p[2].egress_int_outer_encap_MATCH        |                                                |
+|                                                |                                                |p[2].ingress_ipv6_multicast_bridge_star_g_ACTION|                                                |
+
+|                      t=16                      |                      t=17                      |                      t=18                      |                      t=19                      |
+| p[0].egress_tunnel_decap_process_inner_ACTION  |          p[0].egress_l3_rewrite_MATCH          |     p[1].ingress_ingress_l4_src_port_MATCH     |        p[1].egress_tunnel_rewrite_MATCH        |
+|         p[0].egress_int_insert_ACTION          |  p[0].egress_tunnel_encap_process_inner_MATCH  |       p[1].ingress_validate_packet_MATCH       |           p[0].ingress__condition_52           |
+|       p[2].egress_egress_ipv6_acl_MATCH        |           p[1].ingress_tunnel_ACTION           |            p[1].ingress_rmac_MATCH             | p[1].ingress_ipv4_multicast_route_star_g_MATCH |
+|    p[0].ingress_switch_config_params_ACTION    |        p[1].egress_smac_rewrite_ACTION         |           p[1].ingress__condition_29           |     p[0].ingress_port_vlan_mapping_ACTION      |
+|         p[2].ingress_fwd_result_MATCH          |        p[0].egress_egress_qos_map_MATCH        | p[1].egress_tunnel_encap_process_outer_ACTION  |    p[1].ingress_ipv4_multicast_route_MATCH     |
+|    p[2].ingress_compute_other_hashes_MATCH     |    p[0].egress_int_meta_header_update_MATCH    |     p[1].egress_egress_l4_src_port_ACTION      |          p[1].ingress_ipv4_fib_MATCH           |
+|           p[0].ingress__condition_47           |      p[0].egress_rewrite_multicast_MATCH       |        p[1].ingress_ipv4_fib_lpm_MATCH         |           p[1].ingress_nat_dst_MATCH           |
+|        p[2].egress_egress_ip_acl_MATCH         |       p[1].ingress_spanning_tree_ACTION        |     p[1].egress_egress_l4_dst_port_ACTION      |p[1].ingress_ipv6_multicast_bridge_star_g_MATCH |
+|                                                |    p[1].ingress_ingress_qos_map_pcp_ACTION     |       p[1].egress_egress_bd_stats_ACTION       |            p[1].ingress_dmac_MATCH             |
+|                                                |         p[1].egress_egress_vni_ACTION          |     p[1].ingress_ingress_l4_dst_port_MATCH     |        p[0].egress_replica_type_ACTION         |
+|                                                |     p[0].ingress_ipsg_permit_special_MATCH     |           p[1].ingress__condition_28           |                                                |
+|                                                |     p[1].ingress_tunnel_lookup_miss_ACTION     |           p[1].ingress__condition_26           |                                                |
+|                                                |       p[1].ingress_ipv6_src_vtep_ACTION        |       p[1].ingress_storm_control_ACTION        |                                                |
+|                                                |       p[1].ingress_ipv4_src_vtep_ACTION        |          p[1].ingress_ipv6_fib_MATCH           |                                                |
+|                                                |    p[1].ingress_ingress_qos_map_dscp_ACTION    |                                                |                                                |
+
+|                      t=20                      |                      t=21                      |                      t=22                      |                      t=23                      |
+|     p[0].egress_egress_l4port_fields_MATCH     |    p[0].ingress_sflow_ing_take_sample_MATCH    |          p[3].ingress_bd_flood_ACTION          |       p[2].ingress_ipv6_urpf_lpm_ACTION        |
+|           p[0].ingress__condition_53           |        p[0].egress_egress_bd_map_MATCH         |          p[3].ingress_urpf_bd_ACTION           |         p[3].ingress_fabric_lag_MATCH          |
+|    p[0].ingress_validate_mpls_packet_ACTION    |            p[0].ingress_mpls_MATCH             |             p[0].egress_mtu_MATCH              |        p[2].egress_int_inst_0003_ACTION        |
+| p[0].ingress_outer_ipv4_multicast_star_g_MATCH |        p[0].ingress_ipv4_src_vtep_MATCH        |       p[0].ingress_ipv4_dest_vtep_MATCH        |         p[2].ingress_ipv4_urpf_ACTION          |
+|         p[0].ingress_outer_rmac_MATCH          |        p[0].ingress_ipv6_src_vtep_MATCH        |       p[3].ingress_traffic_class_ACTION        |         p[2].ingress_ipv6_urpf_ACTION          |
+|           p[0].egress__condition_62            |       p[0].ingress_ipv6_dest_vtep_MATCH        |    p[0].ingress_outer_ipv6_multicast_MATCH     |       p[2].ingress_ipv4_urpf_lpm_ACTION        |
+|       p[0].ingress_sflow_ingress_ACTION        |           p[0].egress__condition_70            | p[0].ingress_outer_ipv6_multicast_star_g_MATCH |   p[2].ingress_int_sink_update_outer_ACTION    |
+|           p[0].egress_rewrite_ACTION           |       p[0].ingress_int_terminate_ACTION        |         p[3].ingress_lag_group_ACTION          |           p[2].egress__condition_72            |
+|        p[0].egress_int_inst_0811_MATCH         |                                                |           p[3].ingress__condition_54           |         p[3].ingress_system_acl_MATCH          |
+|    p[0].ingress_outer_ipv4_multicast_MATCH     |                                                |           p[3].ingress__condition_50           |                                                |
+|            p[0].ingress_ipsg_MATCH             |                                                |                                                |                                                |
+|           p[0].ingress__condition_51           |                                                |                                                |                                                |
+|           p[0].egress__condition_71            |                                                |                                                |                                                |
+|   p[0].ingress_fabric_ingress_dst_lkp_ACTION   |                                                |                                                |                                                |
+|           p[0].egress__condition_61            |                                                |                                                |                                                |
+|           p[0].ingress__condition_7            |                                                |                                                |                                                |
+|           p[0].ingress__condition_3            |                                                |                                                |                                                |
+
+
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+|8.0 |8.0 |6.0 |8.0 |8.0 |8.0 |8.0 |8.0 |8.0 |6.0 |8.0 |8.0 |3.0 |5.0 |6.0 |3.0 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+|8.0 |6.0 |8.0 |8.0 |8.0 |8.0 |8.0 |3.0 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 6  | 21 | 8  | 24 | 30 | 25 | 26 | 29 | 28 | 31 | 11 | 32 | 14 | 32 | 29 | 31 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 28 | 31 | 32 | 23 | 28 | 30 | 8  | 27 |
+
+
+Match packets (max = 1 match packets) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  |
+
+
+Action packets (max = 1 action packets) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 1  | 1  | 1  | 1  | 1  | 1  | 1  | 1  |
+
+
