@@ -41,7 +41,7 @@ class DrmtScheduleSolver:
           print ('{:*^80}'.format(' Running PRMT + rotator '))
           psolver = PrmtFineSolver(self.G, self.input_spec, self.latency_spec, seed_greedy=True)
           solution = psolver.solve(solve_coarse = False)
-          prmt_sch = sieve_rotator(solution.ops_at_time, self.period_duration, input_spec.dM, input_spec.dA)
+          prmt_sch = sieve_rotator(solution.ops_at_time, self.period_duration, self.latency_spec.dM, self.latency_spec.dA)
 
           if ((rnd_sch == None) and (prmt_sch == None)):
             print ("Both heuristics returned nothing")
