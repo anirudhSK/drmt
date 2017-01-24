@@ -11,9 +11,10 @@ from solution import Solution
 
 class PrmtFineSolver:
     def __init__(self, dag,
-                 input_spec, seed_greedy):
+                 input_spec, latency_spec, seed_greedy):
         self.G = dag
         self.input_spec          = input_spec
+        self.latency_spec        = latency_spec
         self.seed_greedy         = seed_greedy
 
     def solve(self, solve_coarse):
@@ -30,7 +31,7 @@ class PrmtFineSolver:
         """
         if self.seed_greedy:
           print ('{:*^80}'.format(' Running greedy heuristic '))
-          gsolver = GreedyPrmtSolver(contract_dag(self.input_spec), self.input_spec)
+          gsolver = GreedyPrmtSolver(contract_dag(self.input_spec, self.latency_spec), self.input_spec)
           gschedule = gsolver.solve()
           # gschedule was obtained as a solution to the coarse-grained model.
           # it needs to be modified to support the fine-grained model
@@ -191,7 +192,7 @@ if __name__ == "__main__":
   print_problem(G, input_spec)
   
   print ('{:*^80}'.format(' Scheduling PRMT fine '))
-  solver = PrmtFineSolver(G, input_spec, seed_greedy = True)
+  solver = PrmtFineSolver(G, input_spec, latency_spec, seed_greedy = True)
   solution = solver.solve(solve_coarse)
   print ('Number of pipeline stages: %f' % (math.ceil(solution.length / 2.0)))
   print ('{:*^80}'.format(' Schedule'))

@@ -3,9 +3,9 @@ import importlib
 import networkx as nx
 from   schedule_dag import ScheduleDAG
 
-def contract_dag(input_spec):
+def contract_dag(input_spec, latency_spec):
   G = ScheduleDAG()
-  G.create_dag(input_spec.nodes, input_spec.edges)
+  G.create_dag(input_spec.nodes, input_spec.edges, latency_spec)
   
   action_nodes = G.nodes(select='action')
   match_nodes  = G.nodes(select='match')

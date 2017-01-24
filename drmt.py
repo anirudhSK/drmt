@@ -13,9 +13,10 @@ from prmt import PrmtFineSolver
 RND_SIEVE_TIME = 5
 
 class DrmtScheduleSolver:
-    def __init__(self, dag, input_spec, seed_rnd_sieve, period_duration, minute_limit):
+    def __init__(self, dag, input_spec, latency_spec, seed_rnd_sieve, period_duration, minute_limit):
         self.G = dag
         self.input_spec = input_spec
+        self.latency_spec = latency_spec
         self.seed_rnd_sieve = seed_rnd_sieve
         self.period_duration = period_duration
         self.minute_limit    = minute_limit
@@ -38,7 +39,7 @@ class DrmtScheduleSolver:
           rnd_sch = rnd_sieve(self.input_spec, self.G, RND_SIEVE_TIME, self.period_duration)
 
           print ('{:*^80}'.format(' Running PRMT + rotator '))
-          psolver = PrmtFineSolver(self.G, self.input_spec, seed_greedy=True)
+          psolver = PrmtFineSolver(self.G, self.input_spec, self.latency_spec, seed_greedy=True)
           solution = psolver.solve(solve_coarse = False)
           prmt_sch = sieve_rotator(solution.ops_at_time, self.period_duration, input_spec.dM, input_spec.dA)
 
@@ -287,7 +288,8 @@ if __name__ == "__main__":
     period = int(math.ceil((low + high)/2.0))
     print ('\nperiod =', period, ' cycles')
     print ('{:*^80}'.format(' Scheduling DRMT '))
-    solver = DrmtScheduleSolver(G, input_spec, seed_rnd_sieve = True, period_duration = period, minute_limit = minute_limit)
+    solver = DrmtScheduleSolver(G, input_spec, latency_spec,\
+                                seed_rnd_sieve = True, period_duration = period, minute_limit = minute_limit)
     solution = solver.solve()
     if (solution):
       last_good_period   = period
