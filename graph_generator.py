@@ -1,13 +1,17 @@
 import sys
 import math
 import matplotlib
+import importlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-if (len(sys.argv) !=2):
-  print("Usage: ", sys.argv[0], " <result folder>")
+if (len(sys.argv) != 4):
+  print("Usage: ", sys.argv[0], " <result folder> <drmt latencies> <prmt latencies>")
   exit(1)
 else:
   result_folder = sys.argv[1]
+  drmt_latencies = importlib.import_module(sys.argv[2], "*")
+  prmt_latencies = importlib.import_module(sys.argv[3], "*")
+
 PROCESSORS=range(1, 51)
 
 progs = ["switch_combined", "switch_combined_subset", "switch_egress",\
@@ -39,6 +43,9 @@ for prog in progs:
 
 for prog in progs:
   plt.figure()
+  plt.title("Throughput vs. number of processors: " + prog)
+  plt.xlabel("Number of processors")
+  plt.ylabel("Throughput in packets per cycle")
   for arch in p_archs:
     plt.plot(PROCESSORS, [min(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = arch)
   for arch in d_archs:
@@ -48,6 +55,10 @@ for prog in progs:
   plt.savefig(prog + ".pdf")
 
 print("drmt thread count")
+print("%26s %16s %16s %16s %16s"%("prog", "drmt_ipc_1", "drmt_ipc_2", "drmt:max(dM, dA)", "prmt:dM+dA"))
 for prog in progs:
-  for arch in d_archs:
-    print(prog, arch, drmt_thread_count[(prog, arch)])
+  print("%26s %16d %16d %16d %16d" %(prog,\
+          int(math.ceil(drmt_thread_count[(prog, "drmt_ipc_1")] / drmt_min_periods[(prog, "drmt_ipc_1")])),\
+          int(math.ceil(drmt_thread_count[(prog, "drmt_ipc_2")] / drmt_min_periods[(prog, "drmt_ipc_2")])),\
+          max(drmt_latencies.dM, drmt_latencies.dA),
+          prmt_latencies.dM + prmt_latencies.dA))
