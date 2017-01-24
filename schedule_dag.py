@@ -1,11 +1,12 @@
 import networkx as nx
 import math
 
+# A DAG to represent fine-grained match-action scheduling constraints in dRMT and pRMT
 class ScheduleDAG(nx.DiGraph):
     def __init__(self):
         nx.DiGraph.__init__(self)
 
-    def create_dag(self, nodes, edges):
+    def create_dag(self, nodes, edges, latency_spec):
         """ Returns a DAG of match/action nodes
 
         Parameters
@@ -47,7 +48,21 @@ class ScheduleDAG(nx.DiGraph):
 
         # Annotate edges
         for (u,v) in self.edges():
-            self.edge[u][v]['delay'] = edges[(u,v)]['delay']
+            # assign delay based on dependency type
+            # see https://github.com/jafingerhut/p4-hlir#sched_data-dependency-graphs
+            dep_type = edges[(u.v)]['dep_type']
+            if (dep_type == 'new_match_to_action') or (dep_type == 'new_successor_conditional_on_table_result_action_type'):
+              # minimum match latency
+              self.edge[u][v]['delay'] = latency_spec.dM
+            elif (dep_type == 'rmt_reverse_read') or (dep_type == 'rmt_successor'):
+              # latency of dS, for now zero
+              self.edge[u][v]['delay'] = latency_spec.dS
+            elif (dep_type == 'rmt_action') or (dep_type == 'rmt_match'):
+              # minimum action latency
+              self.edge[u][v]['delay'] = latency_spec.dA
+            else:
+              print ("Unexpected dependency type: ", dep_type)
+              assert(False)
 
     def critical_path(self):
         """Returns the critical (longest) path in the DAG, and its latency

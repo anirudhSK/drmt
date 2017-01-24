@@ -164,18 +164,20 @@ class PrmtFineSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 4):
-    print ("Usage: ", sys.argv[0], " <DAG> <HW file> <coarse/fine>")
+  if (len(sys.argv) != 5):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <latency file> <coarse/fine>")
     exit(1)
-  elif (len(sys.argv) == 4):
+  elif (len(sys.argv) == 5):
     input_file = sys.argv[1]
     hw_file = sys.argv[2]
-    assert((sys.argv[3] == "coarse") or (sys.argv[3] == "fine"))
-    solve_coarse = bool(sys.argv[3] == "coarse")
+    latency_file = sys.argv[3]
+    assert((sys.argv[4] == "coarse") or (sys.argv[4] == "fine"))
+    solve_coarse = bool(sys.argv[4] == "coarse")
 
   # Input example
   input_spec = importlib.import_module(input_file, "*")
   hw_spec    = importlib.import_module(hw_file, "*")
+  latency_spec=importlib.import_module(latency_file, "*")
   input_spec.action_fields_limit = hw_spec.action_fields_limit
   input_spec.match_unit_limit    = hw_spec.match_unit_limit
   input_spec.match_unit_size     = hw_spec.match_unit_size
@@ -183,7 +185,7 @@ if __name__ == "__main__":
   input_spec.match_proc_limit    = hw_spec.match_proc_limit
 
   G = ScheduleDAG()
-  G.create_dag(input_spec.nodes, input_spec.edges)
+  G.create_dag(input_spec.nodes, input_spec.edges, latency_spec)
   
   print ('{:*^80}'.format(' Input DAG '))
   print_problem(G, input_spec)

@@ -242,17 +242,19 @@ class DrmtScheduleSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 4):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <time limit in mins>")
+  if (len(sys.argv) != 5):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <latency file> <time limit in mins>")
     exit(1)
-  elif (len(sys.argv) == 4):
-    input_file = sys.argv[1]
-    hw_file = sys.argv[2]
-    minute_limit = int(sys.argv[3])
+  elif (len(sys.argv) == 5):
+    input_file   = sys.argv[1]
+    hw_file      = sys.argv[2]
+    latency_file = sys.argv[3]
+    minute_limit = int(sys.argv[4])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
   hw_spec    = importlib.import_module(hw_file, "*")
+  latency_spec=importlib.import_module(latency_file, "*")
   input_spec.action_fields_limit = hw_spec.action_fields_limit
   input_spec.match_unit_limit    = hw_spec.match_unit_limit
   input_spec.match_unit_size     = hw_spec.match_unit_size
@@ -261,7 +263,7 @@ if __name__ == "__main__":
 
   # Create G
   G = ScheduleDAG()
-  G.create_dag(input_spec.nodes, input_spec.edges)
+  G.create_dag(input_spec.nodes, input_spec.edges, latency_spec)
   cpath, cplat = G.critical_path()
 
   print ('{:*^80}'.format(' Input DAG '))
