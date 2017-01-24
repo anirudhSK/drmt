@@ -1,11 +1,14 @@
 import sys
 import math
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 if (len(sys.argv) !=2):
   print("Usage: ", sys.argv[0], " <result folder>")
   exit(1)
 else:
   result_folder = sys.argv[1]
-LIMIT_PROC = 51
+PROCESSORS=range(1, 51)
 
 progs = ["switch_combined", "switch_combined_subset", "switch_egress",\
          "switch_egress_subset", "switch_ingress", "switch_ingress_subset"]
@@ -36,20 +39,11 @@ for prog in progs:
 
 for prog in progs:
   for arch in p_archs:
-    plot_file = open((prog + "_" + arch + ".dat"), "w")
-    for n in range(1, LIMIT_PROC):
-      print(n, max(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)), file = plot_file)
-
-for prog in progs:
+    plt.plot(PROCESSORS, [max(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = arch)
   for arch in d_archs:
-    plot_file = open((prog + "_" + arch + ".dat"), "w")
-    for n in range(1, LIMIT_PROC):
-      print(n, max(1, n / drmt_min_periods[(prog, arch)]), file = plot_file)
-
-for prog in progs:
-  plot_file = open((prog + "_" + "full_dagg" + ".dat"), "w")
-  for n in range(1, LIMIT_PROC):
-    print(n, max(1, n / drmt_min_periods[(prog, "full_dagg")]), file = plot_file)
+    plt.plot(PROCESSORS, [max(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = arch)
+  plt.plot(PROCESSORS, [max(1, n / drmt_min_periods[(prog, "full_dagg")]) for n in PROCESSORS], label = "full_dagg")
+  plt.savefig(prog + ".pdf")
 
 print("drmt thread count")
 for prog in progs:
