@@ -10,7 +10,7 @@ from randomized_sieve import *
 from sieve_rotator import *
 from prmt import PrmtFineSolver
 
-RND_SIEVE_TIME = 5
+RND_SIEVE_TIME = 30
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec, latency_spec, seed_rnd_sieve, period_duration, minute_limit):
