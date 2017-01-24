@@ -1,6 +1,9 @@
 import networkx as nx
 import math
 
+# For now, assume conditions cost 1 action field
+CONDITION_COST = 1
+
 # A DAG to represent fine-grained match-action scheduling constraints in dRMT and pRMT
 class ScheduleDAG(nx.DiGraph):
     def __init__(self):
@@ -42,15 +45,19 @@ class ScheduleDAG(nx.DiGraph):
                 self.node[u]['key_width'] = nodes[u]['key_width']
             elif self.node[u]['type'] == 'action':
                 self.node[u]['num_fields'] = nodes[u]['num_fields']
+            elif self.node[u]['type'] == 'condition':
+                # TODO: At some later point, we might handle conditions more carefully
+                # For now, we treat them as actions with 1 action field
+                self.node[u]['num_fields'] = CONDITION_COST
+                self.node[u]['type'] == 'action'
             else:
-                # TODO: Fix this and handle conditions correctly
                 assert(False)
 
         # Annotate edges
         for (u,v) in self.edges():
             # assign delay based on dependency type
             # see https://github.com/jafingerhut/p4-hlir#sched_data-dependency-graphs
-            dep_type = edges[(u.v)]['dep_type']
+            dep_type = edges[(u,v)]['dep_type']
             if (dep_type == 'new_match_to_action') or (dep_type == 'new_successor_conditional_on_table_result_action_type'):
               # minimum match latency
               self.edge[u][v]['delay'] = latency_spec.dM
