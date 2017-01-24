@@ -84,12 +84,26 @@ def print_problem(dag, input_spec, match_selector = 'match', action_selector = '
   match_units = reduce(lambda acc, node: acc + math.ceil((1.0 * dag.node[node]['key_width']) / input_spec.match_unit_size),\
                        dag.nodes(select=match_selector), 0)
   print ('# of match units = ', match_units)
-  print ('aggregate match_unit_limit = ', input_spec.match_unit_limit)
+  print ('match_unit_limit = ', input_spec.match_unit_limit)
+
+  max_match_key = reduce(lambda acc, node: max(acc, dag.node[node]['key_width']),dag.nodes(select=match_selector), 0)
+  print ('max size of match key in program = ', max_match_key)
+  print ('max size of match key in hw = ', input_spec.match_unit_size * input_spec.match_unit_limit)
+  if (max_match_key > input_spec.match_unit_size * input_spec.match_unit_limit):
+    print ('max match key in program is larger than can be supported by hardware')
+    exit(1)
 
   action_fields = reduce(lambda acc, node: acc + dag.node[node]['num_fields'],\
                        dag.nodes(select=action_selector), 0)
   print ('# of action fields = ', action_fields)
-  print ('aggregate action_fields_limit = ', input_spec.action_fields_limit)
+  print ('action_fields_limit = ', input_spec.action_fields_limit)
+
+  max_action_fields = reduce(lambda acc, node: max(acc, dag.node[node]['num_fields']),dag.nodes(select=action_selector), 0)
+  print ('max number of action fields in program = ', max_action_fields)
+  print ('max number of action fields in hw = ', input_spec.action_fields_limit)
+  if (max_action_fields > input_spec.action_fields_limit):
+    print ('max number of action fields in program is larger than can be supported by hardware')
+    exit(1)
 
   print ('match_proc_limit =',  input_spec.match_proc_limit)
   print ('action_proc_limit =', input_spec.action_proc_limit)
