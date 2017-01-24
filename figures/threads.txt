@@ -1,8 +1,8 @@
 drmt thread count
-                      prog        ipc_1_lat     ipc_1_period       ipc_1_thrs        ipc_2_lat     ipc_2_period       ipc_2_thrs drmt:max(dM, dA)       prmt:dM+dA
-           switch_combined         (50%)505               21               25              243               21               12               22               20
-    switch_combined_subset              217               11               20              217               11               20               22               20
-             switch_egress         (10%)225               11               21              198                7               29               22               20
-      switch_egress_subset               99                5               20               99                3               33               22               20
-            switch_ingress         (40%)407               17               24              243               15               17               22               20
-     switch_ingress_subset              217               11               20              221                8               28               22               20
+                      prog        ipc_1_lat         ipc_2_lat    ipc_1_period      ipc_2_period      ipc_1_thrs       ipc_2_thrs drmt:max(dM, dA)       prmt:dM+dA
+           switch_combined         (50%)505               243              21                21              25               12               22               20
+    switch_combined_subset              217               217              11                11              20               20               22               20
+             switch_egress         (10%)225               198              11                 7              21               29               22               20
+      switch_egress_subset               99                99               5                 3              20               33               22               20
+            switch_ingress         (40%)407               243              17                15              24               17               22               20
+     switch_ingress_subset              217               221              11                 8              20               28               22               20
