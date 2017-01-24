@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [ $# -ne 1 ]; then
-  echo "Usage: ./benchmark.sh result_folder"
+  echo "Usage: ./run_experiments.sh result_folder"
   exit
 fi
 
