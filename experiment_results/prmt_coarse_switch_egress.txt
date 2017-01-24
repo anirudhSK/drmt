@@ -1,0 +1,100 @@
+********************************** Input DAG ***********************************
+# of nodes =  104
+# of edges =  291
+# of matches =  41
+# of actions =  63
+Match unit size =  80
+# of match units =  46
+match_unit_limit =  8
+max size of match key in program =  312
+max size of match key in hw =  640
+# of action fields =  197
+action_fields_limit =  32
+max number of action fields in program =  25
+max number of action fields in hw =  32
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['rid_MATCH', 'rid_ACTION', 'replica_type_MATCH', 'replica_type_ACTION', 'rewrite_ACTION', 'egress_bd_map_MATCH', 'egress_bd_map_ACTION', '_condition_65', 'egress_nat_ACTION', 'egress_l4port_fields_ACTION', 'egress_l4_src_port_MATCH', 'egress_l4_src_port_ACTION', 'tunnel_encap_process_outer_ACTION', 'tunnel_rewrite_MATCH', 'tunnel_rewrite_ACTION', 'tunnel_smac_rewrite_MATCH', 'tunnel_smac_rewrite_ACTION', 'egress_mac_acl_MATCH', 'egress_mac_acl_ACTION', 'egress_system_acl_MATCH', 'egress_system_acl_ACTION']
+Critical path length = 165 cycles
+Upper bound on throughput =  0.16243654822335024
+***************************** Scheduling PRMT fine *****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Number of pipeline stages: 12.000000
+*********************************** Schedule************************************
+|               t=0               |               t=1               |               t=2               |               t=3               |
+|            rid_MATCH            |          _condition_57          |tunnel_decap_process_inner_MATCH |          _condition_60          |
+|          mirror_MATCH           |          _condition_55          |    egress_port_mapping_MATCH    |        vlan_decap_ACTION        |
+|                                 |           rid_ACTION            |        int_insert_MATCH         |   egress_port_mapping_ACTION    |
+|                                 |          _condition_56          |        vlan_decap_MATCH         |tunnel_decap_process_inner_ACTION|
+|                                 |          mirror_ACTION          |                                 |          _condition_58          |
+|                                 |          _condition_74          |                                 |          _condition_59          |
+|                                 |                                 |                                 |          _condition_72          |
+|                                 |                                 |                                 |        int_insert_ACTION        |
+
+|               t=4               |               t=5               |               t=6               |               t=7               |
+|       int_inst_0003_MATCH       |          _condition_62          |          rewrite_MATCH          |         int_bos_ACTION          |
+|tunnel_decap_process_outer_MATCH |tunnel_decap_process_outer_ACTION|     rewrite_multicast_MATCH     |         rewrite_ACTION          |
+|      egress_qos_map_MATCH       |          _condition_71          |          int_bos_MATCH          |          _condition_61          |
+|       int_inst_1215_MATCH       |      int_inst_0407_ACTION       |                                 |    rewrite_multicast_ACTION     |
+|       replica_type_MATCH        |      int_inst_0811_ACTION       |                                 |                                 |
+|       int_inst_0811_MATCH       |      int_inst_1215_ACTION       |                                 |                                 |
+|       int_inst_0407_MATCH       |      egress_qos_map_ACTION      |                                 |                                 |
+|                                 |       replica_type_ACTION       |                                 |                                 |
+|                                 |          _condition_70          |                                 |                                 |
+|                                 |          _condition_64          |                                 |                                 |
+|                                 |      int_inst_0003_ACTION       |                                 |                                 |
+
+|               t=8               |               t=9               |              t=10               |              t=11               |
+|  int_meta_header_update_MATCH   |           mtu_ACTION            |        egress_nat_MATCH         |          _condition_65          |
+|            mtu_MATCH            |        l3_rewrite_ACTION        |       smac_rewrite_MATCH        |       smac_rewrite_ACTION       |
+|        egress_vni_MATCH         |      egress_bd_map_ACTION       |                                 |        egress_nat_ACTION        |
+|       egress_bd_map_MATCH       |        egress_vni_ACTION        |                                 |                                 |
+|        l3_rewrite_MATCH         |          _condition_66          |                                 |                                 |
+|                                 |          _condition_67          |                                 |                                 |
+|                                 |  int_meta_header_update_ACTION  |                                 |                                 |
+|                                 |          _condition_63          |                                 |                                 |
+
+|              t=12               |              t=13               |              t=14               |              t=15               |
+|   egress_l4port_fields_MATCH    |tunnel_encap_process_inner_ACTION|tunnel_encap_process_outer_MATCH |    egress_l4_src_port_ACTION    |
+|tunnel_encap_process_inner_MATCH |   egress_l4port_fields_ACTION   |    egress_l4_dst_port_MATCH     |    egress_l4_dst_port_ACTION    |
+|                                 |                                 |    egress_l4_src_port_MATCH     |tunnel_encap_process_outer_ACTION|
+
+|              t=16               |              t=17               |              t=18               |              t=19               |
+|        tunnel_mtu_MATCH         |     egress_bd_stats_ACTION      |    tunnel_smac_rewrite_MATCH    |      egress_filter_ACTION       |
+|      tunnel_rewrite_MATCH       |     int_outer_encap_ACTION      |    tunnel_src_rewrite_MATCH     |    tunnel_dst_rewrite_ACTION    |
+|      int_outer_encap_MATCH      |      tunnel_rewrite_ACTION      |    tunnel_dmac_rewrite_MATCH    |   tunnel_dmac_rewrite_ACTION    |
+|      egress_bd_stats_MATCH      |          _condition_68          |    tunnel_dst_rewrite_MATCH     |    tunnel_src_rewrite_ACTION    |
+|                                 |        tunnel_mtu_ACTION        |                                 |   tunnel_smac_rewrite_ACTION    |
+|                                 |          _condition_69          |                                 |                                 |
+
+|              t=20               |              t=21               |              t=22               |              t=23               |
+|       egress_ip_acl_MATCH       |     egress_ipv6_acl_ACTION      |     egress_vlan_xlate_MATCH     |    egress_vlan_xlate_ACTION     |
+|      egress_ipv6_acl_MATCH      |      egress_mac_acl_ACTION      |     egress_system_acl_MATCH     |    egress_system_acl_ACTION     |
+|      egress_mac_acl_MATCH       |          _condition_73          |                                 |                                 |
+|                                 |    egress_filter_drop_ACTION    |                                 |                                 |
+|                                 |      egress_ip_acl_ACTION       |                                 |                                 |
+
+ 
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 2  | 0  | 4  | 0  | 7  | 0  | 3  | 0  | 5  | 0  | 2  | 0  | 2  | 0  | 3  | 0  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 4  | 0  | 4  | 0  | 8  | 0  | 2  | 0  |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 0  | 16 | 0  | 32 | 0  | 31 | 0  | 10 | 0  | 12 | 0  | 8  | 0  | 8  | 0  | 27 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|
+| 0  | 28 | 0  | 7  | 0  | 8  | 0  | 10 |
+
+
+Match packets (max = 1 match packets) on one processor
+empty dictionary
+Action packets (max = 1 action packets) on one processor
+empty dictionary

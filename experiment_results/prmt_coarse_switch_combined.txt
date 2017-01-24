@@ -1,0 +1,200 @@
+********************************** Input DAG ***********************************
+# of nodes =  328
+# of edges =  1221
+# of matches =  124
+# of actions =  204
+Match unit size =  80
+# of match units =  166
+match_unit_limit =  8
+max size of match key in program =  328
+max size of match key in hw =  640
+# of action fields =  584
+action_fields_limit =  32
+max number of action fields in program =  29
+max number of action fields in hw =  32
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['ing_ingress_port_mapping_MATCH', 'ing_ingress_port_mapping_ACTION', 'ing_port_vlan_mapping_MATCH', 'ing_port_vlan_mapping_ACTION', 'ing_ipsg_MATCH', 'ing_ipsg_ACTION', 'ing_native_packet_over_fabric_ACTION', 'ing_mpls_ACTION', 'ing_tunnel_MATCH', 'ing_tunnel_lookup_miss_ACTION', 'ing_ingress_l4_src_port_MATCH', 'ing_ingress_l4_src_port_ACTION', 'ing_ipv6_acl_MATCH', 'ing_ipv6_acl_ACTION', 'ing_ipv6_racl_ACTION', 'ing_fwd_result_MATCH', 'ing_fwd_result_ACTION', 'ing_nexthop_MATCH', 'ing_nexthop_ACTION', 'ing_lag_group_MATCH', 'ing_lag_group_ACTION', 'ing_fabric_lag_MATCH', 'ing_fabric_lag_ACTION']
+Critical path length = 203 cycles
+Upper bound on throughput =  0.04819277108433735
+***************************** Scheduling PRMT fine *****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Number of pipeline stages: 22.000000
+*********************************** Schedule************************************
+|                  t=0                  |                  t=1                  |                  t=2                  |                  t=3                  |
+|           egr_mirror_MATCH            |           egr_mirror_ACTION           |        egr_replica_type_MATCH         |    ing_ipsg_permit_special_ACTION     |
+|   ing_validate_outer_ethernet_MATCH   |           _condition_egr_55           |      ing_port_vlan_mapping_MATCH      |     ing_port_vlan_mapping_ACTION      |
+|    ing_ingress_port_mapping_MATCH     |    ing_validate_mpls_packet_ACTION    |     ing_ipsg_permit_special_MATCH     |           _condition_ing_7            |
+| ing_validate_outer_ipv6_packet_MATCH  |    ing_ingress_port_mapping_ACTION    |         ing_int_source_MATCH          |    ing_switch_config_params_ACTION    |
+|    ing_validate_mpls_packet_MATCH     |  ing_validate_outer_ethernet_ACTION   |    ing_switch_config_params_MATCH     |        egr_replica_type_ACTION        |
+| ing_validate_outer_ipv4_packet_MATCH  |           _condition_ing_2            |                                       |         ing_int_source_ACTION         |
+|             egr_rid_MATCH             |           _condition_ing_0            |                                       |                                       |
+|                                       |           _condition_egr_57           |                                       |                                       |
+|                                       | ing_validate_outer_ipv6_packet_ACTION |                                       |                                       |
+|                                       |           _condition_egr_56           |                                       |                                       |
+|                                       |           _condition_ing_8            |                                       |                                       |
+|                                       |            egr_rid_ACTION             |                                       |                                       |
+|                                       |           _condition_ing_1            |                                       |                                       |
+|                                       | ing_validate_outer_ipv4_packet_ACTION |                                       |                                       |
+
+|                  t=4                  |                  t=5                  |                  t=6                  |                  t=7                  |
+|   ing_fabric_ingress_dst_lkp_MATCH    |       ing_sflow_ingress_ACTION        |        ing_int_terminate_MATCH        |           _condition_ing_11           |
+|     egr_egress_port_mapping_MATCH     |           _condition_ing_9            |         ing_outer_rmac_MATCH          |         ing_outer_rmac_ACTION         |
+| egr_tunnel_decap_process_inner_MATCH  |           _condition_ing_10           |            ing_ipsg_MATCH             |            ing_ipsg_ACTION            |
+|         egr_vlan_decap_MATCH          |           _condition_egr_60           |                                       |           _condition_ing_13           |
+|        ing_spanning_tree_MATCH        |    egr_egress_port_mapping_ACTION     |                                       |       ing_int_terminate_ACTION        |
+|        ing_sflow_ingress_MATCH        |           _condition_egr_58           |                                       |                                       |
+|                                       |           _condition_ing_4            |                                       |                                       |
+|                                       |           _condition_egr_59           |                                       |                                       |
+|                                       |   ing_fabric_ingress_dst_lkp_ACTION   |                                       |                                       |
+|                                       |           _condition_ing_3            |                                       |                                       |
+|                                       |           _condition_ing_52           |                                       |                                       |
+|                                       |         egr_vlan_decap_ACTION         |                                       |                                       |
+|                                       |       ing_spanning_tree_ACTION        |                                       |                                       |
+|                                       | egr_tunnel_decap_process_inner_ACTION |                                       |                                       |
+
+|                  t=8                  |                  t=9                  |                 t=10                  |                 t=11                  |
+|       egr_egress_qos_map_MATCH        | egr_tunnel_decap_process_outer_ACTION |  ing_native_packet_over_fabric_MATCH  |ing_outer_ipv4_multicast_star_g_ACTION |
+| egr_tunnel_decap_process_outer_MATCH  |           _condition_egr_62           |    ing_outer_ipv6_multicast_MATCH     |           _condition_ing_47           |
+|    ing_outer_ipv4_multicast_MATCH     |   ing_sflow_ing_take_sample_ACTION    |           egr_rewrite_MATCH           |          egr_rewrite_ACTION           |
+|    ing_sflow_ing_take_sample_MATCH    |           _condition_ing_17           | ing_outer_ipv4_multicast_star_g_MATCH | ing_native_packet_over_fabric_ACTION  |
+|        ing_ipv6_src_vtep_MATCH        |           _condition_ing_12           |   ing_fabric_ingress_src_lkp_MATCH    |           _condition_egr_61           |
+|        ing_ipv4_src_vtep_MATCH        |           _condition_ing_14           |                                       |           _condition_ing_18           |
+|                                       |           _condition_ing_16           |                                       |   ing_fabric_ingress_src_lkp_ACTION   |
+|                                       |       egr_egress_qos_map_ACTION       |                                       |           _condition_ing_21           |
+|                                       |    ing_outer_ipv4_multicast_ACTION    |                                       |    ing_outer_ipv6_multicast_ACTION    |
+|                                       |       ing_ipv6_src_vtep_ACTION        |                                       |                                       |
+|                                       |       ing_ipv4_src_vtep_ACTION        |                                       |                                       |
+|                                       |           _condition_ing_15           |                                       |                                       |
+
+|                 t=12                  |                 t=13                  |                 t=14                  |                 t=15                  |
+|       ing_ipv6_dest_vtep_MATCH        |           _condition_egr_63           |      egr_rewrite_multicast_MATCH      |         egr_egress_vni_ACTION         |
+|            ing_mpls_MATCH             |           _condition_egr_67           |         egr_egress_vni_MATCH          |           _condition_ing_22           |
+|   ing_ingress_port_properties_MATCH   |       egr_egress_bd_map_ACTION        |    ing_ingress_qos_map_dscp_MATCH     |        egr_smac_rewrite_ACTION        |
+|       ing_ipv4_dest_vtep_MATCH        |            ing_mpls_ACTION            |        egr_smac_rewrite_MATCH         |           _condition_ing_19           |
+| ing_outer_ipv6_multicast_star_g_MATCH |           _condition_egr_66           |     ing_ingress_qos_map_pcp_MATCH     |           _condition_ing_6            |
+|        egr_egress_bd_map_MATCH        |       ing_ipv4_dest_vtep_ACTION       |           ing_tunnel_MATCH            |           ing_tunnel_ACTION           |
+|                                       |  ing_ingress_port_properties_ACTION   |                                       |    ing_ingress_qos_map_pcp_ACTION     |
+|                                       |ing_outer_ipv6_multicast_star_g_ACTION |                                       |     egr_rewrite_multicast_ACTION      |
+|                                       |       ing_ipv6_dest_vtep_ACTION       |                                       |    ing_ingress_qos_map_dscp_ACTION    |
+|                                       |                                       |                                       |           _condition_ing_5            |
+
+|                 t=16                  |                 t=17                  |                 t=18                  |                 t=19                  |
+|       egr_egress_bd_stats_MATCH       |           _condition_egr_65           |          ing_nat_twice_MATCH          |           _condition_ing_34           |
+|         egr_egress_nat_MATCH          |           _condition_ing_53           |       ing_validate_packet_MATCH       |           _condition_ing_26           |
+|             egr_mtu_MATCH             |       ing_storm_control_ACTION        |            ing_rmac_MATCH             |    ing_ingress_l4_src_port_ACTION     |
+|        ing_storm_control_MATCH        |         egr_l3_rewrite_ACTION         |    egr_egress_l4port_fields_MATCH     |           _condition_ing_33           |
+|         egr_l3_rewrite_MATCH          |      egr_egress_bd_stats_ACTION       | egr_tunnel_encap_process_inner_MATCH  |           _condition_ing_30           |
+|      ing_adjust_lkp_fields_MATCH      |           _condition_ing_23           |     ing_ingress_l4_src_port_MATCH     |           _condition_ing_45           |
+|     ing_tunnel_lookup_miss_MATCH      |           _condition_ing_20           |                                       |           _condition_ing_24           |
+|                                       |     ing_adjust_lkp_fields_ACTION      |                                       |           _condition_ing_39           |
+|                                       |     ing_tunnel_lookup_miss_ACTION     |                                       |           _condition_ing_44           |
+|                                       |         egr_egress_nat_ACTION         |                                       |           _condition_ing_29           |
+|                                       |            egr_mtu_ACTION             |                                       |           _condition_ing_31           |
+|                                       |                                       |                                       |    egr_egress_l4port_fields_ACTION    |
+|                                       |                                       |                                       |           _condition_ing_28           |
+|                                       |                                       |                                       |           _condition_ing_38           |
+|                                       |                                       |                                       |           _condition_ing_37           |
+|                                       |                                       |                                       |           _condition_ing_40           |
+|                                       |                                       |                                       |         ing_nat_twice_ACTION          |
+|                                       |                                       |                                       | egr_tunnel_encap_process_inner_ACTION |
+|                                       |                                       |                                       |      ing_validate_packet_ACTION       |
+|                                       |                                       |                                       |            ing_rmac_ACTION            |
+
+|                 t=20                  |                 t=21                  |                 t=22                  |                 t=23                  |
+|     egr_egress_l4_dst_port_MATCH      |      ing_ingress_bd_stats_ACTION      |            ing_dmac_MATCH             |     egr_egress_l4_src_port_ACTION     |
+|            ing_smac_MATCH             |            ing_smac_ACTION            | egr_tunnel_encap_process_outer_MATCH  |            ing_dmac_ACTION            |
+|           ing_nat_src_MATCH           |           _condition_ing_25           |    ing_ipv6_multicast_bridge_MATCH    |   ing_ipv6_multicast_bridge_ACTION    |
+|     ing_compute_ipv4_hashes_MATCH     |           _condition_ing_41           |     ing_ingress_l4_dst_port_MATCH     | egr_tunnel_encap_process_outer_ACTION |
+|    ing_ipv4_multicast_route_MATCH     |     egr_egress_l4_dst_port_ACTION     |     egr_egress_l4_src_port_MATCH      |    ing_ingress_l4_dst_port_ACTION     |
+|           ing_mac_acl_MATCH           |          ing_nat_dst_ACTION           |                                       |                                       |
+|           ing_nat_dst_MATCH           |           _condition_ing_27           |                                       |                                       |
+|                                       |    ing_ipv4_multicast_route_ACTION    |                                       |                                       |
+|                                       |           _condition_ing_36           |                                       |                                       |
+|                                       |          ing_mac_acl_ACTION           |                                       |                                       |
+|                                       |           _condition_egr_71           |                                       |                                       |
+|                                       |           _condition_ing_35           |                                       |                                       |
+|                                       |          ing_nat_src_ACTION           |                                       |                                       |
+|                                       |    ing_compute_ipv4_hashes_ACTION     |                                       |                                       |
+
+|                 t=24                  |                 t=25                  |                 t=26                  |                 t=27                  |
+|           ing_ip_acl_MATCH            |           _condition_egr_68           |          ing_ipv6_racl_MATCH          |         ing_ipv4_racl_ACTION          |
+|     ing_compute_ipv6_hashes_MATCH     |           _condition_ing_32           |          ing_ipv4_fib_MATCH           |          ing_ipv4_fib_ACTION          |
+|          ing_ipv6_acl_MATCH           |    ing_compute_ipv6_hashes_ACTION     |          ing_ipv4_racl_MATCH          |         ing_ipv6_racl_ACTION          |
+|                                       |           ing_ip_acl_ACTION           |        ing_learn_notify_MATCH         |        ing_learn_notify_ACTION        |
+|                                       |           _condition_ing_51           |                                       |           _condition_egr_69           |
+|                                       |          ing_ipv6_acl_ACTION          |                                       |                                       |
+
+|                 t=28                  |                 t=29                  |                 t=30                  |                 t=31                  |
+|       egr_tunnel_rewrite_MATCH        |   ing_compute_non_ip_hashes_ACTION    |         ing_meter_index_MATCH         |           _condition_ing_43           |
+|        ing_ipv6_fib_lpm_MATCH         |        ing_ipv6_fib_lpm_ACTION        |     egr_tunnel_dst_rewrite_MATCH      |    ing_compute_other_hashes_ACTION    |
+|ing_ipv4_multicast_bridge_star_g_MATCH |          ing_ipv6_fib_ACTION          |    ing_compute_other_hashes_MATCH     |           _condition_ing_48           |
+|          ing_ipv6_fib_MATCH           |   ing_ipv4_multicast_bridge_ACTION    |    ing_ipv6_multicast_route_MATCH     |         egr_int_insert_ACTION         |
+|    ing_compute_non_ip_hashes_MATCH    |       egr_tunnel_rewrite_ACTION       |         egr_int_insert_MATCH          |     egr_tunnel_dst_rewrite_ACTION     |
+|    ing_ipv4_multicast_bridge_MATCH    |ing_ipv4_multicast_bridge_star_g_ACTION|                                       |        ing_meter_index_ACTION         |
+|                                       |                                       |                                       |    ing_ipv6_multicast_route_ACTION    |
+|                                       |                                       |                                       |           _condition_egr_74           |
+
+|                 t=32                  |                 t=33                  |                 t=34                  |                 t=35                  |
+|     egr_tunnel_smac_rewrite_MATCH     |         ing_ipv6_urpf_ACTION          |     egr_tunnel_dmac_rewrite_MATCH     |ing_ipv4_multicast_route_star_g_ACTION |
+|     egr_tunnel_src_rewrite_MATCH      |           _condition_egr_72           |        ing_ipv4_fib_lpm_MATCH         |           _condition_ing_46           |
+|ing_ipv6_multicast_bridge_star_g_MATCH |         ing_ipv4_urpf_ACTION          |        ing_traffic_class_MATCH        |ing_ipv6_multicast_route_star_g_ACTION |
+|          ing_ipv6_urpf_MATCH          |    egr_tunnel_smac_rewrite_ACTION     |          ing_nat_flow_MATCH           |       egr_egress_filter_ACTION        |
+|          ing_ipv4_urpf_MATCH          |ing_ipv6_multicast_bridge_star_g_ACTION| ing_ipv4_multicast_route_star_g_MATCH |    egr_tunnel_dmac_rewrite_ACTION     |
+|        ing_ipv4_urpf_lpm_MATCH        |     egr_tunnel_src_rewrite_ACTION     | ing_ipv6_multicast_route_star_g_MATCH |          ing_nat_flow_ACTION          |
+|                                       |       ing_ipv4_urpf_lpm_ACTION        |                                       |        ing_ipv4_fib_lpm_ACTION        |
+|                                       |                                       |                                       |       ing_traffic_class_ACTION        |
+
+|                 t=36                  |                 t=37                  |                 t=38                  |                 t=39                  |
+|        egr_egress_ip_acl_MATCH        |       egr_int_inst_0811_ACTION        |           ing_nexthop_MATCH           |           _condition_ing_49           |
+|        ing_ipv6_urpf_lpm_MATCH        |       egr_egress_ip_acl_ACTION        |         ing_ecmp_group_MATCH          |           _condition_ing_42           |
+|         egr_tunnel_mtu_MATCH          |           _condition_egr_73           |       egr_egress_ipv6_acl_MATCH       |         ing_ecmp_group_ACTION         |
+|        egr_int_inst_0407_MATCH        |           _condition_egr_64           |        ing_meter_action_MATCH         |        ing_meter_action_ACTION        |
+|        egr_int_inst_0811_MATCH        |         egr_tunnel_mtu_ACTION         |           ing_urpf_bd_MATCH           |           _condition_ing_54           |
+|         ing_fwd_result_MATCH          |       egr_int_inst_0407_ACTION        |                                       |          ing_urpf_bd_ACTION           |
+|                                       |       ing_ipv6_urpf_lpm_ACTION        |                                       |     egr_egress_filter_drop_ACTION     |
+|                                       |         ing_fwd_result_ACTION         |                                       |          ing_nexthop_ACTION           |
+|                                       |                                       |                                       |      egr_egress_ipv6_acl_ACTION       |
+
+|                 t=40                  |                 t=41                  |                 t=42                  |                 t=43                  |
+|          ing_bd_flood_MATCH           |    ing_storm_control_stats_ACTION     |         ing_system_acl_MATCH          |       egr_int_inst_1215_ACTION        |
+|      egr_egress_vlan_xlate_MATCH      |         ing_lag_group_ACTION          |   egr_int_meta_header_update_MATCH    |         ing_system_acl_ACTION         |
+|       egr_int_outer_encap_MATCH       |       egr_int_inst_0003_ACTION        |      egr_egress_system_acl_MATCH      |   ing_int_sink_update_outer_ACTION    |
+|        egr_int_inst_0003_MATCH        |       egr_egress_mac_acl_ACTION       |           egr_int_bos_MATCH           |     egr_egress_system_acl_ACTION      |
+|       egr_egress_mac_acl_MATCH        |      egr_int_outer_encap_ACTION       |    ing_int_sink_update_outer_MATCH    |         ing_fabric_lag_ACTION         |
+|          ing_lag_group_MATCH          |          ing_bd_flood_ACTION          |        egr_int_inst_1215_MATCH        |   egr_int_meta_header_update_ACTION   |
+|     ing_storm_control_stats_MATCH     |         ing_drop_stats_ACTION         |         ing_fabric_lag_MATCH          |          egr_int_bos_ACTION           |
+|                                       |           _condition_egr_70           |                                       |         ing_acl_stats_ACTION          |
+|                                       |     egr_egress_vlan_xlate_ACTION      |                                       |                                       |
+|                                       |           _condition_ing_50           |                                       |                                       |
+
+ 
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 8  | 0  | 6  | 0  | 7  | 0  | 4  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 6  | 0  |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|t=24|t=25|t=26|t=27|t=28|t=29|t=30|t=31|
+| 7  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  |
+
+|t=32|t=33|t=34|t=35|t=36|t=37|t=38|t=39|t=40|t=41|t=42|t=43|
+| 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  | 8  | 0  |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |t=10|t=11|t=12|t=13|t=14|t=15|
+| 0  | 32 | 0  | 31 | 0  | 31 | 0  | 32 | 0  | 22 | 0  | 27 | 0  | 30 | 0  | 25 |
+
+|t=16|t=17|t=18|t=19|t=20|t=21|t=22|t=23|t=24|t=25|t=26|t=27|t=28|t=29|t=30|t=31|
+| 0  | 32 | 0  | 31 | 0  | 30 | 0  | 32 | 0  | 25 | 0  | 21 | 0  | 29 | 0  | 29 |
+
+|t=32|t=33|t=34|t=35|t=36|t=37|t=38|t=39|t=40|t=41|t=42|t=43|
+| 0  | 14 | 0  | 22 | 0  | 22 | 0  | 17 | 0  | 32 | 0  | 18 |
+
+
+Match packets (max = 1 match packets) on one processor
+empty dictionary
+Action packets (max = 1 action packets) on one processor
+empty dictionary

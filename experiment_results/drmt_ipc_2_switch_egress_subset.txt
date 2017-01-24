@@ -1,0 +1,224 @@
+********************************** Input DAG ***********************************
+# of nodes =  46
+# of edges =  87
+# of matches =  16
+# of actions =  30
+Match unit size =  80
+# of match units =  16
+match_unit_limit =  8
+max size of match key in program =  43
+max size of match key in hw =  640
+# of action fields =  65
+action_fields_limit =  32
+max number of action fields in program =  8
+max number of action fields in hw =  32
+match_proc_limit = 2
+action_proc_limit = 2
+Critical path:  ['rid_MATCH', 'rid_ACTION', 'replica_type_MATCH', 'replica_type_ACTION', 'rewrite_ACTION', 'egress_bd_map_MATCH', 'egress_bd_map_ACTION', 'smac_rewrite_MATCH', 'smac_rewrite_ACTION']
+Critical path length = 97 cycles
+Upper bound on throughput =  0.49230769230769234
+
+
+
+Searching between limits  3  and  100  cycles
+
+period = 52  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 96
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Latencies, PRMT:  118  RND sieve:  96
+Picking output from RND sieve
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 27  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 96
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Latencies, PRMT:  118  RND sieve:  96
+Picking output from RND sieve
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 15  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 96
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Latencies, PRMT:  118  RND sieve:  96
+Picking output from RND sieve
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 9  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 96
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Latencies, PRMT:  119  RND sieve:  96
+Picking output from RND sieve
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 6  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 98
+Found Feasible Solution With Latency 97
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Latencies, PRMT:  122  RND sieve:  97
+Picking output from RND sieve
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 4  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+Found Feasible Solution With Latency 117
+Found Feasible Solution With Latency 104
+Found Feasible Solution With Latency 101
+Found Feasible Solution With Latency 97
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Can't find a solution in rotator, match const. violated
+Picking output from RND sieve
+Latency for RND sieve:  97
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+period = 3  cycles
+******************************* Scheduling DRMT ********************************
+****************************** Running rnd sieve *******************************
+Looking for greedy feasible solution for 30 seconds
+**************************** Running PRMT + rotator ****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Can't find a solution in rotator, match const. violated
+Both heuristics returned nothing
+*************************** Running DRMT ILP solver ****************************
+Optimal solution found with gap  0.0
+
+Best achieved throughput = 1 packet every 3 cycles
+Schedule length (thread count) = 99 cycles
+Critical path length = 97 cycles
+
+
+
+******************* First scheduling period on one processor********************
+|           t=0            |           t=1            |           t=2            |           t=3            |
+|     l3_rewrite_MATCH     |egress_port_mapping_MATCH |      _condition_41       |                          |
+|     vlan_decap_MATCH     |                          |      _condition_42       |                          |
+|        rid_MATCH         |                          |      _condition_52       |                          |
+|     egress_nat_MATCH     |                          |      _condition_43       |                          |
+|       mirror_MATCH       |                          |                          |                          |
+| rewrite_multicast_MATCH  |                          |                          |                          |
+
+|           t=20           |           t=21           |           t=22           |           t=23           |
+|                          |                          |      mirror_ACTION       |                          |
+|                          |                          |        rid_ACTION        |                          |
+
+|           t=24           |           t=25           |           t=26           |           t=27           |
+|    replica_type_MATCH    |                          |                          |                          |
+|      rewrite_MATCH       |                          |                          |                          |
+
+|           t=44           |           t=45           |           t=46           |           t=47           |
+|                          |                          |    vlan_decap_ACTION     |                          |
+|                          |                          |      _condition_50       |                          |
+|                          |                          |      _condition_46       |                          |
+|                          |                          |      _condition_44       |                          |
+|                          |                          |   replica_type_ACTION    |                          |
+|                          |                          |egress_port_mapping_ACTION|                          |
+
+|           t=48           |           t=49           |           t=50           |           t=51           |
+|      rewrite_ACTION      |                          | egress_vlan_xlate_MATCH  |                          |
+|      _condition_49       |                          |   egress_bd_map_MATCH    |                          |
+|      _condition_45       |                          |  egress_bd_stats_MATCH   |                          |
+| rewrite_multicast_ACTION |                          |   egress_qos_map_MATCH   |                          |
+|                          |                          |        mtu_MATCH         |                          |
+
+|           t=72           |           t=73           |           t=74           |           t=75           |
+|   egress_filter_ACTION   |                          |    smac_rewrite_MATCH    |                          |
+|      _condition_47       |                          | egress_system_acl_MATCH  |                          |
+| egress_vlan_xlate_ACTION |                          |                          |                          |
+|   egress_bd_map_ACTION   |                          |                          |                          |
+|  egress_bd_stats_ACTION  |                          |                          |                          |
+|  egress_qos_map_ACTION   |                          |                          |                          |
+|        mtu_ACTION        |                          |                          |                          |
+
+|           t=96           |           t=97           |           t=98           |
+|                          |                          |egress_filter_drop_ACTION |
+|                          |                          |    egress_nat_ACTION     |
+|                          |                          |      _condition_48       |
+|                          |                          |   smac_rewrite_ACTION    |
+|                          |                          |      _condition_51       |
+|                          |                          | egress_system_acl_ACTION |
+|                          |                          |    l3_rewrite_ACTION     |
+
+ 
+
+
+************************* Steady state on one processor*************************
+******************p[u] is packet from u scheduling periods ago******************
+|              t=0               |              t=1               |              t=2               |
+|      p[16].rewrite_ACTION      |    p[15].vlan_decap_ACTION     | p[16].egress_vlan_xlate_MATCH  |
+|    p[8].replica_type_MATCH     |      p[15]._condition_50       |    p[24].smac_rewrite_MATCH    |
+|   p[24].egress_filter_ACTION   |      p[15]._condition_46       |       p[0]._condition_41       |
+|      p[16]._condition_49       |      p[15]._condition_44       |       p[0]._condition_42       |
+|      p[16]._condition_45       | p[0].egress_port_mapping_MATCH |       p[0]._condition_52       |
+| p[16].rewrite_multicast_ACTION |       p[7].mirror_ACTION       |p[32].egress_filter_drop_ACTION |
+|      p[24]._condition_47       |   p[15].replica_type_ACTION    |    p[32].egress_nat_ACTION     |
+|     p[0].l3_rewrite_MATCH      |        p[7].rid_ACTION         |       p[0]._condition_43       |
+|     p[0].vlan_decap_MATCH      |p[15].egress_port_mapping_ACTION|      p[32]._condition_48       |
+| p[24].egress_vlan_xlate_ACTION |                                | p[24].egress_system_acl_MATCH  |
+|   p[24].egress_bd_map_ACTION   |                                |   p[32].smac_rewrite_ACTION    |
+|         p[0].rid_MATCH         |                                |   p[16].egress_bd_map_MATCH    |
+|       p[8].rewrite_MATCH       |                                |      p[32]._condition_51       |
+|     p[0].egress_nat_MATCH      |                                |  p[16].egress_bd_stats_MATCH   |
+|       p[0].mirror_MATCH        |                                |   p[16].egress_qos_map_MATCH   |
+|  p[24].egress_bd_stats_ACTION  |                                |        p[16].mtu_MATCH         |
+|  p[24].egress_qos_map_ACTION   |                                | p[32].egress_system_acl_ACTION |
+|        p[24].mtu_ACTION        |                                |    p[32].l3_rewrite_ACTION     |
+|  p[0].rewrite_multicast_MATCH  |                                |                                |
+
+ 
+
+
+Match units usage (max = 8 units) on one processor
+|t=0|t=1|t=2|
+| 8 | 1 | 7 |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0|t=1|t=2|
+|25 |20 |20 |
+
+
+Match packets (max = 2 match packets) on one processor
+|t=0|t=1|t=2|
+| 2 | 1 | 2 |
+
+
+Action packets (max = 2 action packets) on one processor
+|t=0|t=1|t=2|
+| 2 | 2 | 2 |
+
+

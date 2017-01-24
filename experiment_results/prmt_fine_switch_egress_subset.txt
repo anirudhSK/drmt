@@ -1,0 +1,71 @@
+********************************** Input DAG ***********************************
+# of nodes =  46
+# of edges =  87
+# of matches =  16
+# of actions =  30
+Match unit size =  80
+# of match units =  16
+match_unit_limit =  8
+max size of match key in program =  43
+max size of match key in hw =  640
+# of action fields =  65
+action_fields_limit =  32
+max number of action fields in program =  8
+max number of action fields in hw =  32
+match_proc_limit = 1
+action_proc_limit = 1
+Critical path:  ['rid_MATCH', 'rid_ACTION', 'replica_type_MATCH', 'replica_type_ACTION', 'rewrite_ACTION', 'egress_bd_map_MATCH', 'egress_bd_map_ACTION', 'smac_rewrite_MATCH', 'smac_rewrite_ACTION']
+Critical path length = 81 cycles
+Upper bound on throughput =  0.49230769230769234
+***************************** Scheduling PRMT fine *****************************
+*************************** Running greedy heuristic ***************************
+****************************** Running ILP solver ******************************
+Number of pipeline stages: 5.000000
+*********************************** Schedule************************************
+|           t=0            |           t=1            |           t=2            |           t=3            |
+|     vlan_decap_MATCH     |      _condition_46       |    replica_type_MATCH    |egress_port_mapping_ACTION|
+|       mirror_MATCH       |        rid_ACTION        |                          |   replica_type_ACTION    |
+|egress_port_mapping_MATCH |      mirror_ACTION       |                          |      _condition_50       |
+|        rid_MATCH         |      _condition_41       |                          |                          |
+|     egress_nat_MATCH     |      _condition_52       |                          |                          |
+|     l3_rewrite_MATCH     |    vlan_decap_ACTION     |                          |                          |
+| rewrite_multicast_MATCH  |      _condition_43       |                          |                          |
+|                          |      _condition_44       |                          |                          |
+|                          |      _condition_42       |                          |                          |
+
+|           t=4            |           t=5            |           t=6            |           t=7            |
+|      rewrite_MATCH       |      rewrite_ACTION      |  egress_bd_stats_MATCH   |   egress_filter_ACTION   |
+|                          |      _condition_49       |        mtu_MATCH         |        mtu_ACTION        |
+|                          |      _condition_45       |   egress_qos_map_MATCH   |   egress_bd_map_ACTION   |
+|                          |                          |   egress_bd_map_MATCH    | rewrite_multicast_ACTION |
+|                          |                          |                          |  egress_qos_map_ACTION   |
+|                          |                          |                          |      _condition_47       |
+
+|           t=8            |           t=9            |
+|    smac_rewrite_MATCH    |    egress_nat_ACTION     |
+| egress_system_acl_MATCH  |egress_filter_drop_ACTION |
+| egress_vlan_xlate_MATCH  |    l3_rewrite_ACTION     |
+|                          |      _condition_48       |
+|                          | egress_vlan_xlate_ACTION |
+|                          |   smac_rewrite_ACTION    |
+|                          | egress_system_acl_ACTION |
+|                          |  egress_bd_stats_ACTION  |
+|                          |      _condition_51       |
+
+ 
+
+
+Match units usage (max = 8 units) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |
+| 7  | 0  | 1  | 0  | 1  | 0  | 4  | 0  | 3  | 0  |
+
+
+Action fields usage (max = 32 fields) on one processor
+|t=0 |t=1 |t=2 |t=3 |t=4 |t=5 |t=6 |t=7 |t=8 |t=9 |
+| 0  | 18 | 0  | 6  | 0  | 8  | 0  | 10 | 0  | 23 |
+
+
+Match packets (max = 1 match packets) on one processor
+empty dictionary
+Action packets (max = 1 action packets) on one processor
+empty dictionary

@@ -1,0 +1,90 @@
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_combined
+33823.93user 18167.76system 52:19.69elapsed 1655%CPU (0avgtext+0avgdata 4409204maxresident)k
+0inputs+1008outputs (0major+16758762minor)pagefaults 0swaps
+drmt_ipc_2 switch_combined
+47004.03user 31931.84system 48:39.34elapsed 2703%CPU (0avgtext+0avgdata 2934640maxresident)k
+0inputs+2424outputs (0major+10545012minor)pagefaults 0swaps
+prmt_fine switch_combined
+2951.08user 2237.46system 2:50.50elapsed 3043%CPU (0avgtext+0avgdata 765568maxresident)k
+0inputs+112outputs (0major+437318minor)pagefaults 0swaps
+prmt_coarse switch_combined
+13237.08user 5680.24system 9:59.64elapsed 3154%CPU (0avgtext+0avgdata 1240508maxresident)k
+0inputs+200outputs (0major+4584399minor)pagefaults 0swaps
+
+
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_combined_subset
+12386.00user 7549.10system 15:58.98elapsed 2078%CPU (0avgtext+0avgdata 3959412maxresident)k
+0inputs+472outputs (0major+8860284minor)pagefaults 0swaps
+drmt_ipc_2 switch_combined_subset
+13398.57user 6947.04system 15:55.11elapsed 2130%CPU (0avgtext+0avgdata 6729632maxresident)k
+0inputs+384outputs (0major+28133447minor)pagefaults 0swaps
+prmt_fine switch_combined_subset
+6.31user 6.13system 0:02.77elapsed 449%CPU (0avgtext+0avgdata 66480maxresident)k
+0inputs+48outputs (0major+19356minor)pagefaults 0swaps
+prmt_coarse switch_combined_subset
+11.52user 8.54system 0:03.12elapsed 642%CPU (0avgtext+0avgdata 68528maxresident)k
+0inputs+32outputs (0major+26394minor)pagefaults 0swaps
+
+
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_egress
+36256.95user 21229.54system 34:05.80elapsed 2809%CPU (0avgtext+0avgdata 3488544maxresident)k
+0inputs+1240outputs (0major+18878157minor)pagefaults 0swaps
+drmt_ipc_2 switch_egress
+315.15user 45.61system 3:56.51elapsed 152%CPU (0avgtext+0avgdata 476640maxresident)k
+0inputs+224outputs (0major+264430minor)pagefaults 0swaps
+prmt_fine switch_egress
+1.27user 1.70system 0:00.99elapsed 298%CPU (0avgtext+0avgdata 49936maxresident)k
+0inputs+24outputs (0major+12901minor)pagefaults 0swaps
+prmt_coarse switch_egress
+1.25user 1.50system 0:01.11elapsed 246%CPU (0avgtext+0avgdata 45880maxresident)k
+0inputs+40outputs (0major+12098minor)pagefaults 0swaps
+
+
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_egress_subset
+12164.84user 7194.63system 13:35.17elapsed 2374%CPU (0avgtext+0avgdata 991484maxresident)k
+0inputs+288outputs (0major+1921568minor)pagefaults 0swaps
+drmt_ipc_2 switch_egress_subset
+214.91user 2.46system 3:34.61elapsed 101%CPU (0avgtext+0avgdata 60952maxresident)k
+0inputs+136outputs (0major+43770minor)pagefaults 0swaps
+prmt_fine switch_egress_subset
+0.79user 1.56system 0:00.60elapsed 392%CPU (0avgtext+0avgdata 39724maxresident)k
+0inputs+8outputs (0major+10029minor)pagefaults 0swaps
+prmt_coarse switch_egress_subset
+0.75user 1.82system 0:00.60elapsed 429%CPU (0avgtext+0avgdata 39536maxresident)k
+0inputs+8outputs (0major+10011minor)pagefaults 0swaps
+
+
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_ingress
+35278.28user 17223.55system 34:36.20elapsed 2528%CPU (0avgtext+0avgdata 5846204maxresident)k
+0inputs+616outputs (0major+41030985minor)pagefaults 0swaps
+drmt_ipc_2 switch_ingress
+8451.34user 5386.64system 12:44.37elapsed 1810%CPU (0avgtext+0avgdata 2168764maxresident)k
+0inputs+408outputs (0major+6181006minor)pagefaults 0swaps
+prmt_fine switch_ingress
+209.38user 140.02system 0:14.86elapsed 2350%CPU (0avgtext+0avgdata 570268maxresident)k
+0inputs+48outputs (0major+192257minor)pagefaults 0swaps
+prmt_coarse switch_ingress
+183.88user 136.05system 0:15.36elapsed 2082%CPU (0avgtext+0avgdata 264972maxresident)k
+0inputs+56outputs (0major+97848minor)pagefaults 0swaps
+
+
+rm: cannot remove '*.pyc': No such file or directory
+drmt_ipc_1 switch_ingress_subset
+12092.46user 7045.73system 14:42.58elapsed 2168%CPU (0avgtext+0avgdata 3868488maxresident)k
+0inputs+344outputs (0major+10062002minor)pagefaults 0swaps
+drmt_ipc_2 switch_ingress_subset
+1176.96user 613.83system 5:02.82elapsed 591%CPU (0avgtext+0avgdata 1089208maxresident)k
+0inputs+232outputs (0major+452970minor)pagefaults 0swaps
+prmt_fine switch_ingress_subset
+4.12user 3.72system 0:01.81elapsed 432%CPU (0avgtext+0avgdata 55816maxresident)k
+0inputs+32outputs (0major+14431minor)pagefaults 0swaps
+prmt_coarse switch_ingress_subset
+3.30user 3.23system 0:01.75elapsed 372%CPU (0avgtext+0avgdata 58136maxresident)k
+0inputs+32outputs (0major+15506minor)pagefaults 0swaps
+
+
