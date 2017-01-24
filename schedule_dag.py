@@ -49,8 +49,9 @@ class ScheduleDAG(nx.DiGraph):
                 # TODO: At some later point, we might handle conditions more carefully
                 # For now, we treat them as actions with 1 action field
                 self.node[u]['num_fields'] = CONDITION_COST
-                self.node[u]['type'] == 'action'
+                self.node[u]['type'] = 'action'
             else:
+                print ("Found unexpected node type ", self.node[u]['type'])
                 assert(False)
 
         # Annotate edges

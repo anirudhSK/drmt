@@ -160,6 +160,7 @@ class PrmtFineSolver:
             elif self.G.node[v]['type'] == 'action':
                solution.action_fields_usage[tv] += self.G.node[v]['num_fields']
             else:
+               print ("Found unexpected node type ", self.G.node[v]['type'])
                assert(False)
         return solution
 
