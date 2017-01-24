@@ -4,13 +4,14 @@ import matplotlib
 import importlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-if (len(sys.argv) != 4):
-  print("Usage: ", sys.argv[0], " <result folder> <drmt latencies> <prmt latencies>")
+if (len(sys.argv) != 5):
+  print("Usage: ", sys.argv[0], " <result folder> <drmt latencies> <prmt latencies> <folder for figs>")
   exit(1)
 else:
   result_folder = sys.argv[1]
   drmt_latencies = importlib.import_module(sys.argv[2], "*")
   prmt_latencies = importlib.import_module(sys.argv[3], "*")
+  fig_folder    = sys.argv[4]
 
 PROCESSORS=range(1, 51)
 
@@ -52,13 +53,19 @@ for prog in progs:
     plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = arch)
   plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, "full_dagg")]) for n in PROCESSORS], label = "full_dagg")
   plt.legend()
-  plt.savefig(prog + ".pdf")
+  plt.savefig(fig_folder + "/" + prog + ".pdf")
 
 print("drmt thread count")
-print("%26s %16s %16s %16s %16s"%("prog", "drmt_ipc_1", "drmt_ipc_2", "drmt:max(dM, dA)", "prmt:dM+dA"))
+print("%26s %16s %16s %16s %16s %16s %16s %16s %16s"%(\
+        "prog", "ipc_1_lat", "ipc_1_period", "ipc_1_thrs", "ipc_2_lat", "ipc_2_period", "ipc_2_thrs",  "drmt:max(dM, dA)", "prmt:dM+dA"))
 for prog in progs:
-  print("%26s %16d %16d %16d %16d" %(prog,\
+  print("%26s %16d %16d %16d %16d %16d %16d %16d %16d" %(\
+          prog,\
+          int(drmt_thread_count[(prog, "drmt_ipc_1")]), \
+          int(drmt_min_periods[(prog, "drmt_ipc_1")]),\
           int(math.ceil(drmt_thread_count[(prog, "drmt_ipc_1")] / drmt_min_periods[(prog, "drmt_ipc_1")])),\
+          int(drmt_thread_count[(prog, "drmt_ipc_2")]), \
+          int(drmt_min_periods[(prog, "drmt_ipc_2")]),\
           int(math.ceil(drmt_thread_count[(prog, "drmt_ipc_2")] / drmt_min_periods[(prog, "drmt_ipc_2")])),\
           max(drmt_latencies.dM, drmt_latencies.dA),
           prmt_latencies.dM + prmt_latencies.dA))
