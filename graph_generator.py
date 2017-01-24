@@ -38,11 +38,13 @@ for prog in progs:
          assert(False)
 
 for prog in progs:
+  plt.figure()
   for arch in p_archs:
-    plt.plot(PROCESSORS, [max(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = arch)
+    plt.plot(PROCESSORS, [min(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = arch)
   for arch in d_archs:
-    plt.plot(PROCESSORS, [max(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = arch)
-  plt.plot(PROCESSORS, [max(1, n / drmt_min_periods[(prog, "full_dagg")]) for n in PROCESSORS], label = "full_dagg")
+    plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = arch)
+  plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, "full_dagg")]) for n in PROCESSORS], label = "full_dagg")
+  plt.legend()
   plt.savefig(prog + ".pdf")
 
 print("drmt thread count")
