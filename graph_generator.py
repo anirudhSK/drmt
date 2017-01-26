@@ -43,8 +43,8 @@ for prog in progs:
            drmt_min_periods[(prog, arch)] = int(line.split()[7])
          if "thread count" in line:
            drmt_thread_count[(prog, arch)] = int(line.split()[5])
-         if "Upper bound" in line:
-           drmt_min_periods[(prog, "upper_bound")] = float(line.split()[5])
+         if "Searching between limits" in line:
+           drmt_min_periods[(prog, "upper_bound")] = int(line.split()[3])
        else:
          print ("Unknown architecture")
          assert(False)
