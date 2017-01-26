@@ -20,6 +20,13 @@ progs = ["switch_combined", "switch_combined_subset", "switch_egress",\
 d_archs = ["drmt_ipc_1", "drmt_ipc_2"]
 p_archs = ["prmt_coarse", "prmt_fine"]
 
+labels = dict()
+labels["drmt_ipc_1"] = "dRMT (IPC=1)"
+labels["drmt_ipc_2"] = "dRMT (IPC=2)"
+labels["prmt_coarse"]= "RMT"
+labels["prmt_fine"]  = "RMT fine"
+labels["upper_bound"] = "Upper bound"
+
 pipeline_stages  = dict()
 drmt_min_periods = dict()
 drmt_thread_count= dict()
@@ -37,7 +44,7 @@ for prog in progs:
          if "thread count" in line:
            drmt_thread_count[(prog, arch)] = int(line.split()[5])
          if "Upper bound" in line:
-           drmt_min_periods[(prog, "full_dagg")] = float(line.split()[5])
+           drmt_min_periods[(prog, "upper_bound")] = float(line.split()[5])
        else:
          print ("Unknown architecture")
          assert(False)
@@ -48,10 +55,10 @@ for prog in progs:
   plt.xlabel("Number of processors")
   plt.ylabel("Throughput in packets per cycle")
   for arch in p_archs:
-    plt.plot(PROCESSORS, [min(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = arch)
+    plt.plot(PROCESSORS, [min(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
   for arch in d_archs:
-    plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = arch)
-  plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, "full_dagg")]) for n in PROCESSORS], label = "full_dagg")
+    plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch])
+  plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, "upper_bound")]) for n in PROCESSORS], label = "Upper bound")
   plt.legend()
   plt.savefig(fig_folder + "/" + prog + ".pdf")
 
