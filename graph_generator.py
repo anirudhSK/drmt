@@ -3,6 +3,7 @@ import math
 import matplotlib
 import importlib
 matplotlib.use('Agg')
+matplotlib.rcParams.update({'font.size':18})
 import matplotlib.pyplot as plt
 if (len(sys.argv) != 5):
   print("Usage: ", sys.argv[0], " <result folder> <drmt latencies> <prmt latencies> <folder for figs>")
@@ -57,7 +58,7 @@ for prog in progs:
     plt.plot(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
   for arch in d_archs:
     plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch])
-  plt.legend()
+  plt.legend(loc = "lower right")
   plt.xlim(0, 15)
   plt.savefig(fig_folder + "/" + prog + ".pdf")
 
