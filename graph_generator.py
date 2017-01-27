@@ -54,10 +54,14 @@ for prog in progs:
   plt.title("Throughput vs. Processors")
   plt.xlabel("Processors", fontsize = 26)
   plt.ylabel("Packets per cycle", fontsize = 26)
-  for arch in p_archs:
-    plt.step(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch], linewidth=3)
-  for arch in d_archs:
-    plt.step(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch], linewidth=3)
+  
+  plt.step(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, "prmt_coarse")]/n)) for n in PROCESSORS], label = labels["prmt_coarse"], linewidth=3, linestyle = '-')
+  plt.step(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, "prmt_fine")]/n)) for n in PROCESSORS], label = labels["prmt_fine"], linewidth=3, linestyle = ':')
+
+  plt.step(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, "drmt_ipc_1")]) for n in PROCESSORS], label = labels["drmt_ipc_1"], linewidth=3, linestyle = '-.')
+
+  plt.step(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, "drmt_ipc_2")]) for n in PROCESSORS], label = labels["drmt_ipc_2"], linewidth=3, linestyle = '--')
+
   plt.legend(loc = "lower right")
   plt.xlim(0, 15)
   plt.tight_layout()
