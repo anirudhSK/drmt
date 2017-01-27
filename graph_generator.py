@@ -15,8 +15,7 @@ else:
 
 PROCESSORS=range(1, 51)
 
-progs = ["switch_combined", "switch_combined_subset", "switch_egress",\
-         "switch_egress_subset", "switch_ingress", "switch_ingress_subset"]
+progs = ["switch_egress"]
 d_archs = ["drmt_ipc_1", "drmt_ipc_2"]
 p_archs = ["prmt_coarse", "prmt_fine"]
 
@@ -51,15 +50,15 @@ for prog in progs:
 
 for prog in progs:
   plt.figure()
-  plt.title("Throughput vs. number of processors: " + prog)
-  plt.xlabel("Number of processors")
-  plt.ylabel("Throughput in packets per cycle")
+  plt.title("Throughput vs. Processors")
+  plt.xlabel("Processors")
+  plt.ylabel("Packets per cycle")
   for arch in p_archs:
     plt.plot(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
   for arch in d_archs:
     plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch])
-  plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, "upper_bound")]) for n in PROCESSORS], label = "Upper bound")
   plt.legend()
+  plt.xlim(0, 15)
   plt.savefig(fig_folder + "/" + prog + ".pdf")
 
 print("drmt thread count")
