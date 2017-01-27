@@ -60,6 +60,7 @@ for prog in progs:
     plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch], linewidth=5)
   plt.legend(loc = "lower right")
   plt.xlim(0, 15)
+  plt.tight_layout()
   plt.savefig(fig_folder + "/" + prog + ".pdf")
 
 print("drmt thread count")
