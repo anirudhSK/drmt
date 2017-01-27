@@ -55,9 +55,9 @@ for prog in progs:
   plt.xlabel("Processors", fontsize = 26)
   plt.ylabel("Packets per cycle", fontsize = 26)
   for arch in p_archs:
-    plt.plot(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch], linewidth=5)
+    plt.step(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch], linewidth=3)
   for arch in d_archs:
-    plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch], linewidth=5)
+    plt.step(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch], linewidth=3)
   plt.legend(loc = "lower right")
   plt.xlim(0, 15)
   plt.tight_layout()
