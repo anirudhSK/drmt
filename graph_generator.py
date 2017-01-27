@@ -52,8 +52,8 @@ for prog in progs:
 for prog in progs:
   plt.figure()
   plt.title("Throughput vs. Processors")
-  plt.xlabel("Processors")
-  plt.ylabel("Packets per cycle")
+  plt.xlabel("Processors", fontsize = 26)
+  plt.ylabel("Packets per cycle", fontsize = 26)
   for arch in p_archs:
     plt.plot(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
   for arch in d_archs:
