@@ -55,10 +55,10 @@ for prog in progs:
   plt.xlabel("Number of processors")
   plt.ylabel("Throughput in packets per cycle")
   for arch in p_archs:
-    plt.plot(PROCESSORS, [min(1, 1/math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
+    plt.plot(PROCESSORS, [min(1.0, 1.0 / math.ceil(pipeline_stages[(prog, arch)]/n)) for n in PROCESSORS], label = labels[arch])
   for arch in d_archs:
-    plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch])
-  plt.plot(PROCESSORS, [min(1, n / drmt_min_periods[(prog, "upper_bound")]) for n in PROCESSORS], label = "Upper bound")
+    plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, arch)]) for n in PROCESSORS], label = labels[arch])
+  plt.plot(PROCESSORS, [min(1.0, (n * 1.0) / drmt_min_periods[(prog, "upper_bound")]) for n in PROCESSORS], label = "Upper bound")
   plt.legend()
   plt.savefig(fig_folder + "/" + prog + ".pdf")
 
