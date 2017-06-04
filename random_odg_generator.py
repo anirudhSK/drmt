@@ -1,101 +1,104 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun 02 15:55:25 2017
 
-@author: svar1984
-"""
 import networkx as nx
 import numpy as np
 
-# range for expected node degrees
-low = 1
-high = 5
 
-# number of nodes
-n = 10
-
-# delays
-dm = 22
-da = 2
-ds = 0
-
-# sequence of expected degrees
-w = np.random.randint(low,high,n)
-
-# create the graph
-G = nx.expected_degree_graph(w, seed=None, selfloops=False)
-
-# remove degree 0 nodes
-for node in G.nodes():
-
-  if G.degree(node) == 0:
-    G.remove_node(node)
+def digraph_generator(n):
     
-# pick a source node and make the graph directed
-s = np.random.choice(G.nodes())
-
-DAG = nx.bfs_tree(G, s, reverse=False)
-
-t_nodes = DAG.nodes()
-t_edges = DAG.edges()
-
-nodes = {}
-edges = {}
-
-# node att.
-for node in t_nodes:
+    G = nx.DiGraph()
+     
+    # We want c*n edges. 
+    c = 5
+    
+    # We have (n^2-n)/2 possible edges. We want c*n edges. p = c*n / (n^2-n)/2.
+    p = np.ceil(1/(float(2*c*n)/(n*n-n)))
+    
+    # create DAG.
+    for i in range(0,n):
+        for j in range(i+1,n):
+            if not (np.random.random_integers(0, p)):
+                G.add_edge(i,j)
+                
+    # nx.draw(G)
+    
+    return G
+    
+def odg_attr_generator(G, delays):
+    
+    nodes = {}
+    edges = {}
+    
+    dm = delays['m']
+    da = delays['a']
+    ds = delays['c']   
+    
+    for node in nx.topological_sort(G):
+      
+      # conditional nodes are not leaves.
+      successors = G.successors(node)
         
-  node_type = np.random.choice(['_condition_','_MATCH','_ACTION'], p=[0.1, 0.45, 0.45])
-      
-  if node_type == '_MATCH':
-      
-    key_width = int(min(640, 80*np.random.geometric(.8, 1)))
+      if successors:
+        
+          node_type = np.random.choice(['_condition_','_MATCH','_ACTION'], p=[0.24, 0.38, 0.38])
+          
+      else:
+          
+          node_type = np.random.choice(['_MATCH','_ACTION'], p=[0.5, 0.5])
+          
+          
+      if node_type == '_MATCH':
+          
+        # Geometric
+        key_width = 80*int(min(np.random.geometric(.75, 1),8))
+        
+        # uniform
+        # key_width = 80*np.random.random_integers(1, 8)
+                
+        nodes[str(node)+node_type] = {'key_width': key_width, 'type': 'match'}
+        
+        for dest in successors:
+             
+            edges[(node, dest)] = {'delay': dm, 'dep_type': 'TODO'}
+        
+               
+      elif node_type == '_ACTION':
+          
+        # Geometric
+        num_fields = int(min(np.random.geometric(.25, 1),32))
+        
+        # uniform
+        # num_fields = np.random.random_integers(1, 32)
             
-    nodes[str(node)+node_type] = {'key_width': key_width, 'type': 'match', 'ID': node}
-    
-           
-  elif node_type == '_ACTION':
-    
-    num_fields = int(min(32, np.random.geometric(.2, 1)))
+        nodes[str(node)+node_type] = {'num_fields': num_fields, 'type': 'action'}
         
-    nodes[str(node)+node_type] = {'num_fields': num_fields, 'type': 'action', 'ID': node}
-    
-  else:
+        for dest in successors:
+             
+            edges[(node, dest)] = {'delay': da, 'dep_type': 'TODO'}
         
-    nodes[node_type + str(node)] = {'num_fields': 0, 'type': 'condition', 'ID': node}
-
-# edge att.
-for edge in t_edges: 
-
-  u, v = edge
+      else:
+            
+        nodes[node_type + str(node)] = {'num_fields': 1, 'type': 'condition'}
+        
+        for dest in successors:
+            
+            # TODO: dep. types for RMT.
+            edges[(node, dest)] = {'delay': ds, 'dep_type': 'TODO'} 
+            
+    return nodes, edges
+            
+def odg_generator(n):   
+         
+    # number of nodes
+    n = 100
     
-  source = None
-  destination = None
+    # generate DAG    
+    G = digraph_generator(n)
+                
+    # delays
+    delays = {'m': 22, 'a': 2, 'c': 0} 
+    
+    # generate ODG
+    return odg_attr_generator(G, delays)
   
-  for node in nodes:
-    
-    if nodes[node]['ID'] == u:
-      
-      source = node
-      delay_type = nodes[node]['type']
-      
-    elif nodes[node]['ID'] == v:
-      
-      destination = node
-  
-  
-  if delay_type == 'condition':
-    
-    delay = ds
-    
-  elif delay_type == 'action':
-       
-    delay = da
-   
-  else:
-    
-    delay = dm
 
-  edges[(source, destination)] = {'delay': delay, 'dep_type': 'TODO'}
-print nodes
-print edges
+# print odg_generator(100)
