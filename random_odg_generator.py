@@ -23,7 +23,7 @@ def digraph_generator(n):
     
     return G
 
-# TODO: Match should have a corresponding action - split match to match-action and decrease match probability?
+# TODO: Match should have a corresponding action - split match to match-action and decrease primitive action probability?
 
 def odg_attr_generator(G, delays):
     
