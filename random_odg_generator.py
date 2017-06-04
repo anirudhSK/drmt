@@ -148,7 +148,7 @@ def odg_attr_generator(G, delays):
     return nodes, edges
     
             
-def odg_generator(n):   
+def odg_generator(n, file_name):   
              
     # generate DAG    
     G = digraph_generator(n)
@@ -157,7 +157,16 @@ def odg_generator(n):
     delays = {'m': 22, 'a': 2, 'c': 0} 
     
     # generate ODG
-    return odg_attr_generator(G, delays)
+    nodes, edges = odg_attr_generator(G, delays)
   
-
-print odg_generator(10)
+    with open(file_name+'.py', 'w') as f: f.write('nodes = ')
+    with open(file_name+'.py', 'a') as f: f.write(repr(nodes))
+    with open(file_name+'.py', 'a') as f: f.write('\n')
+    
+    with open(file_name+'.py', 'a') as f: f.write('edges = ')
+    with open(file_name+'.py', 'a') as f: f.write(repr(edges))
+    with open(file_name+'.py', 'a') as f: f.write('\n')
+        
+      
+# print odg_generator(10)
+      
