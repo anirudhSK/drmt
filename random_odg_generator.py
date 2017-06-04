@@ -22,7 +22,9 @@ def digraph_generator(n):
     # nx.draw(G)
     
     return G
-    
+
+# TODO: Match should have a corresponding action - split match to match-action and decrease match probability?
+
 def odg_attr_generator(G, delays):
     
     nodes = {}
@@ -31,7 +33,8 @@ def odg_attr_generator(G, delays):
     dm = delays['m']
     da = delays['a']
     ds = delays['c']   
-    
+
+    # Create nodes.    
     for node in nx.topological_sort(G):
       
       # conditional nodes are not leaves.
@@ -54,13 +57,8 @@ def odg_attr_generator(G, delays):
         # uniform
         # key_width = 80*np.random.random_integers(1, 8)
                 
-        nodes[str(node)+node_type] = {'key_width': key_width, 'type': 'match'}
-        
-        for dest in successors:
-             
-            edges[(node, dest)] = {'delay': dm, 'dep_type': 'TODO'}
-        
-               
+        nodes[str(node)+node_type] = {'key_width': key_width, 'type': 'match', 'ID': node}
+                               
       elif node_type == '_ACTION':
           
         # Geometric
@@ -69,28 +67,76 @@ def odg_attr_generator(G, delays):
         # uniform
         # num_fields = np.random.random_integers(1, 32)
             
-        nodes[str(node)+node_type] = {'num_fields': num_fields, 'type': 'action'}
-        
-        for dest in successors:
-             
-            edges[(node, dest)] = {'delay': da, 'dep_type': 'TODO'}
-        
+        nodes[str(node)+node_type] = {'num_fields': num_fields, 'type': 'action', 'ID': node}
+                
       else:
             
-        nodes[node_type + str(node)] = {'num_fields': 1, 'type': 'condition'}
+        nodes[node_type + str(node)] = {'num_fields': 1, 'type': 'condition', 'ID': node}
+
         
-        for dest in successors:
+    # Create edges.        
+    for node in nx.topological_sort(G):
+        
+      # name according to ID
+      n_node = [name for name in nodes if nodes[name]['ID']==node][0]
+      
+      successors = G.successors(node)
+        
+      for dest in successors:
+          
+          # name according to ID                        
+          n_dest = [name for name in nodes if nodes[name]['ID']==dest][0] 
+
+                       
+
+          # TODO: fill correct 'dep_type'.                         
+                                    
+          if nodes[n_node]['type'] == 'match' and nodes[n_dest]['type'] == 'match':
+                            
+            edges[(n_node, n_dest)] = {'delay': dm, 'dep_type': 'new_match_to_action'}
+
+          if nodes[n_node]['type'] == 'match' and nodes[n_dest]['type'] == 'action':
+                            
+            edges[(n_node, n_dest)] = {'delay': dm, 'dep_type': 'new_match_to_action'}
             
-            # TODO: dep. types for RMT.
-            edges[(node, dest)] = {'delay': ds, 'dep_type': 'TODO'} 
+          if nodes[n_node]['type'] == 'match' and nodes[n_dest]['type'] == 'condition':
+                            
+            edges[(n_node, n_dest)] = {'delay': dm, 'dep_type': 'new_match_to_action'}
+
             
+            
+          if nodes[n_node]['type'] == 'action' and nodes[n_dest]['type'] == 'match':
+                            
+            edges[(n_node, n_dest)] = {'delay': da, 'dep_type': 'rmt_match'}
+
+          if nodes[n_node]['type'] == 'action' and nodes[n_dest]['type'] == 'action':
+                            
+            edges[(n_node, n_dest)] = {'delay': da, 'dep_type': 'rmt_match'}
+
+          if nodes[n_node]['type'] == 'action' and nodes[n_dest]['type'] == 'condition':
+                            
+            edges[(n_node, n_dest)] = {'delay': da, 'dep_type': 'rmt_match'}
+            
+            
+
+          if nodes[n_node]['type'] == 'condition' and nodes[n_dest]['type'] == 'match':
+                            
+            edges[(n_node, n_dest)] = {'delay': ds, 'dep_type': 'rmt_successor'}
+
+          if nodes[n_node]['type'] == 'condition' and nodes[n_dest]['type'] == 'action':
+                            
+            edges[(n_node, n_dest)] = {'delay': ds, 'dep_type': 'rmt_successor'}
+
+          if nodes[n_node]['type'] == 'condition' and nodes[n_dest]['type'] == 'condition':
+                            
+            edges[(n_node, n_dest)] = {'delay': ds, 'dep_type': 'rmt_successor'}
+            
+                                       
     return nodes, edges
+    
             
 def odg_generator(n):   
-         
-    # number of nodes
-    n = 100
-    
+             
     # generate DAG    
     G = digraph_generator(n)
                 
@@ -100,5 +146,4 @@ def odg_generator(n):
     # generate ODG
     return odg_attr_generator(G, delays)
   
-
-# print odg_generator(100)
+# print odg_generator(10)
