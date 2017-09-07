@@ -9,6 +9,7 @@ from solution import Solution
 from randomized_sieve import *
 from sieve_rotator import *
 from prmt import PrmtFineSolver
+from create_relation_graph import create_relation_graph
 
 RND_SIEVE_TIME = 30
 
@@ -20,8 +21,10 @@ class DrmtScheduleSolver:
         self.seed_rnd_sieve = seed_rnd_sieve
         self.period_duration = period_duration
         self.minute_limit    = minute_limit
+        self.relation_graph = create_relation_graph(input_spec)
+        
 
-    def solve(self):
+    def solve(self, multiple_types):
         """ Returns the optimal schedule
 
         Returns
@@ -33,6 +36,7 @@ class DrmtScheduleSolver:
         length : int
             Maximum latency of optimal schedule
         """
+
         init_drmt_schedule = None
         if (self.seed_rnd_sieve):
           print ('{:*^80}'.format(' Running rnd sieve '))
@@ -98,8 +102,17 @@ class DrmtScheduleSolver:
         # The length of the schedule
         length = m.addVar(lb=0, ub=GRB.INFINITY, vtype=GRB.INTEGER, name="length")
 
+        # binary constants that indicate relation between operations
+        any_relation_indeces = list(itertools.product(nodes, nodes))
+
+        # new variables for class indication
+        sqr = m.addVars(list(itertools.product(nodes, range(T))), vtype=GRB.BINARY, name="sqr")
+
         # Set objective: minimize length of schedule
         m.setObjective(length, GRB.MINIMIZE)
+
+        # for the new sqr
+        m.addConstrs((sqr[v,r] == sum(qr[v, q, r] for q in range(Q_MAX)) for v in nodes for r in range(T)), "constr_sqr")
 
         # Set constraints
 
@@ -110,6 +123,14 @@ class DrmtScheduleSolver:
         m.addConstrs((sum(qr[v, q, r] for q in range(Q_MAX) for r in range(T)) == 1 for v in nodes),\
                      "constr_unique_quotient_remainder")
 
+        # check for relation in the relation graph
+        any_relation = {}
+        for rel_index in any_relation_indeces:
+            if rel_index[0] not in rel_index[1]:
+                any_relation[rel_index]=int(self.relation_graph.has_edge(rel_index[0],rel_index[1]))
+            else:
+                any_relation[rel_index]=1
+
         # This is just a way to write dividend = quotient * divisor + remainder
         m.addConstrs((t[v] == \
                       sum(q * qr[v, q, r] for q in range(Q_MAX) for r in range(T)) * T + \
@@ -119,20 +140,33 @@ class DrmtScheduleSolver:
         # Respect dependencies in DAG
         m.addConstrs((t[v] - t[u] >= self.G.edge[u][v]['delay'] for (u,v) in edges),\
                      "constr_dag_dependencies")
+        
+        if not multiple_types:
+            # Number of match units does not exceed match_unit_limit
+            # for every time step (j) < T, check the total match unit requirements
+            # across all nodes (v) that can be "rotated" into this time slot.
+            m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.input_spec.match_unit_size) * qr[v, q, r]\
+                          for v in match_nodes for q in range(Q_MAX))\
+                          <= self.input_spec.match_unit_limit for r in range(T)),\
+                          "constr_match_units")
 
-        # Number of match units does not exceed match_unit_limit
-        # for every time step (j) < T, check the total match unit requirements
-        # across all nodes (v) that can be "rotated" into this time slot.
-        m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.input_spec.match_unit_size) * qr[v, q, r]\
-                      for v in match_nodes for q in range(Q_MAX))\
-                      <= self.input_spec.match_unit_limit for r in range(T)),\
-                      "constr_match_units")
+            # The action field resource constraint (similar comments to above)
+            m.addConstrs((sum(self.G.node[v]['num_fields'] * qr[v, q, r]\
+                          for v in action_nodes for q in range(Q_MAX))\
+                          <= self.input_spec.action_fields_limit for r in range(T)),\
+                          "constr_action_fields")
 
-        # The action field resource constraint (similar comments to above)
-        m.addConstrs((sum(self.G.node[v]['num_fields'] * qr[v, q, r]\
-                      for v in action_nodes for q in range(Q_MAX))\
-                      <= self.input_spec.action_fields_limit for r in range(T)),\
-                      "constr_action_fields")
+        else:
+            # here we do the heaviest neighbor approximation.            
+            m.addConstrs((sum(math.ceil((1.0 * self.G.node[v]['key_width']) / self.input_spec.match_unit_size)*any_relation[(u,v)]*(sqr[u,r]+sqr[v,r]-1)\
+                          for v in match_nodes)\
+                          <= self.input_spec.match_unit_limit for r in range(T) for u in match_nodes),\
+                          "constr_match_units")            
+
+            m.addConstrs((sum(self.G.node[v]['num_fields']*any_relation[(u,v)]*(sqr[u,r]+sqr[v,r]-1)\
+                          for v in action_nodes)\
+                          <= self.input_spec.action_fields_limit for r in range(T) for u in action_nodes),\
+                          "constr_action_units") 
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -141,12 +175,12 @@ class DrmtScheduleSolver:
         # First, detect if there is any (at least one) match/action operation from packet q in time slot r
         # if qr[v, q, r] = 1 for any match node, then any_match[q,r] must = 1 (same for actions)
         # Notice that any_match[q, r] may be 1 even if all qr[v, q, r] are zero
-        m.addConstrs((sum(qr[v, q, r] for v in match_nodes) <= (len(match_nodes) * any_match[q, r]) \
+        m.addConstrs((sum(qr[v, q, r] for v in match_nodes) <= (len(match_nodes) * any_match[q, r])\
                       for q in range(Q_MAX)\
                       for r in range(T)),\
                       "constr_any_match1");
 
-        m.addConstrs((sum(qr[v, q, r] for v in action_nodes) <= (len(action_nodes) * any_action[q, r]) \
+        m.addConstrs((sum(qr[v, q, r] for v in action_nodes) <= (len(action_nodes) * any_action[q, r])\
                       for q in range(Q_MAX)\
                       for r in range(T)),\
                       "constr_any_action1");
@@ -243,14 +277,16 @@ class DrmtScheduleSolver:
 
 if __name__ == "__main__":
   # Cmd line args
-  if (len(sys.argv) != 5):
-    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <latency file> <time limit in mins>")
+  if (len(sys.argv) != 6):
+    print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <latency file> <mpt support (True/False)> <time limit in mins>")
     exit(1)
   elif (len(sys.argv) == 5):
+
     input_file   = sys.argv[1]
     hw_file      = sys.argv[2]
     latency_file = sys.argv[3]
-    minute_limit = int(sys.argv[4])
+    mpt_support = sys.argv[4]
+    minute_limit = int(sys.argv[5])
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
@@ -282,6 +318,7 @@ if __name__ == "__main__":
   print ('Searching between limits ', period_lower_bound, ' and ', period_upper_bound, ' cycles')
   low = period_lower_bound
   high = period_upper_bound
+
   while (low <= high):
     assert(low > 0)
     assert(high > 0)
@@ -290,7 +327,7 @@ if __name__ == "__main__":
     print ('{:*^80}'.format(' Scheduling DRMT '))
     solver = DrmtScheduleSolver(G, input_spec, latency_spec,\
                                 seed_rnd_sieve = True, period_duration = period, minute_limit = minute_limit)
-    solution = solver.solve()
+    solution = solver.solve(mpt_support)
     if (solution):
       last_good_period   = period
       last_good_solution = solution
