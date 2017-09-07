@@ -11,7 +11,7 @@ from sieve_rotator import *
 from prmt import PrmtFineSolver
 from create_relation_graph import create_relation_graph
 
-RND_SIEVE_TIME = 30
+RND_SIEVE_TIME = 1
 
 class DrmtScheduleSolver:
     def __init__(self, dag, input_spec, latency_spec, seed_rnd_sieve, period_duration, minute_limit):
@@ -166,7 +166,7 @@ class DrmtScheduleSolver:
             m.addConstrs((sum(self.G.node[v]['num_fields']*any_relation[(u,v)]*(sqr[u,r]+sqr[v,r]-1)\
                           for v in action_nodes)\
                           <= self.input_spec.action_fields_limit for r in range(T) for u in action_nodes),\
-                          "constr_action_units") 
+                          "constr_action_fields") 
 
         # Any time slot (r) can have match or action operations
         # from only match_proc_limit/action_proc_limit packets
@@ -280,13 +280,15 @@ if __name__ == "__main__":
   if (len(sys.argv) != 6):
     print ("Usage: ", sys.argv[0], " <DAG file> <HW file> <latency file> <mpt support (True/False)> <time limit in mins>")
     exit(1)
-  elif (len(sys.argv) == 5):
+  elif (len(sys.argv) == 6):
 
     input_file   = sys.argv[1]
     hw_file      = sys.argv[2]
     latency_file = sys.argv[3]
-    mpt_support = sys.argv[4]
+    mpt_support = str(sys.argv[4])
     minute_limit = int(sys.argv[5])
+
+    print input_file
 
   # Input specification
   input_spec = importlib.import_module(input_file, "*")
@@ -316,7 +318,7 @@ if __name__ == "__main__":
   last_good_solution = None
   last_good_period   = None
   print ('Searching between limits ', period_lower_bound, ' and ', period_upper_bound, ' cycles')
-  low = period_lower_bound
+  low = 1
   high = period_upper_bound
 
   while (low <= high):
@@ -327,7 +329,7 @@ if __name__ == "__main__":
     print ('{:*^80}'.format(' Scheduling DRMT '))
     solver = DrmtScheduleSolver(G, input_spec, latency_spec,\
                                 seed_rnd_sieve = True, period_duration = period, minute_limit = minute_limit)
-    solution = solver.solve(mpt_support)
+    solution = solver.solve(mpt_support=='True')
     if (solution):
       last_good_period   = period
       last_good_solution = solution
