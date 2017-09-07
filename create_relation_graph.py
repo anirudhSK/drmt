@@ -7,12 +7,8 @@ This is a temporary script file.
 
 import importlib as im
 import networkx as nx
-import matplotlib.pyplot as plt
 import time
 import os
-
-from random_odg_generator import odg_generator
-
 
 # return True if substr is a substring of srt and false otherwise.
 def is_substring(srt, substr):    
@@ -20,11 +16,8 @@ def is_substring(srt, substr):
 
 
 
-def reduce_graph(super_source, fn):
+def reduce_graph(super_source, input_graph):
   
-    # import operation dependancy graph    
-    input_graph = im.import_module(fn, "*")
-    
     # retreive nodes and edges   
     nodes = input_graph.nodes
     edges = input_graph.edges
@@ -169,11 +162,11 @@ def reduce_graph(super_source, fn):
 
 
 
-def main(fn):
+def create_relation_graph(input_graph):
     
     # Change to True to create a source to all zero degree nodes.
     super_source = True
-    G = reduce_graph(super_source, fn)
+    G = reduce_graph(super_source, input_graph)
     
 #     nx.draw(G,pos=nx.random_layout(G),with_labels=True,node_size=1000,iterations=10000)
 #     plt.show()
@@ -213,7 +206,7 @@ def main(fn):
                         G.add_weighted_edges_from([(node_1, super_sink_node, 1),(node_2, super_sink_node, 1)]) 
                                                  
                         for curr_source in nodes:
-                           if not is_substring(curr_source, 'condition'):
+                           if not (is_substring(curr_source, 'input') and is_substring(curr_source, 'condition')) and not (is_substring(curr_source, 'output') and is_substring(curr_source, 'condition')):
                                if nx.maximum_flow_value(G, curr_source, 'super_sink_node', capacity='weight') == 2:
                                     dep_edges.append((node_1, node_2))
                                     
@@ -249,56 +242,6 @@ def main(fn):
     print "|E| = %d" % E
     unrelated_nodes  = max_num_of_edges - E
     print "Number of unrelated node couples = %d" % unrelated_nodes
-    
 
-###############################################################################
-###############################################################################      
-
-if __name__ == "__main__":
-  
-    start_time = time.time()
-       
-    random_odg = False
-    
-    if random_odg:
-        
-        fn = 'test_odg.py'
-        
-        try:
-            os.remove('test_odg.py')
-        except OSError:
-            pass
-        
-        print "######################### ODG data - start ########################"
-        odg_generator(30, 'test_odg') 
-        print "######################### ODG data - end ##########################"
-        
-    else:
-        
-        # file name
-        fn = 'switch_ingress_sched_data'
-        
-    
-    print "##################### relation graph data - start ##################"
-    main(fn) 
-    print "##################### relation graph data - end ####################"
-           
-    print("TIME: --- %s seconds ---" % round(time.time() - start_time, 2))
-    
-    
-       
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    return RG
     
