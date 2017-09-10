@@ -1,8 +1,8 @@
 nodes = \
 {'_condition_1': {'type': 'condition', 'ID': 0, 'num_fields': 1},\
- '1_MATCH': {'type': 'match', 'key_width': 320, 'ID': 2},\
+ '1_MATCH': {'type': 'match', 'key_width': 640, 'ID': 2},\
  '1_ACTION': {'type': 'action', 'num_fields': 31, 'ID': 3},\
- '2_MATCH': {'type': 'match', 'key_width': 320, 'ID': 4},\
+ '2_MATCH': {'type': 'match', 'key_width': 640, 'ID': 4},\
  '2_ACTION': {'type': 'action', 'num_fields': 31, 'ID': 5}}
  
 edges = \
